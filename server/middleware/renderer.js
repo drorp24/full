@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-
-// import our main App component
+import { StaticRouter } from 'react-router-dom'
 import App from '../../src/App'
 
 const path = require('path')
@@ -17,8 +16,13 @@ export default (req, res, next) => {
       return res.status(404).end()
     }
 
-    // render the app as a string
-    const html = ReactDOMServer.renderToString(<App />)
+    const context = {}
+    const jsx = (
+      <StaticRouter context={context} location={req.url}>
+        <App />
+      </StaticRouter>
+    )
+    const html = ReactDOMServer.renderToString(jsx)
 
     // inject the rendered app into our html and send it
     return res.send(

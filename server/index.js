@@ -1,6 +1,4 @@
 import express from 'express'
-
-// we'll talk about this in a minute:
 import serverRenderer from './middleware/renderer'
 
 const PORT = 3000
