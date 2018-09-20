@@ -7,6 +7,7 @@ const path = require('path')
 const fs = require('fs')
 
 export default (req, res, next) => {
+  console.log('Server rendering req.url: ', req.url)
   // point to the html file created by CRA's build tool
   const filePath = path.resolve(__dirname, '..', '..', 'build', 'index.html')
 

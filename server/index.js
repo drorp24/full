@@ -18,7 +18,9 @@ router.use(
 
 // anything else should act as our index page
 // react-router will take care of everything
-router.use('*', serverRenderer)
+// NOTE: router.use did *not* pass the correct req.url into serverRenderer! Neither did app.use!
+// That's why it has been changed to router.get
+router.get('*', serverRenderer)
 
 // tell the app to use the above rules
 app.use(router)
