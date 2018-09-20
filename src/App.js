@@ -1,8 +1,11 @@
-// @flow
-
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
-import AsyncComponent from './AsyncComponent'
+import Loadable from 'react-loadable'
+
+const AsyncComponent = Loadable({
+  loader: () => import('./SomeComponent'),
+  loading: () => <div>loading...</div>,
+})
 
 const App = () => (
   <div>
