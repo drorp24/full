@@ -3,8 +3,16 @@ import { Route, Link } from 'react-router-dom'
 import Loadable from 'react-loadable'
 
 const AsyncComponent = Loadable({
-  loader: () => import('./SomeComponent'),
+  loader: () =>
+    import(/* webpackChunkName: "SomeComponent" */ './SomeComponent'),
   loading: () => <div>loading...</div>,
+  modules: ['AsyncComponent'],
+})
+
+const AboutLink = Loadable({
+  loader: () => import(/* webpackChunkName: "AboutLink" */ './AboutLink'),
+  loading: () => <div>loading...</div>,
+  modules: ['AboutLink'],
 })
 
 const App = () => (
@@ -13,9 +21,7 @@ const App = () => (
       <li>
         <Link to="/">Home</Link>
       </li>
-      <li>
-        <Link to="/about">About</Link>
-      </li>
+      <AboutLink />
       <li>
         <Link to="/topics">Topics</Link>
       </li>

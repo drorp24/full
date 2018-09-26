@@ -1,5 +1,6 @@
 import express from 'express'
 import serverRenderer from './middleware/renderer'
+import Loadable from 'react-loadable'
 
 const PORT = 3001
 const path = require('path')
@@ -25,11 +26,14 @@ router.get('*', serverRenderer)
 // tell the app to use the above rules
 app.use(router)
 
-// start the app
-app.listen(PORT, error => {
-  if (error) {
-    return console.log('something bad happened', error)
-  }
+Loadable.preloadAll().then(() => {
+  app.listen(PORT, error => {
+    if (error) {
+      return console.log('something bad happened', error)
+    }
 
-  console.log('listening on ' + PORT + '...')
+    console.log('listening on ' + PORT + '...')
+  })
 })
+
+// start the app

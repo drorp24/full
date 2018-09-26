@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App'
 import registerServiceWorker from './registerServiceWorker'
+import Loadable from 'react-loadable'
 
 const jsx = (
   <BrowserRouter>
@@ -13,5 +14,10 @@ const jsx = (
 
 const root = document.getElementById('root')
 
-ReactDOM.hydrate(jsx, root)
+window.onload = () => {
+  Loadable.preloadReady().then(() => {
+    ReactDOM.hydrate(jsx, root)
+  })
+}
+
 registerServiceWorker()
