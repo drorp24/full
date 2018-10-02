@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom'
 import Loadable from 'react-loadable'
+import { connect } from 'react-redux'
+import { setMessage } from './store/creators'
 
 const AsyncComponent = Loadable({
   loader: () =>
@@ -15,29 +17,40 @@ const AboutLink = Loadable({
   modules: ['AboutLink'],
 })
 
-const App = () => (
-  <div>
-    <ul>
-      <li>
-        <Link to="/">Home</Link>
-      </li>
-      <AboutLink />
-      <li>
-        <Link to="/topics">Topics</Link>
-      </li>
-      <li>
-        <Link to="/async">Async</Link>
-      </li>
-    </ul>
+class App extends Component {
+  componentDidMount() {
+    if (!this.props.message) {
+      this.props.updateMessage("Hi I'm from the client!")
+    }
+  }
 
-    <hr />
+  render() {
+    return (
+      <div>
+        <p>Redux: {this.props.message} </p>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <AboutLink />
+          <li>
+            <Link to="/topics">Topics</Link>
+          </li>
+          <li>
+            <Link to="/async">Async</Link>
+          </li>
+        </ul>
 
-    <Route exact path="/" component={Home} />
-    <Route path="/about" component={About} />
-    <Route path="/topics" component={Topics} />
-    <Route path="/async" component={AsyncComponent} />
-  </div>
-)
+        <hr />
+
+        <Route exact path="/" component={Home} />
+        <Route path="/about" component={About} />
+        <Route path="/topics" component={Topics} />
+        <Route path="/async" component={AsyncComponent} />
+      </div>
+    )
+  }
+}
 
 const Home = ({ staticContext }) => {
   if (staticContext) {
@@ -99,4 +112,11 @@ const Topic = ({ match }) => {
   )
 }
 
-export default App
+export default connect(
+  ({ app }) => ({
+    message: app.message,
+  }),
+  dispatch => ({
+    updateMessage: txt => dispatch(setMessage(txt)),
+  })
+)(App)
