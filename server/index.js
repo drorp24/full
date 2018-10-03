@@ -1,31 +1,15 @@
 import express from 'express'
-import serverRenderer from './middleware/renderer'
 import Loadable from 'react-loadable'
+import indexController from './controllers/index'
 
 const PORT = 3001
-const path = require('path')
 
 // initialize the application and create the routes
 const app = express()
-const router = express.Router()
 
-// root (/) should always serve our server rendered page
-router.use('^/$', serverRenderer)
+app.use(indexController)
 
-// other static resources should just be served as they are
-router.use(
-  express.static(path.resolve(__dirname, '..', 'build'), { maxAge: '30d' })
-)
-
-// anything else should act as our index page
-// react-router will take care of everything
-// NOTE: router.use did *not* pass the correct req.url into serverRenderer! Neither did app.use!
-// That's why it has been changed to router.get
-router.get('*', serverRenderer)
-
-// tell the app to use the above rules
-app.use(router)
-
+// start the app
 Loadable.preloadAll().then(() => {
   app.listen(PORT, error => {
     if (error) {
@@ -35,5 +19,3 @@ Loadable.preloadAll().then(() => {
     console.log('listening on ' + PORT + '...')
   })
 })
-
-// start the app

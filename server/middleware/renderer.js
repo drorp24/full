@@ -4,11 +4,12 @@ import { StaticRouter } from 'react-router-dom'
 import App from '../../src/App'
 import Loadable from 'react-loadable'
 import manifest from '../../build/asset-manifest.json'
+import { Provider as ReduxProvider } from 'react-redux'
 
 const path = require('path')
 const fs = require('fs')
 
-export default (req, res, next) => {
+export default store => (req, res, next) => {
   console.log('Server rendering req.url: ', req.url)
   // point to the html file created by CRA's build tool
   const filePath = path.resolve(__dirname, '..', '..', 'build', 'index.html')
@@ -23,11 +24,13 @@ export default (req, res, next) => {
     const modules = []
 
     const jsx = (
-      <Loadable.Capture report={m => modules.push(m)}>
-        <StaticRouter context={context} location={req.url}>
-          <App />
-        </StaticRouter>
-      </Loadable.Capture>
+      <ReduxProvider store={store}>
+        <Loadable.Capture report={m => modules.push(m)}>
+          <StaticRouter context={context} location={req.url}>
+            <App />
+          </StaticRouter>
+        </Loadable.Capture>
+      </ReduxProvider>
     )
     const html = ReactDOMServer.renderToString(jsx)
 
