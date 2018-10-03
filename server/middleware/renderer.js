@@ -33,6 +33,7 @@ export default store => (req, res, next) => {
       </ReduxProvider>
     )
     const html = ReactDOMServer.renderToString(jsx)
+    const reduxState = JSON.stringify(store.getState())
 
     const extractAssets = (assets, chunks) => {
       console.log('entering extractAssets with:')
@@ -61,6 +62,7 @@ export default store => (req, res, next) => {
       htmlData
         .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
         .replace('</body>', extraChunks.join('') + '</body>')
+        .replace('"__SERVER_REDUX_STATE__"', reduxState)
     )
   })
 }

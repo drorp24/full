@@ -8,7 +8,7 @@ import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
 
-const store = configureStore()
+const store = configureStore(window.REDUX_STATE || {})
 
 const AppBundle = (
   <ReduxProvider store={store}>
