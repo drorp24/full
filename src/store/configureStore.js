@@ -1,13 +1,14 @@
-import { createStore, combineReducers, compose, applyMiddleware } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 import ReduxThunk from 'redux-thunk'
 
 import { appReducer } from './reducers'
 
 // add extra middlewares here
-const createStoreWithMiddleware = compose(applyMiddleware(ReduxThunk))(
-  createStore
-)
+const createStoreWithMiddleware = composeWithDevTools(
+  applyMiddleware(ReduxThunk)
+)(createStore)
 
 const rootReducer = combineReducers({
   app: appReducer,
