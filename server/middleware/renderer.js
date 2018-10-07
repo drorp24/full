@@ -10,7 +10,6 @@ const path = require('path')
 const fs = require('fs')
 
 export default store => (req, res, next) => {
-  console.log('Server rendering req.url: ', req.url)
   // point to the html file created by CRA's build tool
   const filePath = path.resolve(__dirname, '..', '..', 'build', 'index.html')
 
@@ -35,27 +34,14 @@ export default store => (req, res, next) => {
     const html = ReactDOMServer.renderToString(jsx)
     const reduxState = JSON.stringify(store.getState())
 
-    const extractAssets = (assets, chunks) => {
-      console.log('entering extractAssets with:')
-      console.log('assets (manifest): ', assets)
-      console.log('chunks (modules): ', chunks)
-      return Object.keys(assets)
+    const extractAssets = (assets, chunks) =>
+      Object.keys(assets)
         .filter(asset => chunks.indexOf(asset.replace('.js', '')) > -1)
-        .map(k => {
-          console.log('k: ', k)
-          return assets[k]
-        })
-    }
+        .map(k => assets[k])
 
     const extraChunks = extractAssets(manifest, modules).map(
       c => `<script type="text/javascript" src="/${c}"></script>`
     )
-
-    console.log('html: ', html)
-    console.log('')
-    console.log('modules', modules)
-    console.log('')
-    console.log('extraChunks: ', extraChunks)
 
     // inject the rendered app into our html and send it
     return res.send(
