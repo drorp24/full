@@ -8,7 +8,10 @@ import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
 
-const store = configureStore(window.REDUX_STATE || {})
+// in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
+// as there's no server to replace it with anything
+// it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
+const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
 
 const AppBundle = (
   <ReduxProvider store={store}>
@@ -21,7 +24,9 @@ const AppBundle = (
 const root = document.getElementById('root')
 
 window.onload = () => {
-  // that 'renderMethod' is preventing the 'maching <div>' warning showing when server does *not* send html
+  // in dev-only mode (no server, e.g.: localhost:3000), there's nothing to hydrate
+  // calling ReactDOM.hydrate in this case will result with a 'maching <div>' warning message
+  // calling ReactDOM.render in this case prevents the warning from appearing
   const renderMethod = module.hot ? ReactDOM.render : ReactDOM.hydrate
   Loadable.preloadReady().then(() => {
     renderMethod(AppBundle, root)
