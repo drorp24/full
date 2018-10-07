@@ -21,8 +21,10 @@ const AppBundle = (
 const root = document.getElementById('root')
 
 window.onload = () => {
+  // that 'renderMethod' is preventing the 'maching <div>' warning showing when server does *not* send html
+  const renderMethod = module.hot ? ReactDOM.render : ReactDOM.hydrate
   Loadable.preloadReady().then(() => {
-    ReactDOM.hydrate(AppBundle, root)
+    renderMethod(AppBundle, root)
   })
 }
 
