@@ -35,7 +35,6 @@
     "server": "yarn build && NODE_ENV=development node server/bootstrap.js"
   },
   "devDependencies": {
-    "ignore-styles": "^5.0.1",
-    "redux-devtools-extension": "^2.13.5"
+    "ignore-styles": "^5.0.1"
   }
 }
