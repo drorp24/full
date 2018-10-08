@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, withRouter } from 'react-router-dom'
 import Loadable from 'react-loadable'
 import { connect } from 'react-redux'
 import { setMessage } from './store/creators'
@@ -112,11 +112,13 @@ const Topic = ({ match }) => {
   )
 }
 
-export default connect(
-  ({ app }) => ({
-    message: app.message,
-  }),
-  dispatch => ({
-    updateMessage: txt => dispatch(setMessage(txt)),
-  })
-)(App)
+export default withRouter(
+  connect(
+    ({ app }) => ({
+      message: app.message,
+    }),
+    dispatch => ({
+      updateMessage: txt => dispatch(setMessage(txt)),
+    })
+  )(App)
+)
