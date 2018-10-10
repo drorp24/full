@@ -1,5 +1,5 @@
 import express from 'express'
-import { setMessage } from '../../src/store/creators'
+import { setMessage } from '../../src/store/actions'
 
 import serverRenderer from '../middleware/renderer'
 import configureStore from '../../src/store/configureStore'

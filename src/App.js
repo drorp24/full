@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Route, Link, withRouter } from 'react-router-dom'
 import Loadable from 'react-loadable'
 import { connect } from 'react-redux'
-import { setMessage } from './store/creators'
+import { setMessage, addClick } from './store/actions'
 
 const AsyncComponent = Loadable({
   loader: () =>
@@ -20,13 +20,16 @@ const AboutLink = Loadable({
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
-      this.props.updateMessage("Hi I'm from the client!")
+      this.props.setMessage("Hi I'm from the client!")
     }
   }
 
   render() {
     return (
       <div>
+        <button onClick={this.props.addClick}>
+          Clicks: {this.props.clicks}
+        </button>
         <p>Redux: {this.props.message} </p>
         <ul>
           <li>
@@ -112,13 +115,17 @@ const Topic = ({ match }) => {
   )
 }
 
+// using mapDispatchToProps' short-hand version as it's so much clearer
+// most use the long version for no reason, having to use a different prop name
 export default withRouter(
   connect(
-    ({ app }) => ({
-      message: app.message,
+    ({ text: { message }, counter: { clicks } }) => ({
+      message,
+      clicks,
     }),
-    dispatch => ({
-      updateMessage: txt => dispatch(setMessage(txt)),
-    })
+    {
+      setMessage,
+      addClick,
+    }
   )(App)
 )
