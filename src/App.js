@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Route, Link, withRouter } from 'react-router-dom'
 import Loadable from 'react-loadable'
 import { connect } from 'react-redux'
-import { setMessage, addClick } from './store/actions'
+import { setMessage, setCount } from './store/actions'
 
 const AsyncComponent = Loadable({
   loader: () =>
@@ -17,6 +17,25 @@ const AboutLink = Loadable({
   modules: ['AboutLink'],
 })
 
+class ClassStateExample extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      count: 0,
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          Class - {this.state.count} Clicks
+        </button>
+      </div>
+    )
+  }
+}
+
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
@@ -27,8 +46,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <button onClick={this.props.addClick}>
-          Clicks: {this.props.clicks}
+        <ClassStateExample />
+        <button onClick={this.props.setCount}>
+          Redux - {this.props.count} Clicks
         </button>
         <p>Redux: {this.props.message} </p>
         <ul>
@@ -119,13 +139,13 @@ const Topic = ({ match }) => {
 // most use the long version for no reason, having to use a different prop name
 export default withRouter(
   connect(
-    ({ text: { message }, counter: { clicks } }) => ({
+    ({ text: { message }, counter: { count } }) => ({
       message,
-      clicks,
+      count,
     }),
     {
       setMessage,
-      addClick,
+      setCount,
     }
   )(App)
 )

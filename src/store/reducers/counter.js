@@ -1,15 +1,15 @@
-import { ADD_CLICK } from '../types'
+import { SET_COUNT } from '../types'
 
 const initialState = {
-  clicks: 0,
+  count: 0,
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case ADD_CLICK:
+    case SET_COUNT:
       return {
         ...state,
-        clicks: state.clicks + 1,
+        count: state.count + 1,
       }
     default:
       return state
