@@ -40,7 +40,7 @@ export default store => (req, res, next) => {
         .map(k => assets[k])
 
     const extraChunks = extractAssets(manifest, modules).map(
-      c => `<script type="text/javascript" src="/${c}"></script>`
+      c => `<script type="text/javascript" src="${c}"></script>`
     )
 
     // inject the rendered app into our html and send it

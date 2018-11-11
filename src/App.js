@@ -46,6 +46,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <p>{React.version}</p>
         <ClassStateExample />
         <button onClick={this.props.setCount}>
           Redux - {this.props.count} Clicks
