@@ -10,7 +10,7 @@ const Topics = ({ match, staticContext }) => {
 
   return (
     <div>
-      <h2>Topics</h2>
+      <p>Topics</p>
       <ul>
         <li>
           <Link to={`${match.url}/rendering`}>Rendering with React</Link>
@@ -27,7 +27,7 @@ const Topics = ({ match, staticContext }) => {
       <Route
         exact
         path={match.url}
-        render={() => <h3>Please select a topic.</h3>}
+        render={() => <p>Please select a topic.</p>}
       />
     </div>
   )

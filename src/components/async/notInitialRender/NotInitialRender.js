@@ -1,5 +1,5 @@
 import React from 'react'
 
 export default () => (
-  <p>Async component, not included in the initial render, fetched now</p>
+  <p>Separate, webpack-named js chunk, just fetched (react-loadable)</p>
 )

@@ -9,6 +9,7 @@ import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotI
 import AsyncInitialRender from './components/async/initialRender/AsyncInitialRender'
 import Home from './components/sync/Home'
 import Topics from './components/sync/Topics'
+import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 
 class App extends Component {
   componentDidMount() {
@@ -20,37 +21,46 @@ class App extends Component {
   render() {
     return (
       <div>
-        <p>React {React.version}</p>
+        <h1>React {React.version}</h1>
+        <h2>Redux</h2>
         <p>Redux initial data source: {this.props.message} </p>
-        <AsyncInitialRender />
 
-        <p>Stateful Components</p>
+        <h2>Stateful Components</h2>
         <HookCounter />
         <ClassCounter />
         <ReduxCounter />
 
+        <h2>Async Components</h2>
+        <h3>Included in initial render</h3>
+        <AsyncInitialRender />
+        <h3>Not included in initial render</h3>
         <ul>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/asyncNotInitialRender">react-loadable</Link>
           </li>
           <li>
-            <Link to="/topics">Topics</Link>
+            <Link to="/asyncLazyComponent">react lazy</Link>
+          </li>
+        </ul>
+
+        <h2>Routing</h2>
+        <ul>
+          <li>
+            <Link to="/">Simple</Link>
           </li>
           <li>
-            <Link to="/asyncNotInitialRender">
-              Click for async component that was not included in initial render
-            </Link>
+            <Link to="/topics">Nested</Link>
           </li>
         </ul>
 
         <hr />
-
         <Route exact path="/" component={Home} />
         <Route path="/topics" component={Topics} />
         <Route
           path="/asyncNotInitialRender"
           component={AsyncNotInitialRender}
         />
+        <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
       </div>
     )
   }
