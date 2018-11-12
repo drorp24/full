@@ -9,7 +9,7 @@ const path = require('path')
 
 const actionIndex = (req, res, next) => {
   const store = configureStore()
-  store.dispatch(setMessage("Hi I'm from server!"))
+  store.dispatch(setMessage('Server'))
 
   serverRenderer(store)(req, res, next)
 }

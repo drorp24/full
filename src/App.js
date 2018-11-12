@@ -1,139 +1,59 @@
 import React, { Component } from 'react'
 import { Route, Link, withRouter } from 'react-router-dom'
-import Loadable from 'react-loadable'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './store/actions'
-
-const AsyncComponent = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "SomeComponent" */ './SomeComponent'),
-  loading: () => <div>loading...</div>,
-  modules: ['AsyncComponent'],
-})
-
-const AboutLink = Loadable({
-  loader: () => import(/* webpackChunkName: "AboutLink" */ './AboutLink'),
-  loading: () => <div>loading...</div>,
-  modules: ['AboutLink'],
-})
-
-class ClassStateExample extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      count: 0,
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
-          Class - {this.state.count} Clicks
-        </button>
-      </div>
-    )
-  }
-}
+import HookCounter from './components/stateful/HookCounter'
+import ClassCounter from './components/stateful/ClassCounter'
+import ReduxCounter from './components/stateful/ReduxCounter'
+import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
+import AsyncInitialRender from './components/async/initialRender/AsyncInitialRender'
+import Home from './components/sync/Home'
+import Topics from './components/sync/Topics'
 
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
-      this.props.setMessage("Hi I'm from the client!")
+      this.props.setMessage('Client')
     }
   }
 
   render() {
     return (
       <div>
-        <p>{React.version}</p>
-        <ClassStateExample />
-        <button onClick={this.props.setCount}>
-          Redux - {this.props.count} Clicks
-        </button>
-        <p>Redux: {this.props.message} </p>
+        <p>React {React.version}</p>
+        <p>Redux initial data source: {this.props.message} </p>
+        <AsyncInitialRender />
+
+        <p>Stateful Components</p>
+        <HookCounter />
+        <ClassCounter />
+        <ReduxCounter />
+
         <ul>
           <li>
             <Link to="/">Home</Link>
           </li>
-          <AboutLink />
           <li>
             <Link to="/topics">Topics</Link>
           </li>
           <li>
-            <Link to="/async">Async</Link>
+            <Link to="/asyncNotInitialRender">
+              Click for async component that was not included in initial render
+            </Link>
           </li>
         </ul>
 
         <hr />
 
         <Route exact path="/" component={Home} />
-        <Route path="/about" component={About} />
         <Route path="/topics" component={Topics} />
-        <Route path="/async" component={AsyncComponent} />
+        <Route
+          path="/asyncNotInitialRender"
+          component={AsyncNotInitialRender}
+        />
       </div>
     )
   }
-}
-
-const Home = ({ staticContext }) => {
-  if (staticContext) {
-    console.log('Server rendering Home')
-  }
-
-  return (
-    <div>
-      <h2>Home</h2>
-    </div>
-  )
-}
-
-const About = () => (
-  <div>
-    <h2>About</h2>
-  </div>
-)
-
-const Topics = ({ match, staticContext }) => {
-  if (staticContext) {
-    console.log('Server rendering Topics')
-  }
-
-  console.log('In Topics. match: ', match)
-
-  return (
-    <div>
-      <h2>Topics</h2>
-      <ul>
-        <li>
-          <Link to={`${match.url}/rendering`}>Rendering with React</Link>
-        </li>
-        <li>
-          <Link to={`${match.url}/components`}>Components</Link>
-        </li>
-        <li>
-          <Link to={`${match.url}/props-v-state`}>Props v. State</Link>
-        </li>
-      </ul>
-
-      <Route path={`${match.url}/:topicId`} component={Topic} />
-      <Route
-        exact
-        path={match.url}
-        render={() => <h3>Please select a topic.</h3>}
-      />
-    </div>
-  )
-}
-
-const Topic = ({ match }) => {
-  console.log('In Topic. match: ', match)
-
-  return (
-    <div>
-      <h3>{match.params.topicId}</h3>
-    </div>
-  )
 }
 
 // using mapDispatchToProps' short-hand version as it's so much clearer
