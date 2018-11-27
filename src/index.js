@@ -7,6 +7,19 @@ import registerServiceWorker from './registerServiceWorker'
 import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from 'react-apollo'
+
+// apollo client docs discrepancy: link & cache arguments mandatory or not
+const uri = process.env.REACT_APP_GRAPHQL_ENDPOINT
+// import { HttpLink } from 'apollo-link-http'
+// import { InMemoryCache } from 'apollo-cache-inmemory'
+// const link = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_ENDPOINT })
+// const cache = new InMemoryCache()
+
+const client = new ApolloClient({
+  uri,
+})
 
 // in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
 // as there's no server to replace it with anything
@@ -14,11 +27,13 @@ import configureStore from './store/configureStore'
 const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
 
 const AppBundle = (
-  <ReduxProvider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </ReduxProvider>
+  <ApolloProvider client={client}>
+    <ReduxProvider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ReduxProvider>
+  </ApolloProvider>
 )
 
 const root = document.getElementById('root')

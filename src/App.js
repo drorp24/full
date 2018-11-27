@@ -10,6 +10,8 @@ import AsyncInitialRender from './components/async/initialRender/AsyncInitialRen
 import Home from './components/sync/Home'
 import Topics from './components/sync/Topics'
 import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
+import Trading from './components/graphql/Trading'
+import Merchants from './components/graphql/Merchants'
 
 class App extends Component {
   componentDidMount() {
@@ -22,6 +24,9 @@ class App extends Component {
     return (
       <div>
         <h1>React {React.version}</h1>
+        <h2>GraphQL</h2>
+        <Merchants />
+        <Trading />
         <h2>Redux</h2>
         <p>Redux initial data source: {this.props.message} </p>
 
