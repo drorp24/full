@@ -1,25 +1,10 @@
 import React from 'react'
 import { Query } from 'react-apollo'
-import { gql } from 'apollo-boost'
 
-const MERCHANTS = gql`
-  query {
-    merchants(
-      searchArea: { lat: 32.05, lng: 34.77, distance: 50 }
-      merchantServices: { currency: "CHF", delivery: true }
-      searchResults: { results: 3 }
-    ) {
-      name
-      address
-      name_he
-      delivery
-      phone
-    }
-  }
-`
+import merchants from '../../queries/merchants'
 
 export default () => (
-  <Query query={MERCHANTS}>
+  <Query query={merchants}>
     {({ loading, error, data }) => {
       if (loading) return <p>Loading...</p>
       if (error) return <p>Error :(</p>
@@ -28,7 +13,7 @@ export default () => (
       // not destructuring to enable query to change w/o affecting this UI
       return data.merchants.map(merchant => (
         <div key={merchant.address}>
-          <h3>{merchant.name}</h3>
+          <h4>{merchant.name}</h4>
           {Object.entries(merchant).map(
             ([key, value]) =>
               key !== '__typename' && (

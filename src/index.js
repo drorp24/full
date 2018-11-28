@@ -27,13 +27,15 @@ const client = new ApolloClient({
 const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
 
 const AppBundle = (
-  <ApolloProvider client={client}>
-    <ReduxProvider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ReduxProvider>
-  </ApolloProvider>
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <ReduxProvider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ReduxProvider>
+    </ApolloProvider>
+  </React.StrictMode>
 )
 
 const root = document.getElementById('root')
