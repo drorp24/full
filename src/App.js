@@ -11,9 +11,9 @@ import Home from './components/sync/Home'
 import Topics from './components/sync/Topics'
 import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
-import Merchants from './components/graphql/Merchants'
 import OneLevel from './components/graphql/OneLevel'
 import ErrorBoundary from './components/error/boundary'
+import TradingUpdated from './components/graphql/TradingUpdated'
 
 class App extends Component {
   componentDidMount() {
@@ -27,6 +27,8 @@ class App extends Component {
       <div>
         <h1>React {React.version}</h1>
         <h2>GraphQL</h2>
+        <h3>Real-time Crypto rates:</h3>
+        <TradingUpdated />
         <h3>Merchants Query:</h3>
         <ErrorBoundary>
           <OneLevel query="merchants" />

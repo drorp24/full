@@ -7,19 +7,52 @@ import registerServiceWorker from './registerServiceWorker'
 import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
-import ApolloClient from 'apollo-boost'
+
+import ApolloClient from 'apollo-client'
 import { ApolloProvider } from 'react-apollo'
+import { WebSocketLink } from 'apollo-link-ws'
+import { split } from 'apollo-link'
+import { HttpLink } from 'apollo-link-http'
+import { getMainDefinition } from 'apollo-utilities'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+
+// Create an http link:
+const httpLink = new HttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_HTTP_ENDPOINT,
+})
+
+const wsLink = new WebSocketLink({
+  uri: process.env.REACT_APP_GRAPHQL_WS_ENDPOINT,
+  options: {
+    reconnect: true,
+    timeout: 60000,
+  },
+})
+
+const link = split(
+  // split based on operation type
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query)
+    return kind === 'OperationDefinition' && operation === 'subscription'
+  },
+  wsLink,
+  httpLink
+)
+
+const cache = new InMemoryCache()
 
 // apollo client docs discrepancy: link & cache arguments mandatory or not
-const uri = process.env.REACT_APP_GRAPHQL_ENDPOINT
 // import { HttpLink } from 'apollo-link-http'
 // import { InMemoryCache } from 'apollo-cache-inmemory'
 // const link = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_ENDPOINT })
 // const cache = new InMemoryCache()
 
 const client = new ApolloClient({
-  uri,
+  link,
+  cache,
 })
+
+client.resetStore()
 
 // in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
 // as there's no server to replace it with anything
