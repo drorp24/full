@@ -7,6 +7,7 @@ import registerServiceWorker from './registerServiceWorker'
 import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 
 import ApolloClient from 'apollo-client'
 import { ApolloProvider } from 'react-apollo'
@@ -52,19 +53,21 @@ const client = new ApolloClient({
   cache,
 })
 
-client.resetStore()
-
 // in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
 // as there's no server to replace it with anything
 // it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
 const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
+
+const theme = createMuiTheme()
 
 const AppBundle = (
   <React.StrictMode>
     <ApolloProvider client={client}>
       <ReduxProvider store={store}>
         <BrowserRouter>
-          <App />
+          <MuiThemeProvider theme={theme}>
+            <App />
+          </MuiThemeProvider>
         </BrowserRouter>
       </ReduxProvider>
     </ApolloProvider>
