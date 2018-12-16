@@ -18,9 +18,11 @@ const Home = ({ staticContext }) => {
       <p>
         <Link to="/cryptochart">Crypto Chart</Link>
       </p>
-      <p>
+
+      {/* <p>
         <Link to="/cryptochartUsingHooks">Crypto Chart Using Hooks</Link>
-      </p>
+      </p> */}
+
       <h2>GraphQL</h2>
       <h3>Subscription</h3>
       <p>

@@ -9,7 +9,7 @@ import Topics from './components/sync/Topics'
 import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
 import CryptoChart from './components/websocket/CryptoChart'
-import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
+// import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 
@@ -25,10 +25,10 @@ class App extends Component {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/cryptochart" component={CryptoChart} />
-        <Route
+        {/* <Route
           path="/cryptochartUsingHooks"
           component={CryptoChartUsingHooks}
-        />
+        /> */}
         <Route path="/realtimetrading/" component={TradingUpdated} />
         <Route path="/trading" component={Trading} />
 

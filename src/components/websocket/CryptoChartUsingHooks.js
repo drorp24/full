@@ -1,3 +1,5 @@
+// GIVEN UP - labels array won't update (data array does)
+
 // Self excercise of using hooks!
 import React, { useState, useEffect } from 'react'
 import { withStyles } from '@material-ui/core/styles'
@@ -11,8 +13,9 @@ const styles = theme => ({
 
 const CryptoChartUsingHooks = props => {
   const [initialized, setInitialized] = useState(false)
+  const [labels, setLabels] = useState([])
   const [lineChartData, setLineChartData] = useState({
-    labels: [],
+    labels,
     datasets: [
       {
         type: 'line',
@@ -56,9 +59,9 @@ const CryptoChartUsingHooks = props => {
     ],
   }
 
-  const ws = new WebSocket('wss://ws-feed.gdax.com')
   useEffect(() => {
     console.log('useEffect called')
+    const ws = new WebSocket('wss://ws-feed.gdax.com')
     if (!initialized) {
       console.log('in useEffect. !initialized')
       ws.onopen = () => {
@@ -75,12 +78,24 @@ const CryptoChartUsingHooks = props => {
         const oldBtcDataSet = lineChartData.datasets[0]
         const newBtcDataSet = { ...oldBtcDataSet }
         newBtcDataSet.data.push(value.price)
+        console.log('labels before setLabels: ', labels)
+        const date = new Date().toLocaleTimeString()
+        console.log('date: ', date)
+        console.log('labels.concat(date): ', labels.concat(date))
+        const labelsConcat = labels.concat(date).slice()
+        console.log('labelsConcat:', labelsConcat)
+        setLabels(labelsConcat)
+        console.log('labels after setLabels: ', labels)
 
         const newChartData = {
           ...lineChartData,
           datasets: [newBtcDataSet],
-          labels: lineChartData.labels.concat(new Date().toLocaleTimeString()),
+          labels,
         }
+        console.log(
+          'hooks version. labels after concat: ',
+          lineChartData.labels
+        )
         setLineChartData(newChartData)
       }
 
