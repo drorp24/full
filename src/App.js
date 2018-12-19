@@ -3,7 +3,7 @@ import { Route, withRouter, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './store/actions'
 
-import Home from './components/sync/Home'
+import Practice from './components/sync/Practice'
 import TradingUpdated from './components/graphql/TradingUpdated'
 import Topics from './components/sync/Topics'
 import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
@@ -12,6 +12,7 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
+import SearchForm from './components/forms/homemade/Hooks'
 
 class App extends Component {
   componentDidMount() {
@@ -23,7 +24,8 @@ class App extends Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" component={SearchForm} />
+        <Route path="/practice" component={Practice} />
         <Route path="/cryptochart" component={CryptoChart} />
         {/* <Route
           path="/cryptochartUsingHooks"

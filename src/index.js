@@ -58,20 +58,24 @@ const client = new ApolloClient({
 // it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
 const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
 
-const theme = createMuiTheme()
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+})
 
 const AppBundle = (
-  <React.StrictMode>
-    <ApolloProvider client={client}>
-      <ReduxProvider store={store}>
-        <BrowserRouter>
-          <MuiThemeProvider theme={theme}>
-            <App />
-          </MuiThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
-    </ApolloProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ApolloProvider client={client}>
+    <ReduxProvider store={store}>
+      <BrowserRouter>
+        <MuiThemeProvider theme={theme}>
+          <App />
+        </MuiThemeProvider>
+      </BrowserRouter>
+    </ReduxProvider>
+  </ApolloProvider>
+  // </React.StrictMode>
 )
 
 const root = document.getElementById('root')
