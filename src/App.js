@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route, withRouter, Switch } from 'react-router-dom'
+import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './store/actions'
 
@@ -12,7 +12,7 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-import SearchForm from './components/forms/homemade/Hooks'
+import SearchForm from './components/forms/homemade/HooksValidation'
 
 class App extends Component {
   componentDidMount() {
@@ -24,12 +24,13 @@ class App extends Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/" component={SearchForm} />
+        <Redirect exact from="/" to="/select" />
+        <Route path="/select" component={SearchForm} />
         <Route path="/practice" component={Practice} />
         <Route path="/cryptochart" component={CryptoChart} />
         {/* <Route
-          path="/cryptochartUsingHooks"
-          component={CryptoChartUsingHooks}
+            path="/cryptochartUsingHooks"
+            component={CryptoChartUsingHooks}
         /> */}
         <Route path="/realtimetrading/" component={TradingUpdated} />
         <Route path="/trading" component={Trading} />
