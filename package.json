@@ -30,7 +30,8 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "subscriptions-transport-ws": "^0.9.15"
+    "subscriptions-transport-ws": "^0.9.15",
+    "yup": "^0.26.6"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [

@@ -12,7 +12,7 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-import SearchForm from './components/forms/homemade/HooksValidation'
+import SearchForm from './components/forms/homemade/Yup'
 
 class App extends Component {
   componentDidMount() {
