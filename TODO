@@ -1,0 +1,15 @@
+
+Todo:
+  Debugger:
+    ✔ Learn the debugger @done(18-12-31 23:17)
+  Forms:
+    HomeMade:
+      ✔ Change the link into a button @started(19-01-01 12:45) @done(19-01-01 12:56) @lasted(11m47s)
+      ☐ replace styles pass-around with styles defined in a *theme* at the top
+      ☐ Use Styled Components
+    Formik:
+      ☐ Use `Formik`
+    Material design:
+      ☐ Use material-ui 
+
+  

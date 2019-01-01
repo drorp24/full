@@ -11,7 +11,7 @@
 
 import React, { useState } from 'react'
 import { Route, Redirect, Switch, Link } from 'react-router-dom'
-import * as yup from 'yup'
+import { object, string, number, boolean } from 'yup'
 
 export default function SearchForm() {
   // though errors can be derived from state, i ended up including them in it
@@ -34,18 +34,16 @@ export default function SearchForm() {
     },
   })
 
-  const schema = yup.object().shape({
-    currency: yup
-      .string()
+  const schema = object().shape({
+    currency: string()
       .required()
       .min(3)
       .max(3)
       .matches(/(USD|EUR)/),
-    amount: yup
-      .number()
+    amount: number()
       .required()
       .positive(),
-    delivery: yup.boolean(),
+    delivery: boolean(),
   })
 
   const check = async (field, value) => {
@@ -59,14 +57,13 @@ export default function SearchForm() {
     }
   }
 
-  const errorIn = field => state.touched[field] && !!state.errors[field]
   // once i use Styled Components i won't have to pass styles around
-  const errorStyle = { borderWidth: '1', borderColor: 'red' }
+  const inputErrorStyle = { borderWidth: '1', borderColor: 'red' }
 
   const formValid = () =>
     // Assumption: initial form values are valid. Hence both false and null are ok
     !Object.values(state.errors).some(i => !!i)
-  const disabledLink = { pointerEvents: 'none', color: '#aaa' }
+  const navButtonErrorStyle = { pointerEvents: 'none', color: '#aaa' }
 
   // Unlike classes' setState, useState does not automatically merge update objects.
   // One can do that with spread syntax, provided setState's function form is used.
@@ -82,14 +79,12 @@ export default function SearchForm() {
     const { name, value } = e.target
     const error = await check(name, value)
 
-    setState(state => {
-      return {
-        ...state,
-        values: { ...state.values, [name]: value },
-        touched: { ...state.touched, [name]: true },
-        errors: { ...state.errors, [name]: error },
-      }
-    })
+    setState(state => ({
+      ...state,
+      values: { ...state.values, [name]: value },
+      touched: { ...state.touched, [name]: true },
+      errors: { ...state.errors, [name]: error },
+    }))
   }
 
   const handleSubmit = e => {
@@ -104,7 +99,7 @@ export default function SearchForm() {
   }
 
   const formStyle = { margin: '5%', padding: '5%' }
-  const formInput = {
+  const inputStyle = {
     width: '90%',
     padding: '5%',
     borderColor: '#aaa',
@@ -132,13 +127,12 @@ export default function SearchForm() {
             onBlur={handleBlur}
             onChange={handleChange}
             onSubmit={doNothing}
-            errorIn={errorIn}
-            errorStyle={errorStyle}
             formValid={formValid}
             formStyle={formStyle}
-            formInput={formInput}
+            inputStyle={inputStyle}
+            inputErrorStyle={inputErrorStyle}
             navButtonStyle={navButtonStyle}
-            disabledLink={disabledLink}
+            navButtonErrorStyle={navButtonErrorStyle}
           />
         )}
       />
@@ -151,11 +145,10 @@ export default function SearchForm() {
             onBlur={handleBlur}
             onChange={handleChange}
             onSubmit={handleSubmit}
-            errorIn={errorIn}
-            errorStyle={errorStyle}
             formValid={formValid}
             formStyle={formStyle}
-            formInput={formInput}
+            inputStyle={inputStyle}
+            inputErrorStyle={inputErrorStyle}
             navButtonStyle={navButtonStyle}
           />
         )}
@@ -164,92 +157,100 @@ export default function SearchForm() {
   )
 }
 
-const ProductForm = props => {
-  const {
-    state,
-    onBlur,
-    onChange,
-    onSubmit,
-    errorIn,
-    errorStyle,
-    formValid,
-    formStyle,
-    formInput,
-    navButtonStyle,
-    disabledLink,
-  } = props
-  const errorInCurrency = errorIn('currency')
-  const errorInAmount = errorIn('amount')
-  return (
-    <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
-      <h3>What do you need</h3>
-      <p>
-        <input
-          name="currency"
-          type="text"
-          placeholder="Currency"
-          value={state.values.currency}
-          onBlur={onBlur}
-          onChange={onChange}
-          style={errorInCurrency ? { ...formInput, ...errorStyle } : formInput}
-        />
-      </p>
-      <p>&nbsp;{errorInCurrency && <span>{state.errors.currency}</span>}</p>
-      <p>
-        <input
-          name="amount"
-          type="text"
-          placeholder="Amount"
-          value={state.values.amount}
-          onBlur={onBlur}
-          onChange={onChange}
-          style={errorInAmount ? { ...formInput, ...errorStyle } : formInput}
-        />
-      </p>
-      <p>{errorInAmount && <span>{state.errors.amount}</span>}</p>
-      <button style={navButtonStyle}>
-        <Link to="/select/service" style={!formValid() ? disabledLink : {}}>
-          Next
-        </Link>
+const ProductForm = ({
+  state: { values, errors, touched },
+  onBlur,
+  onChange,
+  onSubmit,
+  formValid,
+  formStyle,
+  inputStyle,
+  inputErrorStyle,
+  navButtonStyle,
+  navButtonErrorStyle,
+}) => (
+  <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
+    <h3>What do you need</h3>
+    <p>
+      <input
+        name="currency"
+        type="text"
+        placeholder="Currency"
+        value={values.currency}
+        onBlur={onBlur}
+        onChange={onChange}
+        style={
+          touched.currency && errors.currency
+            ? { ...inputStyle, ...inputErrorStyle }
+            : inputStyle
+        }
+      />
+    </p>
+    <p>
+      &nbsp;<span>{touched.currency && errors.currency}</span>
+    </p>
+    <p>
+      <input
+        name="amount"
+        type="text"
+        placeholder="Amount"
+        value={values.amount}
+        onBlur={onBlur}
+        onChange={onChange}
+        style={
+          touched.amount && errors.amount
+            ? { ...inputStyle, ...inputErrorStyle }
+            : inputStyle
+        }
+      />
+    </p>
+    <p>
+      &nbsp;<span>{touched.amount && errors.amount}</span>
+    </p>
+    {/* <button style={navButtonStyle}> */}
+    <Link to="/select/service" style={!formValid() ? navButtonErrorStyle : {}}>
+      <button type="button" style={navButtonStyle}>
+        Next
       </button>
-    </form>
-  )
-}
+    </Link>
+    {/* </button> */}
+  </form>
+)
 
-const ServiceForm = props => {
-  const {
-    state,
-    onBlur,
-    onChange,
-    onSubmit,
-    errorIn,
-    errorStyle,
-    formValid,
-    formStyle,
-    formInput,
-    navButtonStyle,
-  } = props
-  const errorInDelivery = errorIn('delivery')
+const ServiceForm = ({
+  state: { values, errors, touched },
+  onBlur,
+  onChange,
+  onSubmit,
+  formValid,
+  formStyle,
+  inputStyle,
+  inputErrorStyle,
+  navButtonStyle,
+}) => (
+  <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
+    <h3>How do you want it delivered</h3>
+    <p>
+      <input
+        name="delivery"
+        type="text"
+        placeholder="Delivery"
+        value={values.delivery}
+        onBlur={onBlur}
+        onChange={onChange}
+        style={
+          touched.delivery && errors.delivery
+            ? { ...inputStyle, ...inputErrorStyle }
+            : inputStyle
+        }
+      />
+    </p>
+    <p>
+      &nbsp;<span>{touched.delivery && errors.delivery}</span>
+    </p>
 
-  return (
-    <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
-      <h3>How do you want it delivered</h3>
-      <p>
-        <input
-          name="delivery"
-          type="text"
-          placeholder="Delivery"
-          value={state.values.delivery}
-          onBlur={onBlur}
-          onChange={onChange}
-          style={errorInDelivery ? { ...formInput, ...errorStyle } : formInput}
-        />
-      </p>
-      <p>{errorInDelivery && <span>{state.errors.delivery}</span>}</p>
-
-      <button disabled={!formValid()} style={navButtonStyle}>
-        Search
-      </button>
-    </form>
-  )
-}
+    <button disabled={!formValid()} style={navButtonStyle}>
+      Search
+    </button>
+  </form>
+)
