@@ -8,9 +8,6 @@
 // Reason: the changed state triggered re-rendering; but the forms were re-rendered as well
 // Now that these forms are *not* re-rendered, their focus remains intact.
 // Separating them made me pass them state and associated functions / styles props
-//
-// Which is actually a good practice even for non multi-step/wizard forms:
-// An upper element that deals with state only and a lower element that deals with presentation only.
 
 import React, { useState } from 'react'
 import { Route, Redirect, Switch, Link } from 'react-router-dom'
@@ -60,12 +57,12 @@ export default function SearchForm() {
     }
   }
 
+  // once i use Styled Components i won't have to pass styles around
   const inputErrorStyle = { borderWidth: '1', borderColor: 'red' }
 
   const formValid = () =>
     // Assumption: initial form values are valid. Hence both false and null are ok
     !Object.values(state.errors).some(i => !!i)
-
   const navButtonErrorStyle = { pointerEvents: 'none', color: '#aaa' }
 
   // Unlike classes' setState, useState does not automatically merge update objects.
@@ -89,12 +86,16 @@ export default function SearchForm() {
       errors: { ...state.errors, [name]: error },
     }))
   }
-  // though handleSubmit is passed to every form in the way, it is only the last one that invokes it
-  // this is since the <Link /> intercepts the user's click which is not propagated to the button
+
   const handleSubmit = e => {
     e.preventDefault()
 
     console.log('Submitting values. state: ', state)
+  }
+
+  const doNothing = e => {
+    e.preventDefault()
+    console.log('Step form submitted - doing nothing')
   }
 
   const formStyle = { margin: '5%', padding: '5%' }
@@ -112,28 +113,10 @@ export default function SearchForm() {
     fontSize: '2.5em',
   }
 
-  // Dynamic component rendering 💪 . For that to work:
-  // - pass a render prop whose value is the defined react component (its reference, not its name string)
-  // - assign the prop's key (here: form) to a PascalCase variable name (here: FormName) and use the latter
-  // (remember the diff b/w deep destructuring [inner {}] and renaming [no {}] )
-  const Form = ({ render: { form: FormName } }) => (
-    <FormName
-      state={state}
-      onBlur={handleBlur}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      formValid={formValid}
-      formStyle={formStyle}
-      inputStyle={inputStyle}
-      inputErrorStyle={inputErrorStyle}
-      navButtonStyle={navButtonStyle}
-      navButtonErrorStyle={navButtonErrorStyle}
-    />
-  )
+  // Further redirection prevents main router from being aware of step names
 
   return (
     <Switch>
-      {/* This redirect saves main component from having to be aware of inner form names */}
       <Redirect exact from="/select" to="/select/product" />
       <Route
         path="/select/product"
@@ -143,7 +126,7 @@ export default function SearchForm() {
             state={state}
             onBlur={handleBlur}
             onChange={handleChange}
-            onSubmit={handleSubmit}
+            onSubmit={doNothing}
             formValid={formValid}
             formStyle={formStyle}
             inputStyle={inputStyle}
@@ -224,11 +207,13 @@ const ProductForm = ({
     <p>
       &nbsp;<span>{touched.amount && errors.amount}</span>
     </p>
-    <Link to="/select/service">
-      <button type="button" disabled={!formValid()} style={navButtonStyle}>
+    {/* <button style={navButtonStyle}> */}
+    <Link to="/select/service" style={!formValid() ? navButtonErrorStyle : {}}>
+      <button type="button" style={navButtonStyle}>
         Next
       </button>
     </Link>
+    {/* </button> */}
   </form>
 )
 
@@ -264,10 +249,8 @@ const ServiceForm = ({
       &nbsp;<span>{touched.delivery && errors.delivery}</span>
     </p>
 
-    <Link to="#">
-      <button style={navButtonStyle} disabled={!formValid()}>
-        Search
-      </button>
-    </Link>
+    <button disabled={!formValid()} style={navButtonStyle}>
+      Search
+    </button>
   </form>
 )
