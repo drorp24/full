@@ -5,11 +5,25 @@ Todo:
   Forms:
     HomeMade:
       ✔ Change the link into a button @started(19-01-01 12:45) @done(19-01-01 12:56) @lasted(11m47s)
-      ☐ replace styles pass-around with styles defined in a *theme* at the top
-      ☐ Use Styled Components
+      ✘ Use Styled Components, macro version @cancelled(19-01-03 16:36)
     Formik:
-      ☐ Use `Formik`
-    Material design:
-      ☐ Use material-ui 
+    ☐ Use `Formik`
+    ☐ Learn its integration with MUI
+  Styling:
+    Material Design:
+    ✔ Learn MUI 'hooks' API @done(19-01-03 18:40)
+    ✔ Learn MUI 'styled components' API @done(19-01-03 18:40)
+    ✔ Understand the MUI roadmap. What happens as of version 4? What does Alpha have? @done(19-01-03 18:40)
+    ✔ Decide which MUI API to use and whether to use Alpha version @done(19-01-03 18:40)
+    ☐ Install MUI & ecosystem (fonts etc), include an existing theme @started(19-01-03 18:40)
+    ☐ replace styles pass-around with styles defined in a *theme* at the top @started(19-01-01 15:17)
+    ☐ Make SearchForm (Yup.js, copied) use MUI
+  Later:
+    Server-side rendering:
+      Styles:
+        ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)
+        ☐ Avoid discrepancy with client-rendered styles (requires https://www.styled-components.com/docs/tooling#babel-plugin)
+
+
 
   

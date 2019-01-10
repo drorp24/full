@@ -8,6 +8,9 @@
 // Reason: the changed state triggered re-rendering; but the forms were re-rendered as well
 // Now that these forms are *not* re-rendered, their focus remains intact.
 // Separating them made me pass them state and associated functions / styles props
+//
+// Which is actually a good practice even for non multi-step/wizard forms:
+// An upper element that deals with state only and a lower element that deals with presentation only.
 
 import React, { useState } from 'react'
 import { Route, Redirect, Switch, Link } from 'react-router-dom'
@@ -57,7 +60,6 @@ export default function SearchForm() {
     }
   }
 
-  // once i use Styled Components i won't have to pass styles around
   const inputErrorStyle = { borderWidth: '1', borderColor: 'red' }
 
   const formValid = () =>
@@ -88,14 +90,11 @@ export default function SearchForm() {
   }
 
   const handleSubmit = e => {
+    // though handleSubmit is passed to every form in the way, it is only the last one that invokes it
+    // since the <Link /> wrapping every form but the last catches user's click which is not propagated to the button
     e.preventDefault()
 
     console.log('Submitting values. state: ', state)
-  }
-
-  const doNothing = e => {
-    e.preventDefault()
-    console.log('Step form submitted - doing nothing')
   }
 
   const formStyle = { margin: '5%', padding: '5%' }
@@ -110,48 +109,38 @@ export default function SearchForm() {
     position: 'absolute',
     left: '0',
     bottom: '15%',
-    fontSize: '2.5em',
+    fontZize: '2.5em',
   }
 
-  // Further redirection prevents main router from being aware of step names
+  // Dynamic component rendering 💪 . For that to work:
+  // - pass a render prop whose value is the defined react component (its reference, not its name string)
+  // - assign the prop's key (here: form) to a PascalCase variable name (here: FormName) and use the latter
+  // (remember the diff b/w deep destructuring [inner {}] and renaming [no {}] )
+  const Form = ({ render: { form: FormName } }) => (
+    <FormName
+      state={state}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      formValid={formValid}
+      formStyle={formStyle}
+      inputStyle={inputStyle}
+      inputErrorStyle={inputErrorStyle}
+      navButtonStyle={navButtonStyle}
+      navButtonErrorStyle={navButtonErrorStyle}
+    />
+  )
 
   return (
     <Switch>
       <Redirect exact from="/select" to="/select/product" />
       <Route
         path="/select/product"
-        render={props => (
-          <ProductForm
-            {...props}
-            state={state}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            onSubmit={doNothing}
-            formValid={formValid}
-            formStyle={formStyle}
-            inputStyle={inputStyle}
-            inputErrorStyle={inputErrorStyle}
-            navButtonStyle={navButtonStyle}
-            navButtonErrorStyle={navButtonErrorStyle}
-          />
-        )}
+        render={() => <Form render={{ form: ProductForm }} />}
       />
       <Route
         path="/select/service"
-        render={props => (
-          <ServiceForm
-            {...props}
-            state={state}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            formValid={formValid}
-            formStyle={formStyle}
-            inputStyle={inputStyle}
-            inputErrorStyle={inputErrorStyle}
-            navButtonStyle={navButtonStyle}
-          />
-        )}
+        render={() => <Form render={{ form: ServiceForm }} />}
       />
     </Switch>
   )
@@ -207,13 +196,9 @@ const ProductForm = ({
     <p>
       &nbsp;<span>{touched.amount && errors.amount}</span>
     </p>
-    {/* <button style={navButtonStyle}> */}
     <Link to="/select/service" style={!formValid() ? navButtonErrorStyle : {}}>
-      <button type="button" style={navButtonStyle}>
-        Next
-      </button>
+      <button style={navButtonStyle}>Next</button>
     </Link>
-    {/* </button> */}
   </form>
 )
 
@@ -227,6 +212,7 @@ const ServiceForm = ({
   inputStyle,
   inputErrorStyle,
   navButtonStyle,
+  navButtonErrorStyle,
 }) => (
   <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
     <h3>How do you want it delivered</h3>
@@ -249,7 +235,7 @@ const ServiceForm = ({
       &nbsp;<span>{touched.delivery && errors.delivery}</span>
     </p>
 
-    <button disabled={!formValid()} style={navButtonStyle}>
+    <button style={navButtonStyle} disabled={!formValid()}>
       Search
     </button>
   </form>
