@@ -106,30 +106,8 @@ export default function SearchForm() {
   }
   const navButtonStyle = {
     width: '100%',
-    position: 'absolute',
-    left: '0',
-    bottom: '15%',
     fontSize: '2.5em',
   }
-
-  // Dynamic component rendering 💪 . For that to work:
-  // - pass a render prop whose value is the defined react component (its reference, not its name string)
-  // - assign the prop's key (here: form) to a PascalCase variable name (here: FormName) and use the latter
-  // (remember the diff b/w deep destructuring [inner {}] and renaming [no {}] )
-  const Form = ({ render: { form: FormName } }) => (
-    <FormName
-      state={state}
-      onBlur={handleBlur}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      formValid={formValid}
-      formStyle={formStyle}
-      inputStyle={inputStyle}
-      inputErrorStyle={inputErrorStyle}
-      navButtonStyle={navButtonStyle}
-      navButtonErrorStyle={navButtonErrorStyle}
-    />
-  )
 
   return (
     <Switch>
