@@ -15,6 +15,12 @@
 import React, { useState } from 'react'
 import { Route, Redirect, Switch, Link } from 'react-router-dom'
 import { object, string, number, boolean } from 'yup'
+import { makeStyles } from '@material-ui/styles'
+import Button from '@material-ui/core/Button'
+
+const useStyles = makeStyles(theme => ({
+  root: { height: '48px' },
+}))
 
 export default function SearchForm() {
   // though errors can be derived from state, i ended up including them in it
@@ -59,6 +65,8 @@ export default function SearchForm() {
       return error.message
     }
   }
+
+  const classes = useStyles()
 
   const inputErrorStyle = { borderWidth: '1', borderColor: 'red' }
 
@@ -128,6 +136,7 @@ export default function SearchForm() {
             inputErrorStyle={inputErrorStyle}
             navButtonStyle={navButtonStyle}
             navButtonErrorStyle={navButtonErrorStyle}
+            classes={classes}
           />
         )}
       />
@@ -145,6 +154,7 @@ export default function SearchForm() {
             inputStyle={inputStyle}
             inputErrorStyle={inputErrorStyle}
             navButtonStyle={navButtonStyle}
+            classes={classes}
           />
         )}
       />
@@ -163,6 +173,7 @@ const ProductForm = ({
   inputErrorStyle,
   navButtonStyle,
   navButtonErrorStyle,
+  classes,
 }) => (
   <form onSubmit={onSubmit} style={formStyle} autoComplete="off">
     <h3>What do you need</h3>
@@ -203,9 +214,14 @@ const ProductForm = ({
       &nbsp;<span>{touched.amount && errors.amount}</span>
     </p>
     <Link to="/select/service">
-      <button type="button" disabled={!formValid()} style={navButtonStyle}>
+      <Button
+        disabled={!formValid()}
+        variant="contained"
+        color="primary"
+        className={classes.root}
+      >
         Next
-      </button>
+      </Button>
     </Link>
   </form>
 )

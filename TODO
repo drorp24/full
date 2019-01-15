@@ -1,15 +1,44 @@
 
 Todo:
-  Debugger:
-    ✔ Learn the debugger @done(18-12-31 23:17)
-  Forms:
-    HomeMade:
-      ✔ Change the link into a button @started(19-01-01 12:45) @done(19-01-01 12:56) @lasted(11m47s)
-      ☐ replace styles pass-around with styles defined in a *theme* at the top
-      ☐ Use Styled Components
-    Formik:
-      ☐ Use `Formik`
-    Material design:
-      ☐ Use material-ui 
+  Now:
+    Styling:
+      Onboarding, self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
+        ✔ Check Formik before doing any of the following @done(19-01-15 13:57)
+        ☐ Commit a working form
+        ☐ Replace the link/button duplicate with one single <Link /> component (released today!)
+        ☐ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) 
+        ☐ Let the mobile stepper button be the link
+        ☐ Create Formik.js, which is a formikation of the Yup.js basic form
+        ☐ Use MUI's new 'system' library - or new <Box /> - to apply theme styling w/o defining any custom styles (no use of makeStyles)
+        ☐ Replace styles pass-around with styles taken from a globally defined theme
+        ☐ Apply MD style to the forms' fields by using MUI components for the form
+        ☐ Add a title, complete the page to adhere to MD's self-select model
+    Forms: 
+      HomeMade:
+        ☐ Keep the home-made version (Yup.js), don't override it with Formik
+      Formik:
+        ✔ Learn `Formik` @done(19-01-15 13:57)
+        ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
+        ✔ Decide whether to use it or stick with home-made forms @done(19-01-15 13:58)
+        ✔ Document my decision in the proper note @done(19-01-15 13:59)
+    Search:
+      GraphQL Client:
+        ☐ Modify the GraphQL query to match the form's content
+      GraphQL Server:
+        ☐ Perform the query, return result
+      React:
+        ☐ Respond to query result by displaying a (unedited yet) list of merchants
+   Later:
+    Material Design using MUI:
+      ☐ Learn how MUI implements MD, particularly: Grid, Typography, Paper
+    Server-side rendering:
+        Styles:
+          ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)
+          ☐ Avoid discrepancy with client-rendered styles (requires https://www.styled-components.com/docs/tooling#babel-plugin)
+
+
+
+  
+
 
   

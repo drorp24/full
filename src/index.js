@@ -7,8 +7,6 @@ import registerServiceWorker from './registerServiceWorker'
 import Loadable from 'react-loadable'
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './store/configureStore'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-
 import ApolloClient from 'apollo-client'
 import { ApolloProvider } from 'react-apollo'
 import { WebSocketLink } from 'apollo-link-ws'
@@ -58,20 +56,15 @@ const client = new ApolloClient({
 // it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
 const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
 
-const theme = createMuiTheme({
-  typography: {
-    useNextVariants: true,
-  },
-})
-
+// Wrap <App /> here with browser-specific components only
+//(put server-specific ones in server/middleware/renderer)
+// Common stuff (e.g., theme) should be included in <App />
 const AppBundle = (
   // <React.StrictMode>
   <ApolloProvider client={client}>
     <ReduxProvider store={store}>
       <BrowserRouter>
-        <MuiThemeProvider theme={theme}>
-          <App />
-        </MuiThemeProvider>
+        <App />
       </BrowserRouter>
     </ReduxProvider>
   </ApolloProvider>

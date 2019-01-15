@@ -22,6 +22,9 @@ export default store => (req, res, next) => {
     const context = {}
     const modules = []
 
+    // Wrap <App /> here with server-specific components only
+    //(put browser-specific ones in src/index)
+    // Common stuff (e.g., theme) should be included in <App />
     const jsx = (
       <ReduxProvider store={store}>
         <Loadable.Capture report={m => modules.push(m)}>

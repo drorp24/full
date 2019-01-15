@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './store/actions'
+import 'typeface-roboto'
 
 import Practice from './components/sync/Practice'
 import TradingUpdated from './components/graphql/TradingUpdated'
@@ -13,6 +14,14 @@ import CryptoChart from './components/websocket/CryptoChart'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 import SearchForm from './components/forms/homemade/Yup'
+import { ThemeProvider } from '@material-ui/styles'
+import { createMuiTheme } from '@material-ui/core/styles'
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+})
 
 class App extends Component {
   componentDidMount() {
@@ -23,28 +32,30 @@ class App extends Component {
 
   render() {
     return (
-      <Switch>
-        <Redirect exact from="/" to="/select" />
-        <Route path="/select" component={SearchForm} />
-        <Route path="/practice" component={Practice} />
-        <Route path="/cryptochart" component={CryptoChart} />
-        {/* <Route
-            path="/cryptochartUsingHooks"
-            component={CryptoChartUsingHooks}
-        /> */}
-        <Route path="/realtimetrading/" component={TradingUpdated} />
-        <Route path="/trading" component={Trading} />
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Redirect exact from="/" to="/select" />
+          <Route path="/select" component={SearchForm} />
+          <Route path="/practice" component={Practice} />
+          <Route path="/cryptochart" component={CryptoChart} />
+          {/* <Route
+      	      path="/cryptochartUsingHooks"
+      	      component={CryptoChartUsingHooks}
+      	  /> */}
+          <Route path="/realtimetrading/" component={TradingUpdated} />
+          <Route path="/trading" component={Trading} />
 
-        <Route path="/merchants" component={Merchants} />
+          <Route path="/merchants" component={Merchants} />
 
-        <Route
-          path="/asyncNotInitialRender"
-          component={AsyncNotInitialRender}
-        />
-        <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
+          <Route
+            path="/asyncNotInitialRender"
+            component={AsyncNotInitialRender}
+          />
+          <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
 
-        <Route path="/topics" component={Topics} />
-      </Switch>
+          <Route path="/topics" component={Topics} />
+        </Switch>
+      </ThemeProvider>
     )
   }
 }
