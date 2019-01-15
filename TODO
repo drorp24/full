@@ -4,10 +4,11 @@ Todo:
     Styling:
       Onboarding, self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
         ✔ Check Formik before doing any of the following @done(19-01-15 13:57)
-        ☐ Commit a working form
-        ☐ Replace the link/button duplicate with one single <Link /> component (released today!)
-        ☐ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) 
-        ☐ Let the mobile stepper button be the link
+        ✔ Commit a working form @done(19-01-15 14:14)
+        ✘ Replace the link/button duplicate with one single <Link /> component (released today!) @cancelled(19-01-15 14:19)
+        ✔ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) @done(19-01-15 18:18)
+        ✔ Let the mobile stepper button be the link @done(19-01-15 18:18)
+        ☐ Make a vertical stepper @started(19-01-15 18:19)
         ☐ Create Formik.js, which is a formikation of the Yup.js basic form
         ☐ Use MUI's new 'system' library - or new <Box /> - to apply theme styling w/o defining any custom styles (no use of makeStyles)
         ☐ Replace styles pass-around with styles taken from a globally defined theme
