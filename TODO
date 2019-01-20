@@ -9,15 +9,18 @@ Todo:
         ✔ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) @done(19-01-15 18:18)
         ✔ Let the mobile stepper button be the link @done(19-01-15 18:18)
         ✔ Make a vertical stepper @started(19-01-15 18:19) @done(19-01-15 20:19) @lasted(2h40s)
-        ☐ Formikate VerticalStepper.js (in a separate file!)
-        ☐ Consolidate ProductForm and ServiceForm into one Form whose fields are generated according to 'steps'
-        ☐ Replace wrapping div with new <Box />m trying to avoid using makeStyle/useStyles
+        ✔ Formikate VerticalStepper.js (in a separate file!) @started(19-01-16 12:43) @done(19-01-17 16:00) @lasted(1d3h17m40s)
+        ✔ concentrate all state handling to a custom hook that's outside of the SearchForm. @done(19-01-17 16:15)
+        ✔ Consolidate ProductForm and ServiceForm into one Form whose fields are generated according to 'steps' @done(19-01-20 20:37)
+        ✔ Make HoC for injecting state, steps and schema into the generic form utility functions @done(19-01-20 20:37)
+        ✘ Extract the state hook into its own separate custom hook @cancelled(19-01-20 20:37)
+        ☐ Replace wrapping div with new <Box /> and try to doing w/o makeStyle/useStyles
         ☐ Replace styles pass-around with styles taken from a globally defined theme
         ☐ Apply MD style to the forms' fields by using MUI components for the form
         ☐ Add a title, complete the page to adhere to MD's self-select model
     Forms: 
       HomeMade:
-        ☐ Keep the home-made version (Yup.js), don't override it with Formik
+        ✔ Keep the home-made version (Yup.js), don't override it with Formik @done(19-01-20 20:38)
       Formik:
         ✔ Learn `Formik` @done(19-01-15 13:57)
         ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
