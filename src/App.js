@@ -28,6 +28,11 @@ class App extends Component {
     if (!this.props.message) {
       this.props.setMessage('Client')
     }
+    // This hack puts the hook stylesheet that has every custom styling last so it can really override
+    // Not clear why MUI put it first; since i'm using an alpha version of hooks, this might be a bug
+    const head = document.getElementsByTagName('head')[0]
+    const hookStylesheet = document.querySelectorAll('style[data-meta=Hook]')[0]
+    head.insertBefore(hookStylesheet, null)
   }
 
   render() {
