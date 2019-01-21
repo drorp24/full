@@ -23,6 +23,8 @@ const theme = createMuiTheme({
   },
 })
 
+console.log('theme: ', theme)
+
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
@@ -32,7 +34,7 @@ class App extends Component {
     // Not clear why MUI put it first; since i'm using an alpha version of hooks, this might be a bug
     const head = document.getElementsByTagName('head')[0]
     const hookStylesheet = document.querySelectorAll('style[data-meta=Hook]')[0]
-    head.insertBefore(hookStylesheet, null)
+    if (hookStylesheet) head.insertBefore(hookStylesheet, null)
   }
 
   render() {
