@@ -2,6 +2,9 @@ import React from 'react'
 
 import merge from 'lodash.merge'
 import capitalize from '../../utility/capitalize'
+import TextField from '@material-ui/core/TextField'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormHelperText from '@material-ui/core/FormHelperText'
 
 // Unlike classes' setState, hooks' setState does not automatically merge update objects (why?)
 // I could do (and did) that with spread operator, as long as I used the setState's function form,
@@ -29,7 +32,7 @@ export const handleChangeGeneric = async ({
       })
       return false
     } catch (error) {
-      return error.message
+      return capitalize(error.message)
     }
   }
   const error = await check(name, value)
@@ -54,44 +57,69 @@ export const multiStepFormValidGeneric = (steps, step, state) =>
 const FormContext = React.createContext()
 
 // Form will work just as fine with a single step form
-export const Form = ({
-  state: { values, errors, touched },
-  onBlur,
-  onChange,
-  structure,
-  step,
-}) => (
-  <FormContext.Provider value={{ values, touched, errors, onBlur, onChange }}>
+export const Form = ({ state, setState, schema, structure, step }) => (
+  <FormContext.Provider value={{ state, setState, schema, structure, step }}>
     <form autoComplete="off">
       {structure[step].fields.map(({ name, type }) => (
-        <Field name={name} type={type} key={name} />
+        <Field name={name} key={name} />
       ))}
     </form>
   </FormContext.Provider>
 )
 
-// Field doesn't need to be exposed, as Form gets a 'steps' props and that's it
-const Field = ({ name, type, noError = false }) => (
+// Field doesn't need to be exposed: Form iterates over Field using structure and schema props
+// However I used context rather than props to enable Field to be exported out easily if needed (and to play with it, of course)
+const Field = ({ name, noError = false }) => (
   <FormContext.Consumer>
-    {formContext => (
-      <>
+    {({ state, setState, schema, structure, step }) => {
+      // This component updates a state that belongs to its ancestor component
+      const handleBlur = e => {
+        withState({ state, setState, schema })(handleBlurGeneric)(e)
+      }
+
+      const handleChange = async e => {
+        withState({ state, setState, schema })(handleChangeGeneric)(e)
+      }
+
+      const field = structure[step].fields.filter(
+        field => field.name === name
+      )[0]
+
+      const { type, required, options, helper } = field
+
+      const { values, touched, errors } = state
+
+      return (
         <div>
-          <input
+          <TextField
             name={name}
             type={type}
-            placeholder={capitalize(name)}
-            value={formContext.values[name]}
-            onBlur={formContext.onBlur}
-            onChange={formContext.onChange}
-          />
+            label={capitalize(name)}
+            value={values[name]}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            required={required}
+            select={!!options}
+            error={!!errors[name]}
+            helperText={
+              !noError && touched[name] && !!errors[name]
+                ? errors[name]
+                : helper
+            }
+            SelectProps={{
+              MenuProps: {},
+            }}
+            fullWidth
+          >
+            {options &&
+              options.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+          </TextField>
         </div>
-        {!noError && (
-          <div>
-            &nbsp;
-            <span>{formContext.touched[name] && formContext.errors[name]}</span>
-          </div>
-        )}
-      </>
-    )}
+      )
+    }}
   </FormContext.Consumer>
 )

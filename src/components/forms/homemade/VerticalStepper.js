@@ -12,6 +12,7 @@
 import React, { useState } from 'react'
 import { object, string, number, boolean } from 'yup'
 import MultiStepForm from '../utilities/MultiStepForm'
+import currencies from '../../../queries/currencies'
 
 export default function SearchForm() {
   const [state, setState] = useState({
@@ -33,15 +34,11 @@ export default function SearchForm() {
   })
 
   const schema = object().shape({
-    currency: string()
+    currency: string(),
+    amount: number()
       .required()
-      .min(3)
-      .max(3)
-      .matches(/(USD|EUR)/, 'Sorry, only EUR and USD are currently supported'),
-    amount: number('Please specify amount of required currency!')
-      .required('Amount is required!')
-      .min(0, 'Amount should be greater than zero!')
-      .positive('Amount should be positive!'),
+      .min(10)
+      .typeError('Invalid number'),
     delivery: boolean(),
   })
 
@@ -50,13 +47,30 @@ export default function SearchForm() {
     {
       label: 'What do you need',
       fields: [
-        { name: 'currency', type: 'text' },
-        { name: 'amount', type: 'number' },
+        {
+          name: 'currency',
+          type: 'text',
+          required: true,
+          options: currencies,
+          helper: 'Which currency do you wish to buy',
+        },
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+          helper: 'How much of that currency do you need',
+        },
       ],
     },
     {
-      label: 'How do you want to get it',
-      fields: [{ name: 'delivery', type: 'text' }],
+      label: 'How do you wish to get it',
+      fields: [
+        {
+          name: 'delivery',
+          type: 'text',
+          helper: 'Would you require a delivery service',
+        },
+      ],
     },
     {
       label: 'Something else',

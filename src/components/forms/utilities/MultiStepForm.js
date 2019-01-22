@@ -6,14 +6,8 @@ import StepLabel from '@material-ui/core/StepLabel'
 import StepContent from '@material-ui/core/StepContent'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import Debug from '../../utility/Debug'
-import {
-  Form,
-  handleBlurGeneric,
-  handleChangeGeneric,
-  multiStepFormValidGeneric,
-  withState,
-} from './formUtilities'
+// import Debug from '../../utility/Debug'
+import { Form, multiStepFormValidGeneric } from './formUtilities'
 
 import { unstable_Box as Box } from '@material-ui/core/Box'
 
@@ -32,15 +26,6 @@ const MultiStepForm = ({ state, setState, schema, structure }) => {
     setActiveStep(0)
   }
 
-  // This component updates a state that belongs to its ancestor component
-  const handleBlur = e => {
-    withState({ state, setState, schema })(handleBlurGeneric)(e)
-  }
-
-  const handleChange = async e => {
-    withState({ state, setState, schema })(handleChangeGeneric)(e)
-  }
-
   const formValid = step => multiStepFormValidGeneric(structure, step, state)
 
   return (
@@ -52,8 +37,8 @@ const MultiStepForm = ({ state, setState, schema, structure }) => {
             <StepContent>
               <Form
                 state={state}
-                onBlur={handleBlur}
-                onChange={handleChange}
+                setState={setState}
+                schema={schema}
                 structure={structure}
                 step={activeStep}
                 key={activeStep}
