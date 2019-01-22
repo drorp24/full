@@ -12,17 +12,11 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import Merchants from './components/graphql/Merchants'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-import SearchForm from './components/forms/homemade/VerticalStepper'
+import SearchForm from './components/forms/homemade/OneStep'
 import { ThemeProvider } from '@material-ui/styles'
-import { createMuiTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import 'typeface-roboto'
-
-const theme = createMuiTheme({
-  typography: {
-    useNextVariants: true,
-  },
-})
+import theme from './components/themed/theme'
 
 console.log('theme: ', theme)
 
@@ -49,9 +43,9 @@ class App extends Component {
             <Route path="/practice" component={Practice} />
             <Route path="/cryptochart" component={CryptoChart} />
             {/* <Route
-      	      path="/cryptochartUsingHooks"
-      	      component={CryptoChartUsingHooks}
-      	  /> */}
+        	      path="/cryptochartUsingHooks"
+        	      component={CryptoChartUsingHooks}
+        	  /> */}
             <Route path="/realtimetrading/" component={TradingUpdated} />
             <Route path="/trading" component={Trading} />
 

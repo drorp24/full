@@ -4,7 +4,6 @@ import merge from 'lodash.merge'
 import capitalize from '../../utility/capitalize'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
-import FormHelperText from '@material-ui/core/FormHelperText'
 
 // Unlike classes' setState, hooks' setState does not automatically merge update objects (why?)
 // I could do (and did) that with spread operator, as long as I used the setState's function form,
@@ -60,7 +59,8 @@ const FormContext = React.createContext()
 export const Form = ({ state, setState, schema, structure, step }) => (
   <FormContext.Provider value={{ state, setState, schema, structure, step }}>
     <form autoComplete="off">
-      {structure[step].fields.map(({ name, type }) => (
+      {structure.length === 1 && <p>{structure[step].label}</p>}
+      {structure[step].fields.map(({ name }) => (
         <Field name={name} key={name} />
       ))}
     </form>
