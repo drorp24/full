@@ -16,6 +16,8 @@ Todo:
         ✘ Extract the state hook into its own separate custom hook @cancelled(19-01-20 20:37)
         ✔ Replace wrapping div with new <Box /> and try to doing w/o makeStyle/useStyles @done(19-01-21 15:02)
         ☐ Apply MD style to the forms' fields by using MUI components for the form
+        ☐ Validate the next two pages 
+        ☐ Learn MUI Grid 
         ☐ Add a title, complete the page to adhere to MD's self-select model
     Forms: 
       HomeMade:

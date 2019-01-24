@@ -4,6 +4,8 @@ import merge from 'lodash.merge'
 import capitalize from '../../utility/capitalize'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
+import { Box, MyTypography } from '../../themed/Box'
+import Page from '../../themed/Page'
 
 // Unlike classes' setState, hooks' setState does not automatically merge update objects (why?)
 // I could do (and did) that with spread operator, as long as I used the setState's function form,
@@ -48,21 +50,42 @@ export const handleChangeGeneric = async ({
 export const withState = ({ state, setState, schema }) => func => async props =>
   func({ props, state, setState, schema })
 
-export const multiStepFormValidGeneric = (steps, step, state) =>
-  Object.entries(state.errors).filter(
-    entry => entry[1] && steps[step].fields.some(i => i.name === entry[0])
-  ).length === 0
+export const multiStepFormValidGeneric = (steps, step, state) => {
+  const result =
+    Object.entries(state.errors).filter(
+      entry => entry[1] && steps[step].fields.some(i => i.name === entry[0])
+    ).length === 0
+  console.log('step: ', step)
+  console.log('state: ', state)
+  console.log('formValid result: ', result)
+  return result
+}
 
 const FormContext = React.createContext()
 
 // Form will work just as fine with a single step form
-export const Form = ({ state, setState, schema, structure, step }) => (
+export const Form = ({ state, setState, schema, structure, step, footer }) => (
   <FormContext.Provider value={{ state, setState, schema, structure, step }}>
     <form autoComplete="off">
-      {structure.length === 1 && <p>{structure[step].label}</p>}
-      {structure[step].fields.map(({ name }) => (
-        <Field name={name} key={name} />
-      ))}
+      <Page>
+        <Box formVariant="header">
+          <MyTypography formVariant="header.title.typography" gutterBottom>
+            {structure[step].title}
+          </MyTypography>
+          <MyTypography
+            formVariant="header.subtitle.typography"
+            formColor="header.subtitle.color"
+          >
+            {structure[step].subtitle}
+          </MyTypography>
+        </Box>
+        <Box formVariant="body">
+          {structure[step].fields.map(({ name }) => (
+            <Field name={name} key={name} />
+          ))}
+        </Box>
+        <Box formVariant="footer">{footer && footer(step)}</Box>
+      </Page>
     </form>
   </FormContext.Provider>
 )
