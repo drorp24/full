@@ -15,6 +15,11 @@ Todo:
         ✔ Make HoC for injecting state, steps and schema into the generic form utility functions @done(19-01-20 20:37)
         ✘ Extract the state hook into its own separate custom hook @cancelled(19-01-20 20:37)
         ✔ Replace wrapping div with new <Box /> and try to doing w/o makeStyle/useStyles @done(19-01-21 15:02)
+        ✔ Solve the red Email issue @done(19-01-27 17:13)
+        ✔ Add the atomic MUI component responsible for underline and check it receives status @done(19-01-28 20:56)
+        ☐ Move visitUntouched to formUtilities
+        ☐ Make the delivery checkbox a switch
+        ☐ Make the title & subtitle fonts proportionate to the container
         ☐ Apply MD style to the forms' fields by using MUI components for the form
         ☐ Validate the next two pages 
         ☐ Learn MUI Grid 

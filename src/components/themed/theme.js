@@ -1,7 +1,11 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 
 // Can't think of any other way to customize the theme based on its own values
-const createdTheme = createMuiTheme()
+const createdTheme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+})
 const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
@@ -20,7 +24,7 @@ const theme = createMuiTheme({
         typography: createdTheme.typography.h6,
       },
       subtitle: {
-        typography: createdTheme.typography.body1Next,
+        typography: createdTheme.typography.body1,
         color: createdTheme.palette.grey[500],
       },
     },

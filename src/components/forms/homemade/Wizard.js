@@ -9,12 +9,12 @@ export default function SearchForm() {
       currency: 'USD',
       amount: 1000,
       delivery: true,
-      phone: null,
-      email: null,
-      address: null,
-      entry: null,
-      floor: null,
-      apartment: null,
+      phone: '+972',
+      email: '',
+      address: '',
+      entry: '',
+      floor: '',
+      apartment: '',
     },
     touched: {
       currency: false,
@@ -31,12 +31,12 @@ export default function SearchForm() {
       currency: null,
       amount: null,
       delivery: null,
-      phone: null,
-      email: null,
-      address: null,
-      entry: null,
-      floor: null,
-      apartment: null,
+      phone: true,
+      email: true,
+      address: true,
+      entry: true,
+      floor: true,
+      apartment: true,
     },
   })
 
@@ -47,8 +47,15 @@ export default function SearchForm() {
       .min(10)
       .typeError('Invalid number'),
     delivery: boolean(),
-    phone: string(),
-    email: string().email(),
+    phone: string()
+      .required()
+      .matches(
+        /(^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$)/,
+        'Please enter a valid phone number'
+      ),
+    email: string()
+      .email()
+      .required(),
     address: string(),
     entry: string(),
     floor: string(),
@@ -132,6 +139,8 @@ export default function SearchForm() {
       ],
     },
   ]
+
+  window.structure = structure
 
   return (
     <DotsMobileStepper
