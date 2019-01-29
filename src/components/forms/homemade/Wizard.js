@@ -47,14 +47,9 @@ export default function SearchForm() {
       .min(10)
       .typeError('Invalid number'),
     delivery: boolean(),
-    phone: string()
-      .required()
-      .matches(
-        /(^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$)/,
-        'Please enter a valid phone number'
-      ),
+    phone: string().required(),
     email: string()
-      .email()
+      .email('Please enter a valid email address')
       .required(),
     address: string(),
     entry: string(),

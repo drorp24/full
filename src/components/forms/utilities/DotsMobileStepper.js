@@ -6,7 +6,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
 import {
   Form,
   multiStepFormValidGeneric,
-  handleChangeGeneric,
+  visitUntouched,
 } from './formUtilities'
 
 const DotsMobileStepper = ({ state, setState, schema, structure }) => {
@@ -14,20 +14,13 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
 
   function handleNext() {
     setActiveStep(prevActiveStep => {
-      const visitUntouched = () => {
-        structure[prevActiveStep].fields.forEach(field => {
-          const { name } = field
-          const {
-            touched: { [name]: isTouched },
-            values: { [name]: value },
-          } = state
-          if (isTouched) return
-          const props = { target: { name, value } }
-          handleChangeGeneric({ props, state, setState, schema })
-        })
-      }
-
-      visitUntouched()
+      visitUntouched({
+        state,
+        setState,
+        schema,
+        structure,
+        step: prevActiveStep,
+      })
 
       const stepHasErrors = structure[prevActiveStep].fields.some(
         field => !!state.errors[field.name]

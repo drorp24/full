@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import merge from 'lodash.merge'
 import { makeStyles } from '@material-ui/styles'
 import capitalize from '../../utility/capitalize'
@@ -47,10 +48,12 @@ export const handleChangeGeneric = ({ props: e, state, setState, schema }) => {
   setState(merge(state, changeToMerge))
 }
 
-const handlePhoneChangeGeneric = ({ value, state, setState, schema }) => {
+const handlePhoneChangeGeneric = ({ value, state, setState }) => {
   const sValue = String(value)
 
-  const error = isValidPhoneNumber(sValue) ? null : 'Phone number required'
+  const error = isValidPhoneNumber(sValue)
+    ? null
+    : 'Please enter a valid phone number'
 
   const changeToMerge = {
     values: { phone: sValue },
@@ -61,36 +64,6 @@ const handlePhoneChangeGeneric = ({ value, state, setState, schema }) => {
   setState(merge(state, changeToMerge))
 }
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    background: 'inherit',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
-  },
-  error: {
-    borderBottomColor: `${theme.palette.error.main} !important`,
-  },
-}))
-
-const propAdaptationUseStyles = makeStyles(theme => {
-  console.log(
-    'propAdaptationUseStyles called (you will see this msg once only!)'
-  )
-
-  return {
-    root: {
-      background: props => {
-        console.log('color function called with props:', props)
-        const result = props.value > 100 ? 'yellow' : 'none'
-        console.log('will return ', result)
-        return result
-      },
-    },
-  }
-})
-
-export const withState = ({ state, setState, schema }) => func => props =>
-  func({ props, state, setState, schema })
-
 export const multiStepFormValidGeneric = (steps, step, state) => {
   const result =
     Object.entries(state.errors).filter(
@@ -100,13 +73,80 @@ export const multiStepFormValidGeneric = (steps, step, state) => {
   return result
 }
 
+const withState = ({ state, setState, schema }) => func => props =>
+  func({ props, state, setState, schema })
+
+const handleBlur = ({ state, setState, schema }) => e => {
+  withState({ state, setState, schema })(handleBlurGeneric)(e)
+}
+
+const handleChange = ({ state, setState, schema }) => e => {
+  withState({ state, setState, schema })(handleChangeGeneric)(e)
+}
+
+const handlePhoneChange = ({ state, setState, schema }) => value => {
+  handlePhoneChangeGeneric({ value, state, setState, schema })
+}
+
+export const visitUntouched = ({
+  state,
+  setState,
+  structure,
+  step,
+  schema,
+}) => {
+  structure[step].fields.forEach(field => {
+    const { name } = field
+    const {
+      touched: { [name]: isTouched },
+      values: { [name]: value },
+    } = state
+    if (isTouched) return
+    const props = { target: { name, value } }
+    const handleChange =
+      name === 'phone' ? handlePhoneChangeGeneric : handleChangeGeneric
+    handleChange({ props, state, setState, schema })
+  })
+}
+
+const usePhoneStyles = makeStyles(theme => ({
+  root: {
+    background: 'inherit',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
+  },
+  error: {
+    borderBottomColor: `${theme.palette.error.main} !important`,
+  },
+}))
+
+// const propAdaptationUseStyles = makeStyles(theme => {
+//   console.log(
+//     'propAdaptationUseStyles called (you will see this msg once only!)'
+//   )
+
+//   return {
+//     root: {
+//       background: props => {
+//         console.log('color function called with props:', props)
+//         const result = props.value > 100 ? 'yellow' : 'none'
+//         console.log('will return ', result)
+//         return result
+//       },
+//     },
+//   }
+// })
+
 const FormContext = React.createContext()
 
-// Oddly, Form is called for *each* keystroke of each field
-// Field used to do that too, but stopped as soon as its Memo version was used
-// However React.memo'ing Form didn't help with Form
+// Oddly, Form is called for each keystroke regardless of field
+// Field stopped doing that as soon as it was React.memo'ized, but that didn't help Form
 //
 // Form will work just as fine with a single step form
+//
+// In addition to the 5 s's, Form gets a render prop/function for the footer
+//
+// Styling is done thru the special form<x> props, which take their values directly from the theme context,
+// requiring no styles/useStyles and className={classes.root}
 export const Form = ({ state, setState, schema, structure, step, footer }) => (
   <FormContext.Provider value={{ state, setState, schema, structure, step }}>
     <form autoComplete="off">
@@ -133,87 +173,71 @@ export const Form = ({ state, setState, schema, structure, step, footer }) => (
   </FormContext.Provider>
 )
 
-// Field doesn't need to be exposed: Form iterates over Field using structure and schema props
-// However I used context rather than props to enable Field to be exported out easily if needed (and to play with it, of course)
-const Field = ({ name, noError = false }) => {
-  console.log('Field called')
-
-  return (
-    <FormContext.Consumer>
-      {({ state, setState, schema, structure, step }) => {
-        // This component updates a state that belongs to its ancestor component
-        const handleBlur = e => {
-          withState({ state, setState, schema })(handleBlurGeneric)(e)
-        }
-        const handleChange = e => {
-          withState({ state, setState, schema })(handleChangeGeneric)(e)
-        }
-
-        const handlePhoneChange = value => {
-          handlePhoneChangeGeneric({ value, state, setState, schema })
-        }
-
-        const field = structure[step].fields.filter(
-          field => field.name === name
-        )[0]
-
-        const { type, required, options, helper } = field
-
-        const { values, touched, errors } = state
-
-        const showError = !noError && touched[name] && !!errors[name]
-
-        return (
-          <div>
-            {name === 'phone' ? (
-              <PhoneField
-                name={'phone'}
-                type={type}
-                label={capitalize(name)}
-                country="IL"
-                placeholder="Enter phone number"
-                value={values[name]}
-                onBlur={handleBlur}
-                onChange={handlePhoneChange}
-                required={required}
-                error={showError}
-                helperText={showError ? errors[name] : helper}
-                fullWidth
-              />
-            ) : (
-              <TextField
-                name={name}
-                type={type}
-                label={capitalize(name)}
-                value={values[name]}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                required={required}
-                select={!!options}
-                error={showError}
-                helperText={showError ? errors[name] : helper}
-                SelectProps={{
-                  MenuProps: {},
-                }}
-                fullWidth
-              >
-                {options &&
-                  options.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
-            )}
-          </div>
-        )
-      }}
-    </FormContext.Consumer>
-  )
+Form.propTypes = {
+  state: PropTypes.object,
+  setState: PropTypes.func,
+  schema: PropTypes.object,
+  structure: PropTypes.array,
+  step: PropTypes.number,
+  footer: PropTypes.func,
 }
+
+// Field doesn't need to be exposed: Form has everything it needs from structure and schema props
+const Field = ({ name, noError = false }) => (
+  <FormContext.Consumer>
+    {({ state, setState, schema, structure, step }) => {
+      const field = structure[step].fields.filter(
+        field => field.name === name
+      )[0]
+
+      const { type, required, options, helper } = field
+
+      const { values, touched, errors } = state
+
+      const showError = !noError && touched[name] && !!errors[name]
+
+      const onChange =
+        name === 'phone'
+          ? handlePhoneChange({ state, setState, schema })
+          : handleChange({ state, setState, schema })
+
+      return (
+        <FieldType
+          fieldType={name}
+          name={name}
+          type={type}
+          country="IL"
+          label={capitalize(name)}
+          value={values[name]}
+          onBlur={handleBlur({ state, setState, schema })}
+          onChange={onChange}
+          required={required}
+          select={!!options}
+          error={showError}
+          helperText={showError ? errors[name] : helper}
+          fullWidth
+        >
+          {options &&
+            options.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+        </FieldType>
+      )
+    }}
+  </FormContext.Consumer>
+)
 
 // Unless memoized, Field gets rendered 3 (!) unnecessary times for each keystroke!
 const MemoField = React.memo(Field)
+
+const FieldType = ({ fieldType, children, ...rest }) =>
+  fieldType === 'phone' ? (
+    <PhoneField {...rest} />
+  ) : (
+    <TextField {...rest}>{children}</TextField>
+  )
 
 // Using the classNames approach, as prop adaptation doesn't work here
 const PhoneField = props => {
@@ -229,27 +253,25 @@ const PhoneField = props => {
     helperText,
   } = props
 
-  const classes = useStyles(props)
+  const classes = usePhoneStyles()
   return (
-    <>
-      <FormControl error={error} fullWidth={fullWidth}>
-        <FormLabel required={required} style={{ fontSize: '0.75rem' }}>
-          {label}
-        </FormLabel>
-        <PhoneInput
-          country={country}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          inputClassName={
-            error
-              ? classes.root + ' ' + classes.error // classNames-style working solution
-              : classes.root
-          }
-        />
-        <FormHelperText component="p">{helperText}</FormHelperText>
-      </FormControl>
-    </>
+    <FormControl error={error} fullWidth={fullWidth}>
+      <FormLabel required={required} style={{ fontSize: '0.75rem' }}>
+        {label}
+      </FormLabel>
+      <PhoneInput
+        country={country}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        inputClassName={
+          error
+            ? classes.root + ' ' + classes.error // classNames-style working solution
+            : classes.root
+        }
+      />
+      <FormHelperText component="p">{helperText}</FormHelperText>
+    </FormControl>
   )
 }
 
