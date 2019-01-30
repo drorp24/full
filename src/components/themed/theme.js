@@ -17,7 +17,6 @@ const theme = createMuiTheme({
   form: {
     header: {
       height: '20%',
-      border: '1px solid red',
       padding: createdTheme.spacing.unit * 2,
       textAlign: 'center',
       title: {
@@ -33,14 +32,14 @@ const theme = createMuiTheme({
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-evenly',
-      border: '1px solid brown',
+      fields: {
+        disabled: createdTheme.palette.action.disabled,
+      },
     },
     footer: {
       height: '10%',
-      border: '1px solid green',
     },
   },
 })
 
-window.theme = theme
 export default theme

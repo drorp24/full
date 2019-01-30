@@ -56,6 +56,8 @@ const variant = key =>
     themeKey: key,
   })
 
+// themeKey seems to be mandatory at that stage at least
+// so can't create a cross-theme 'color' prop but have to define one per each theme key
 const color = key =>
   style({
     prop: `${key}Color`,

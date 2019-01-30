@@ -18,8 +18,6 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import 'typeface-roboto'
 import theme from './components/themed/theme'
 
-console.log('theme: ', theme)
-
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {

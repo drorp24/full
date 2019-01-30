@@ -6,9 +6,9 @@ import currencies from '../../../queries/currencies'
 export default function SearchForm() {
   const [state, setState] = useState({
     values: {
-      currency: 'USD',
-      amount: 1000,
-      delivery: true,
+      currency: '',
+      amount: '',
+      delivery: false,
       phone: '+972',
       email: '',
       address: '',
@@ -28,9 +28,9 @@ export default function SearchForm() {
       apartment: false,
     },
     errors: {
-      currency: null,
-      amount: null,
-      delivery: null,
+      currency: true,
+      amount: true,
+      delivery: true,
       phone: true,
       email: true,
       address: true,
@@ -41,7 +41,7 @@ export default function SearchForm() {
   })
 
   const schema = object().shape({
-    currency: string(),
+    currency: string().required(),
     amount: number()
       .required()
       .min(10)
@@ -81,14 +81,14 @@ export default function SearchForm() {
       ],
     },
     {
-      title: 'How do you want to get it',
+      title: 'How would you like to get it',
       subtitle:
-        'If you require delivery, please let us know how we can contact you',
+        'Would you rather pick it up yourself or have it delivered to you',
       fields: [
         {
           name: 'delivery',
-          type: 'checkbox',
-          helper: 'Would you require a delivery service',
+          type: 'switch',
+          helper: 'Have it delivered to me',
           required: true,
         },
         {
@@ -112,8 +112,8 @@ export default function SearchForm() {
       fields: [
         {
           name: 'address',
-          type: 'phone',
-          helper: 'Your phone number',
+          type: 'text',
+          helper: 'Street address',
           required: true,
         },
         {

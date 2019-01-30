@@ -1,43 +1,59 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import merge from 'lodash.merge'
+
 import { makeStyles } from '@material-ui/styles'
-import capitalize from '../../utility/capitalize'
+import { FormHelperText } from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormLabel from '@material-ui/core/FormLabel'
 import FormControl from '@material-ui/core/FormControl'
+import Switch from '@material-ui/core/Switch'
+import Grid from '@material-ui/core/Grid'
+
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+
 import { Box, MyTypography } from '../../themed/Box'
 import Page from '../../themed/Page'
-import 'react-phone-number-input/style.css'
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { FormHelperText } from '@material-ui/core'
+import capitalize from '../../utility/capitalize'
 
-// Unlike classes' setState, hooks' setState does not automatically merge update objects (why?)
-// I could do (and did) that with spread operator, as long as I used the setState's function form,
-// but spread operator will handle one level only, whereas lodash.merge will handle all levels recursively
-// so lodash.merge should be the go-to solution for setState when it comes to hooks
-export const handleBlurGeneric = ({ props: e, state, setState }) => {
-  const { name } = e.target
-
-  setState(merge(state, { touched: { [name]: true } }))
+const yupCheck = ({ name, value, schema }) => {
+  try {
+    schema.validateSyncAt(name, {
+      [name]: value,
+    })
+    return false
+  } catch (error) {
+    return capitalize(error.message)
+  }
 }
 
-//Unlike Formik, I set 'touched' as soon as a change is made
-export const handleChangeGeneric = ({ props: e, state, setState, schema }) => {
-  const { name, value } = e.target
+const phoneCheck = ({ name, value }) =>
+  isValidPhoneNumber(String(value))
+    ? false
+    : `Please enter a valid ${name} number`
 
-  const check = (field, value) => {
-    try {
-      schema.validateSyncAt(field, {
-        [field]: value,
-      })
+const checkByType = ({ name, type, value, schema }) => {
+  switch (type) {
+    case 'phone':
+      return phoneCheck({ name, value })
+    case 'switch':
       return false
-    } catch (error) {
-      return capitalize(error.message)
-    }
+    default:
+      return yupCheck({ name, value, schema })
   }
-  const error = check(name, value)
+}
+
+const handleGenericChange = ({
+  name,
+  type,
+  value,
+  state,
+  setState,
+  schema,
+}) => {
+  const error = checkByType({ name, type, value, schema })
 
   const changeToMerge = {
     values: { [name]: value },
@@ -48,20 +64,38 @@ export const handleChangeGeneric = ({ props: e, state, setState, schema }) => {
   setState(merge(state, changeToMerge))
 }
 
-const handlePhoneChangeGeneric = ({ value, state, setState }) => {
-  const sValue = String(value)
-
-  const error = isValidPhoneNumber(sValue)
-    ? null
-    : 'Please enter a valid phone number'
-
-  const changeToMerge = {
-    values: { phone: sValue },
-    touched: { phone: true },
-    errors: { phone: error },
+// return an onChange function that matches the onChange signature the component uses
+const onChangeFor = ({ type, state, setState, schema }) => {
+  switch (type) {
+    case 'phone':
+      return value =>
+        handleGenericChange({
+          name: 'phone',
+          type,
+          value,
+          state,
+          setState,
+        })
+    case 'switch':
+      return (event, checked) =>
+        handleGenericChange({
+          name: event.target.name,
+          type,
+          value: checked,
+          state,
+          setState,
+        })
+    default:
+      return event =>
+        handleGenericChange({
+          name: event.target.name,
+          type,
+          value: event.target.value,
+          state,
+          setState,
+          schema,
+        })
   }
-
-  setState(merge(state, changeToMerge))
 }
 
 export const multiStepFormValidGeneric = (steps, step, state) => {
@@ -73,21 +107,7 @@ export const multiStepFormValidGeneric = (steps, step, state) => {
   return result
 }
 
-const withState = ({ state, setState, schema }) => func => props =>
-  func({ props, state, setState, schema })
-
-const handleBlur = ({ state, setState, schema }) => e => {
-  withState({ state, setState, schema })(handleBlurGeneric)(e)
-}
-
-const handleChange = ({ state, setState, schema }) => e => {
-  withState({ state, setState, schema })(handleChangeGeneric)(e)
-}
-
-const handlePhoneChange = ({ state, setState, schema }) => value => {
-  handlePhoneChangeGeneric({ value, state, setState, schema })
-}
-
+// activated only if next button isn't disabled, which can happen only if initial error values aren't true
 export const visitUntouched = ({
   state,
   setState,
@@ -96,16 +116,13 @@ export const visitUntouched = ({
   schema,
 }) => {
   structure[step].fields.forEach(field => {
-    const { name } = field
+    const { name, type } = field
     const {
       touched: { [name]: isTouched },
       values: { [name]: value },
     } = state
     if (isTouched) return
-    const props = { target: { name, value } }
-    const handleChange =
-      name === 'phone' ? handlePhoneChangeGeneric : handleChangeGeneric
-    handleChange({ props, state, setState, schema })
+    handleGenericChange({ name, type, value, state, setState, schema })
   })
 }
 
@@ -119,34 +136,10 @@ const usePhoneStyles = makeStyles(theme => ({
   },
 }))
 
-// const propAdaptationUseStyles = makeStyles(theme => {
-//   console.log(
-//     'propAdaptationUseStyles called (you will see this msg once only!)'
-//   )
-
-//   return {
-//     root: {
-//       background: props => {
-//         console.log('color function called with props:', props)
-//         const result = props.value > 100 ? 'yellow' : 'none'
-//         console.log('will return ', result)
-//         return result
-//       },
-//     },
-//   }
-// })
-
 const FormContext = React.createContext()
 
 // Oddly, Form is called for each keystroke regardless of field
-// Field stopped doing that as soon as it was React.memo'ized, but that didn't help Form
-//
-// Form will work just as fine with a single step form
-//
-// In addition to the 5 s's, Form gets a render prop/function for the footer
-//
-// Styling is done thru the special form<x> props, which take their values directly from the theme context,
-// requiring no styles/useStyles and className={classes.root}
+// Field stopped doing that as soon as it was memoized, but that didn't help Form
 export const Form = ({ state, setState, schema, structure, step, footer }) => (
   <FormContext.Provider value={{ state, setState, schema, structure, step }}>
     <form autoComplete="off">
@@ -196,20 +189,19 @@ const Field = ({ name, noError = false }) => (
 
       const showError = !noError && touched[name] && !!errors[name]
 
-      const onChange =
-        name === 'phone'
-          ? handlePhoneChange({ state, setState, schema })
-          : handleChange({ state, setState, schema })
+      const onChange = onChangeFor({
+        type,
+        state,
+        setState,
+        schema,
+      })
 
       return (
         <FieldType
-          fieldType={name}
-          name={name}
           type={type}
-          country="IL"
+          name={name}
           label={capitalize(name)}
           value={values[name]}
-          onBlur={handleBlur({ state, setState, schema })}
           onChange={onChange}
           required={required}
           select={!!options}
@@ -232,27 +224,28 @@ const Field = ({ name, noError = false }) => (
 // Unless memoized, Field gets rendered 3 (!) unnecessary times for each keystroke!
 const MemoField = React.memo(Field)
 
-const FieldType = ({ fieldType, children, ...rest }) =>
-  fieldType === 'phone' ? (
-    <PhoneField {...rest} />
-  ) : (
-    <TextField {...rest}>{children}</TextField>
-  )
+const FieldType = ({ type, children, ...rest }) => {
+  switch (type) {
+    case 'phone':
+      return <PhoneField {...rest} />
+    case 'switch':
+      return <SwitchField {...rest} />
+    default:
+      return <TextField {...rest}>{children}</TextField>
+  }
+}
 
 // Using the classNames approach, as prop adaptation doesn't work here
-const PhoneField = props => {
-  const {
-    error,
-    fullWidth,
-    required,
-    label,
-    country,
-    placeholder,
-    value,
-    onChange,
-    helperText,
-  } = props
-
+const PhoneField = ({
+  error,
+  fullWidth,
+  required,
+  label,
+  placeholder,
+  value,
+  onChange,
+  helperText,
+}) => {
   const classes = usePhoneStyles()
   return (
     <FormControl error={error} fullWidth={fullWidth}>
@@ -260,7 +253,7 @@ const PhoneField = props => {
         {label}
       </FormLabel>
       <PhoneInput
-        country={country}
+        country="IL"
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -275,25 +268,11 @@ const PhoneField = props => {
   )
 }
 
-// This shows that prop adaptation does work well with a MUI component and a className prop
-//
-// To use it, useStyles needs to be called with the props which
-// would be fed into the styling function within the makeStyles hook
-//
-// console logs shows that the ...useStyles hook called by the below function is called once only, though
-// the function itself is being called again for each keystroke (which makes perfect sense).
-// What's being called for every invocation (= keystroke) is the styling function that reacts to the prop changes.
-//
-// devTools shows the classname hasn't changed.
-// However, confusingly it also doesn't change the class' contents, contradicting the browser which does obey the new content
-//
-// const PropAdaptationTextField = props => {
-//   console.log('before declaring classes')
-//   const classes = propAdaptationUseStyles(props)
-//   console.log('after declaring classes')
-//   return (
-//     <TextField {...props} className={classes.root}>
-//       {props.children}
-//     </TextField>
-//   )
-// }
+const SwitchField = ({ name, value, helperText, onChange }) => (
+  <Grid container direction="row" justify="space-between" alignItems="center">
+    <MyTypography formColor={value ? '' : 'body.fields.disabled'}>
+      {helperText}
+    </MyTypography>
+    <Switch color="primary" name={name} checked={value} onChange={onChange} />
+  </Grid>
+)

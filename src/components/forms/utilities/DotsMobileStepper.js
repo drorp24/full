@@ -62,7 +62,7 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
   )
 
   return (
-    <Form // Called again for every keystroke. memoization didn't change that.
+    <Form
       state={state}
       setState={setState}
       schema={schema}
