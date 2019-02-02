@@ -32,6 +32,7 @@ const theme = createMuiTheme({
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-evenly',
+      color: createdTheme.palette.text.secondary,
       fields: {
         disabled: createdTheme.palette.action.disabled,
       },
@@ -42,4 +43,5 @@ const theme = createMuiTheme({
   },
 })
 
+console.log('theme', theme)
 export default theme

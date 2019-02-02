@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { object, string, number, boolean } from 'yup'
 import DotsMobileStepper from '../utilities/DotsMobileStepper'
-import currencies from '../../../queries/currencies'
+import currencies, { currencySymbol } from '../../../queries/currencies'
 
 export default function SearchForm() {
   const [state, setState] = useState({
@@ -12,9 +12,8 @@ export default function SearchForm() {
       phone: '+972',
       email: '',
       address: '',
-      entry: '',
-      floor: '',
-      apartment: '',
+      // date: '',
+      time: '',
     },
     touched: {
       currency: false,
@@ -23,20 +22,18 @@ export default function SearchForm() {
       phone: false,
       email: false,
       address: false,
-      entry: false,
-      floor: false,
-      apartment: false,
+      // date: false,
+      time: false,
     },
     errors: {
       currency: true,
       amount: true,
-      delivery: true,
+      delivery: false,
       phone: true,
       email: true,
       address: true,
-      entry: true,
-      floor: true,
-      apartment: true,
+      // date: true,
+      time: true,
     },
   })
 
@@ -52,9 +49,8 @@ export default function SearchForm() {
       .email('Please enter a valid email address')
       .required(),
     address: string(),
-    entry: string(),
-    floor: string(),
-    apartment: string(),
+    // date: string(),
+    time: string(),
   })
 
   window.state = state
@@ -71,12 +67,14 @@ export default function SearchForm() {
           required: true,
           options: currencies,
           helper: 'Which currency do you wish to buy',
+          icon: 'Cash',
         },
         {
           name: 'amount',
           type: 'number',
           required: true,
           helper: 'How much of that currency do you need',
+          icon: currencySymbol,
         },
       ],
     },
@@ -96,40 +94,32 @@ export default function SearchForm() {
           type: 'phone',
           helper: 'Your phone number',
           required: true,
+          icon: 'ContactPhone',
         },
         {
           name: 'email',
           type: 'email',
           helper: 'Your email address',
           required: true,
+          icon: 'Email',
         },
-      ],
-    },
-    {
-      title: 'Where do you want to get it',
-      subtitle:
-        "Let us know where to deliver to and we'll notify you of the time",
-      fields: [
         {
           name: 'address',
           type: 'text',
           helper: 'Street address',
           required: true,
+          icon: 'HomeCity',
         },
+        // {
+        //   name: 'date',
+        //   type: 'text',
+        //   helper: 'When would you like to get it',
+        // },
         {
-          name: 'entry',
+          name: 'time',
           type: 'text',
-          helper: 'House entry',
-        },
-        {
-          name: 'floor',
-          type: 'text',
-          helper: 'Floor',
-        },
-        {
-          name: 'apartment',
-          type: 'text',
-          helper: 'Apartment',
+          helper: 'What delivery time would suit you best',
+          icon: 'Timetable',
         },
       ],
     },

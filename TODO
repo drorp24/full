@@ -20,10 +20,10 @@ Todo:
         ✔ Move visitUntouched to formUtilities @done(19-01-29 18:14)
         ✔ Make the delivery checkbox a switch @done(19-01-30 14:50)
         ✔ Change the switch helperText color and add a line iff switch is on @done(19-01-30 19:32)
-        ☐ Prefix every field with an icon
+        ✔ Prefix every field with an icon @done(19-02-02 23:33)
         ☐ Make the title & subtitle fonts proportionate to the container
         ✔ Apply MD style to the forms' fields by using MUI components for the form @done(19-01-30 19:32)
-        ☐ Validate the next two pages 
+        ✔ Validate the next two pages @done(19-02-02 23:33)
         ☐ Add a results page, which will eventually contain the list returned from server
         ✔ Learn MUI Grid @done(19-01-30 19:32)
         ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
@@ -40,9 +40,11 @@ Todo:
         ☐ Modify the GraphQL query to match the form's content
       GraphQL Server:
         ☐ Perform the query, return result
-      React:
+      Merchants list:
         ☐ Respond to query result by displaying a (unedited yet) list of merchants
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
+      Endless Scrolling:
+        ☐ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom
    Later:
     Material Design using MUI:
       ☐ Learn how MUI implements MD, particularly: Grid, Typography, Paper

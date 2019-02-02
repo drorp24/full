@@ -1,3 +1,5 @@
 {
-  "browser-preview.startUrl": "http://localhost:3000"
+  "browser-preview.startUrl": "http://localhost:3000",
+  "editor.acceptSuggestionOnEnter": "smart",
+  "emmet.triggerExpansionOnTab": true
 }
