@@ -1,4 +1,5 @@
 export default s => {
   if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
+  const cap = s.charAt(0).toUpperCase() + s.slice(1)
+  return cap
 }

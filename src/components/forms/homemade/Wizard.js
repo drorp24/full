@@ -4,16 +4,17 @@ import DotsMobileStepper from '../utilities/DotsMobileStepper'
 import currencies, { currencySymbol } from '../../../queries/currencies'
 
 export default function SearchForm() {
+  // TODO: leave only values and calculate touched and errors
   const [state, setState] = useState({
     values: {
-      currency: '',
-      amount: '',
+      currency: 'USD',
+      amount: '1000',
       delivery: true,
       phone: '+972',
       email: '',
       address: '',
       // date: '',
-      time: '',
+      time: new Date(),
     },
     touched: {
       currency: false,
@@ -26,8 +27,8 @@ export default function SearchForm() {
       time: false,
     },
     errors: {
-      currency: true,
-      amount: true,
+      currency: false,
+      amount: false,
       delivery: false,
       phone: true,
       email: true,
@@ -56,14 +57,15 @@ export default function SearchForm() {
   window.state = state
   window.schema = schema
 
+  // 'type' indicates the component and its onChange signature, it's not a form type (e.g., email: 'default')
   const structure = [
     {
       title: 'What do you need',
-      subtitle: 'What currency do you need and how much',
+      subtitle: 'What currency do you need, and how much of it?',
       fields: [
         {
           name: 'currency',
-          type: 'text',
+          type: 'default',
           required: true,
           options: currencies,
           helper: 'Which currency do you wish to buy',
@@ -79,34 +81,33 @@ export default function SearchForm() {
       ],
     },
     {
-      title: 'How would you like to get it',
-      subtitle:
-        'Would you rather pick it up yourself or have it delivered to you',
+      title: 'How would you like it',
+      subtitle: 'Would you rather pick it up yourself, or have it delivered?',
       fields: [
         {
           name: 'delivery',
           type: 'switch',
-          helper: 'Have it delivered to me',
+          helper: "I'd like a delivery",
           required: true,
         },
         {
           name: 'phone',
           type: 'phone',
-          helper: 'Your phone number',
+          helper: 'My phone number',
           required: true,
           icon: 'ContactPhone',
         },
         {
           name: 'email',
-          type: 'email',
-          helper: 'Your email address',
+          type: 'default',
+          helper: 'My email address',
           required: true,
           icon: 'Email',
         },
         {
           name: 'address',
-          type: 'text',
-          helper: 'Street address',
+          type: 'default',
+          helper: 'Delivery address',
           required: true,
           icon: 'HomeCity',
         },
@@ -117,8 +118,8 @@ export default function SearchForm() {
         // },
         {
           name: 'time',
-          type: 'text',
-          helper: 'What delivery time would suit you best',
+          type: 'time',
+          helper: 'I prefer delivery at this time of day',
           icon: 'Timetable',
         },
       ],

@@ -1,6 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 
 // Can't think of any other way to customize the theme based on its own values
+// TODO: Surely I can just spread merge them rather than calling createMuiTheme twice
 const createdTheme = createMuiTheme({
   typography: {
     useNextVariants: true,
