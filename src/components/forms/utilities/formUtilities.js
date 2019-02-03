@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import PropTypes from 'prop-types'
 import merge from 'lodash.merge'
 
@@ -158,10 +158,7 @@ export const Form = ({ state, setState, schema, structure, step, footer }) => (
             <MyTypography formVariant="header.title.typography" gutterBottom>
               {structure[step].title}
             </MyTypography>
-            <MyTypography
-              formVariant="header.subtitle.typography"
-              formColor="header.subtitle.color"
-            >
+            <MyTypography formVariant="header.subtitle.typography">
               {structure[step].subtitle}
             </MyTypography>
           </Box>
@@ -330,9 +327,9 @@ const MyTextField = ({ type, icon = null, children, state, ...rest }) => {
           </InputAdornment>
         ),
         className: classes.input,
-        // The component to place where native <input /> would otherwise be when type is 'number'
         // https://medium.com/@mikeh91/conditionally-adding-keys-to-javascript-objects-using-spread-operators-and-short-circuit-evaluation-acf157488ede
         ...(type === 'number' && {
+          // The component to place instead of native <input /> when type is 'number'
           inputComponent: MyNumberFormat,
           // Its props
           inputProps: {

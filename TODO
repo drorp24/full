@@ -21,7 +21,8 @@ Todo:
         ✔ Make the delivery checkbox a switch @done(19-01-30 14:50)
         ✔ Change the switch helperText color and add a line iff switch is on @done(19-01-30 19:32)
         ✔ Prefix every field with an icon @done(19-02-02 23:33)
-        ☐ Make the title & subtitle fonts proportionate to the container
+        ✔ Make the title & subtitle fonts proportionate to the container @done(19-02-03 12:56)
+        ☐ Create a time picker
         ✔ Apply MD style to the forms' fields by using MUI components for the form @done(19-01-30 19:32)
         ✔ Validate the next two pages @done(19-02-02 23:33)
         ☐ Add a results page, which will eventually contain the list returned from server
@@ -52,6 +53,9 @@ Todo:
         Styles:
           ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)
           ☐ Avoid discrepancy with client-rendered styles (requires https://www.styled-components.com/docs/tooling#babel-plugin)
+    Performance:
+      ☐ What is the reason for the 21M
+      ☐ Roboto was fetched with all variants
 
 
 

@@ -8,7 +8,7 @@ export default function SearchForm() {
     values: {
       currency: '',
       amount: '',
-      delivery: false,
+      delivery: true,
       phone: '+972',
       email: '',
       address: '',
