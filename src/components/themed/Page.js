@@ -1,9 +1,9 @@
 import React from 'react'
 import { Box } from './Box'
 
-const Page = props => (
+const Page = ({ children }) => (
   <Box pgpadding="padding" pgheight="height">
-    {props.children}
+    {children}
   </Box>
 )
 

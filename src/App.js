@@ -10,7 +10,9 @@ import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
 import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
-import Merchants from './components/graphql/Merchants'
+import MerchantsRaw from './components/graphql/MerchantsRaw'
+import Merchants from './components/list/Merchants'
+import Try from './components/utility/Try'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 import SearchForm from './components/forms/homemade/Wizard'
 import { ThemeProvider } from '@material-ui/styles'
@@ -47,6 +49,7 @@ class App extends Component {
             <Route path="/realtimetrading/" component={TradingUpdated} />
             <Route path="/trading" component={Trading} />
 
+            <Route path="/merchantsRaw" component={MerchantsRaw} />
             <Route path="/merchants" component={Merchants} />
 
             <Route
@@ -56,6 +59,7 @@ class App extends Component {
             <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
 
             <Route path="/topics" component={Topics} />
+            <Route path="/try" component={Try} />
           </Switch>
         </ThemeProvider>
       </>

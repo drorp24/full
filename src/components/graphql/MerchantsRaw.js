@@ -9,7 +9,7 @@ export default () => (
       if (loading) return <p>Loading...</p>
       if (error) return <p>Error :(</p>
 
-      // console.log('data', data)
+      console.log('data', data)
       // not destructuring to enable query to change w/o affecting this UI
       return data.merchants.map(merchant => (
         <div key={merchant.address}>

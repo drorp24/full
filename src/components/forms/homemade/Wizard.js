@@ -34,7 +34,7 @@ export default function SearchForm() {
       email: true,
       address: true,
       // date: true,
-      time: true,
+      time: false,
     },
   })
 
@@ -78,18 +78,18 @@ export default function SearchForm() {
           helper: 'How much of that currency do you need',
           icon: currencySymbol,
         },
-      ],
-    },
-    {
-      title: 'How would you like it',
-      subtitle: 'Would you rather pick it up yourself, or have it delivered?',
-      fields: [
         {
           name: 'delivery',
           type: 'switch',
           helper: "I'd like a delivery",
           required: true,
         },
+      ],
+    },
+    {
+      title: 'How would you like it',
+      subtitle: 'Would you rather pick it up yourself, or have it delivered?',
+      fields: [
         {
           name: 'phone',
           type: 'phone',
@@ -119,7 +119,7 @@ export default function SearchForm() {
         {
           name: 'time',
           type: 'time',
-          helper: 'I prefer delivery at this time of day',
+          helper: 'Preferred delivery  time',
           icon: 'Timetable',
         },
       ],

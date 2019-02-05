@@ -46,10 +46,11 @@ export const page = compose(
 
 // And that's the variant way of doing it:
 // Instead of defining new props one for each css property in the theme,
-// Define one prop to refer to an entire object in the theme (attributed by cssProperty: false)
+// Define one prop to refer to an entire object* in the theme (attributed by cssProperty: false)
 // This enables adding more definitions to that theme key w/o having to define a new prop for each one
 // Function enables me to quickly add another variant for another (entire) key of the theme
-const variant = key =>
+// * it must point to an obj rather than a single property to work
+export const variant = key =>
   style({
     prop: `${key}Variant`,
     cssProperty: false,
@@ -70,6 +71,8 @@ export const form = compose(
   color('form')
 )
 
+// If there are named exports in a file, it's better to not have any default export
+// Reason: If I wrongly assume one of those imports is the default one, I will be silently given the default one
 export const Box = styled('div')(
   compose(
     spacing,

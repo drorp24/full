@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+// import Link from '@material-ui/core/Link'
 import MobileStepper from '@material-ui/core/MobileStepper'
 import Button from '@material-ui/core/Button'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
@@ -43,14 +45,22 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
       position="static"
       activeStep={step}
       nextButton={
-        <Button
-          size="small"
-          onClick={handleNext}
-          disabled={!formValid(step) || step === structure.length - 1}
-        >
-          Next
-          <KeyboardArrowRight />
-        </Button>
+        step < structure.length - 1 ? (
+          <Button size="small" onClick={handleNext} disabled={!formValid(step)}>
+            Next
+            <KeyboardArrowRight />
+          </Button>
+        ) : (
+          <Button
+            to="/merchants"
+            component={Link}
+            size="small"
+            disabled={!formValid(step)}
+          >
+            Search
+            <KeyboardArrowRight />
+          </Button>
+        )
       }
       backButton={
         <Button size="small" onClick={handleBack} disabled={step === 0}>

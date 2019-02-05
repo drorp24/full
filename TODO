@@ -2,14 +2,14 @@
 Todo:
   Now:
     Styling:
-      Forms: 
+    Forms: 
+      Formik:
+        ✔ Learn `Formik` @done(19-01-15 13:57)
+        ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
+        ✔ Decide whether to use it or stick with home-made forms @done(19-01-15 13:58)
+        ✔ Document my decision in the proper note @done(19-01-15 13:59)
         HomeMade:
-          ✔ Keep the home-made version (Yup.js), don't override it with Formik @done(19-01-20 20:38)
-        Formik:
-          ✔ Learn `Formik` @done(19-01-15 13:57)
-          ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
-          ✔ Decide whether to use it or stick with home-made forms @done(19-01-15 13:58)
-          ✔ Document my decision in the proper note @done(19-01-15 13:59)
+        ✔ Keep the home-made version (Yup.js), don't override it with Formik @done(19-01-20 20:38)
     Onboarding, self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
       ✔ Check Formik before doing any of the following @done(19-01-15 13:57)
       ✔ Commit a working form @done(19-01-15 14:14)
@@ -35,18 +35,47 @@ Todo:
       ✔ Validate the next two pages @done(19-02-02 23:33)
       ✔ Learn MUI Grid @done(19-01-30 19:32)
       ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
-      ☐ Add a results page, which will eventually contain the list returned from server
+      ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
+      One-Step, search Form:
+        ✔ Move delivery switch to 1st page @done(19-02-05 00:11)
+        ☐ Discard 2nd page. Wrap it in some component and save it for later stages (order) 
+        ☐ Replace Wizard.js with a Select.js that like Wizard defines the data only
+        ☐ Let it generate its touched and errors state parts by itself (teach Wizard to do that too)
+        ☐ Select will either call a new component that'll pass a 'search' footer into Form
+        ☐ Or, if that new component is trivial, skip it and have Select call Form directly
+        ☐ Add a 'look around' switch to first page, and a box to write the user's location
+        ☐ Add a live, subscription-based rate*amount of selected currency (bank, our lowest, whatever I can find)
+        ☐ (?) Only if place permits, and it helps: consider adding a google location box, that turning 'lokk around' switch populates with current location 
     Search:
-      GraphQL Client:
-        ☐ Modify the GraphQL query to match the form's content
       GraphQL Server:
-        ☐ Perform the query, return result
+        ☐ Update the GraphQL resolver  / mongoose query to address the form's content
+        ☐ Create the live, subscription-based rate server-side query 
+        ☐ Update the crypto subscription query (server)
+      GraphQL Client:
+        ☐ Update the GraphQL client gql query to address the form's content
+        ☐ Create the live, subscription-based rate client-side query 
+        ☐ Update the crypto subscription query (client)
       Merchants list:
+        ☐ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters
         ☐ Respond to query result by displaying a (unedited yet) list of merchants
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
       Endless Scrolling:
         ☐ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom
-   Later:
+    Map:
+      ☐ Create a google map component whose center is user's location displaying nearby merchants
+      ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
+    Header / Footer:
+      ☐ Create a branded header
+      ☐ Create a footer with action icons
+      ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
+    Card:
+      ☐ Create a merchant card
+       ☐ Make a list click link t   o mer chant's card
+    Menu:
+      ☐ Consider creating a left-drawer menu
+  Later:
+    https:
+      ☐ Support httpsß
     Server-side rendering:
         Styles:
           ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)

@@ -343,11 +343,11 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
         })
       }
     default:
-      return event =>
+      return ({ target: { name, value } }) =>
         handleEveryChange({
-          name: event.target.name,
+          name,
           type,
-          value: event.target.value,
+          value,
           state,
           setState,
           schema,
@@ -356,7 +356,7 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
 }
 
 // Using MUI classic styling method rather than the newer, prop way
-// as this style needs to be injected to a deep component in some xClassName customization param
+// as these styles are passed to a deep component in some xClassName customization param
 const useFormStyles = makeStyles(theme => ({
   input: {
     color: theme.palette.primary.main,
