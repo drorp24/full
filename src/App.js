@@ -12,7 +12,9 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import MerchantsRaw from './components/graphql/MerchantsRaw'
 import Merchants from './components/list/Merchants'
+import Next from './components/utility/Next'
 import Try from './components/utility/Try'
+import Delivery from './components/order/Delivery'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 import SearchForm from './components/forms/homemade/Wizard'
 import { ThemeProvider } from '@material-ui/styles'
@@ -51,6 +53,8 @@ class App extends Component {
 
             <Route path="/merchantsRaw" component={MerchantsRaw} />
             <Route path="/merchants" component={Merchants} />
+            <Route path="/delivery" component={Delivery} />
+            <Route path="/next" component={Next} />
 
             <Route
               path="/asyncNotInitialRender"

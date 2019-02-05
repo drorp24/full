@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useState } from 'react'
 import PropTypes from 'prop-types'
 import merge from 'lodash.merge'
 
@@ -12,6 +12,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Switch from '@material-ui/core/Switch'
 import Grid from '@material-ui/core/Grid'
 
+import { object } from 'yup'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import NumberFormat from 'react-number-format'
@@ -23,6 +24,38 @@ import Page from '../../themed/Page'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
+
+export const useFormState = structure => {
+  // UseFormState's state values populate input 'value' attributes as soon as the form is rendered
+  // Only then the useEffect gets called, populating the form values again
+  // if state will not have initial values, react will warn about 'changing from uncontrolled to controlled'
+  const values = {}
+  getFields(structure).forEach(({ name }) => {
+    values[name] = ''
+  })
+
+  return useState({ values, touched: {}, errors: {} })
+}
+
+export const populateFormState = (structure, setState, setSchema) => {
+  const state = { values: {}, touched: {}, errors: {} }
+  const shape = {}
+
+  getFields(structure).forEach(({ name, value = '', schema }) => {
+    state.values[name] = value
+    state.touched[name] = false
+    try {
+      schema.validateSync(value)
+      state.errors[name] = false
+    } catch (error) {
+      state.errors[name] = capitalize(error.message)
+    }
+    shape[name] = schema
+  })
+
+  setState(state)
+  setSchema(object(shape))
+}
 
 const FormContext = React.createContext()
 
@@ -272,7 +305,7 @@ const handleEveryChange = ({ name, type, value, state, setState, schema }) => {
   setState(merge(state, changeToMerge))
 }
 
-const checkByType = ({ name, type, value, schema }) => {
+export const checkByType = ({ name, type, value, schema }) => {
   switch (type) {
     case 'phone':
       return phoneCheck({ name, value })
@@ -402,3 +435,11 @@ export const visitUntouched = ({
     handleEveryChange({ name, type, value, state, setState, schema })
   })
 }
+
+// merge fields across steps
+const getFields = structure =>
+  structure.reduce(
+    (acc, curr) =>
+      curr.hasOwnProperty('fields') ? [...acc, ...curr.fields] : acc,
+    []
+  )

@@ -52,7 +52,7 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
           </Button>
         ) : (
           <Button
-            to="/merchants"
+            to="/next"
             component={Link}
             size="small"
             disabled={!formValid(step)}

@@ -16,13 +16,16 @@ const Try = () => {
       const address = await getAddress(position)
       setGeolocation(geolocation => ({ ...geolocation, address }))
     } catch (error) {
-      setGeolocation(geolocation => ({ ...geolocation, error }))
+      setGeolocation(geolocation => ({
+        ...geolocation,
+        error: error.toString(),
+      }))
     }
   }
 
   useEffect(() => {
     getPositionAndAddress()
-  }, [])
+  })
 
   return (
     <Page>
