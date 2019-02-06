@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { string } from 'yup'
 import { useFormState, createSchema } from '../forms/utilities/formUtilities'
-import DotsMobileStepper from '../forms/utilities/DotsMobileStepper'
+import FormContainer from '../forms/utilities/FormContainer'
 
 const structure = [
   {
+    submit: 'order',
+    next: 'next',
+
     title: 'Some details please',
     subtitle: 'Please provide these details so we can proceed with delivery',
     fields: [
@@ -52,7 +55,7 @@ const Delivery = () => {
   const schema = createSchema(structure)
 
   return (
-    <DotsMobileStepper
+    <FormContainer
       state={state}
       setState={setState}
       schema={schema}

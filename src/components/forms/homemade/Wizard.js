@@ -1,6 +1,8 @@
+// Old format, before useFormState custom hook and createSchema
+
 import React, { useState } from 'react'
 import { object, string, number, boolean } from 'yup'
-import DotsMobileStepper from '../utilities/DotsMobileStepper'
+import FormContainer from '../utilities/FormContainer'
 import currencies, { currencySymbol } from '../../../queries/currencies'
 
 export default function SearchForm() {
@@ -10,7 +12,7 @@ export default function SearchForm() {
       currency: 'USD',
       amount: '1000',
       delivery: true,
-      phone: '+972',
+      phone: '',
       email: '',
       address: '',
       // date: '',
@@ -60,6 +62,9 @@ export default function SearchForm() {
   // 'type' indicates the component and its onChange signature, it's not a form type (e.g., email: 'default')
   const structure = [
     {
+      submit: 'search',
+      next: 'next',
+
       title: 'What do you need',
       subtitle: 'What currency do you need, and how much of it?',
       fields: [
@@ -129,7 +134,7 @@ export default function SearchForm() {
   window.structure = structure
 
   return (
-    <DotsMobileStepper
+    <FormContainer
       state={state}
       setState={setState}
       schema={schema}

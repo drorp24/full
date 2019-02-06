@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-// import Link from '@material-ui/core/Link'
 import MobileStepper from '@material-ui/core/MobileStepper'
 import Button from '@material-ui/core/Button'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
@@ -52,12 +51,12 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
           </Button>
         ) : (
           <Button
-            to="/next"
             component={Link}
+            to={`/${structure[0].next}`}
             size="small"
             disabled={!formValid(step)}
           >
-            Search
+            {structure[0].submit || 'save'}
             <KeyboardArrowRight />
           </Button>
         )

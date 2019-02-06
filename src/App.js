@@ -17,6 +17,7 @@ import Try from './components/utility/Try'
 import Delivery from './components/order/Delivery'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 import SearchForm from './components/forms/homemade/Wizard'
+import Wizard from './components/forms/homemade/Wizard'
 import { ThemeProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import 'typeface-roboto'
@@ -42,6 +43,7 @@ class App extends Component {
           <Switch>
             <Redirect exact from="/" to="/select" />
             <Route path="/select" component={SearchForm} />
+            <Route path="/wizard" component={Wizard} />
             <Route path="/practice" component={Practice} />
             <Route path="/cryptochart" component={CryptoChart} />
             {/* <Route
