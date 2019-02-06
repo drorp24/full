@@ -26,35 +26,31 @@ import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
 
 export const useFormState = structure => {
-  // UseFormState's state values populate input 'value' attributes as soon as the form is rendered
-  // Only then the useEffect gets called, populating the form values again
-  // if state will not have initial values, react will warn about 'changing from uncontrolled to controlled'
-  const values = {}
-  getFields(structure).forEach(({ name }) => {
-    values[name] = ''
-  })
-
-  return useState({ values, touched: {}, errors: {} })
-}
-
-export const populateFormState = (structure, setState, setSchema) => {
   const state = { values: {}, touched: {}, errors: {} }
-  const shape = {}
+  const { values, touched, errors } = state
 
   getFields(structure).forEach(({ name, value = '', schema }) => {
-    state.values[name] = value
-    state.touched[name] = false
+    values[name] = value
+    touched[name] = false
     try {
       schema.validateSync(value)
-      state.errors[name] = false
+      errors[name] = false
     } catch (error) {
-      state.errors[name] = capitalize(error.message)
+      errors[name] = capitalize(error.message)
     }
+  })
+
+  return useState(state)
+}
+
+export const createSchema = structure => {
+  const shape = {}
+
+  getFields(structure).forEach(({ name, schema }) => {
     shape[name] = schema
   })
 
-  setState(state)
-  setSchema(object(shape))
+  return object(shape)
 }
 
 const FormContext = React.createContext()
