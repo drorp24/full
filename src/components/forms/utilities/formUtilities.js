@@ -29,11 +29,11 @@ export const useFormState = structure => {
   const state = { values: {}, touched: {}, errors: {} }
   const { values, touched, errors } = state
 
-  getFields(structure).forEach(({ name, value = '', schema }) => {
+  getFields(structure).forEach(({ name, value = '', fieldSchema }) => {
     values[name] = value
     touched[name] = false
     try {
-      schema.validateSync(value)
+      fieldSchema && fieldSchema.validateSync(value)
       errors[name] = false
     } catch (error) {
       errors[name] = capitalize(error.message)
@@ -46,8 +46,8 @@ export const useFormState = structure => {
 export const createSchema = structure => {
   const shape = {}
 
-  getFields(structure).forEach(({ name, schema }) => {
-    shape[name] = schema
+  getFields(structure).forEach(({ name, fieldSchema }) => {
+    shape[name] = fieldSchema
   })
 
   return object(shape)
@@ -66,8 +66,10 @@ export const Form = ({ state, setState, schema, structure, step, footer }) => (
             <MyTypography formVariant="header.title.typography" gutterBottom>
               {structure[step].title}
             </MyTypography>
-            <MyTypography formVariant="header.subtitle.typography">
-              {structure[step].subtitle}
+            <MyTypography formVariant="header.subtitle.typography" gutterBottom>
+              <span style={{ whiteSpace: 'pre-line' }}>
+                {structure[step].subtitle}
+              </span>
             </MyTypography>
           </Box>
           <Box formVariant="body" formColor="body.color">
@@ -104,19 +106,27 @@ const Field = ({ name, noError = false }) => (
         field => field.name === name
       )[0]
 
-      const { type, required, options, helper, icon } = field
+      const { type, fieldSchema, required, options, helper, icon } = field
 
-      const { values, touched, errors } = state
+      const {
+        values: { [name]: fieldValue },
+        touched: { [name]: fieldTouched },
+        errors: { [name]: fieldError },
+      } = state
 
-      const showError = !noError && touched[name] && !!errors[name]
+      const showError = !noError && fieldTouched && !!fieldError
 
       const onChange = onChangeFor({
         name,
         type,
+        fieldSchema,
         state,
         setState,
         schema,
       })
+
+      const value =
+        typeof fieldValue === 'function' ? fieldValue(state) : fieldValue
 
       return (
         <DisplayField
@@ -124,12 +134,12 @@ const Field = ({ name, noError = false }) => (
           type={type}
           icon={icon}
           label={capitalize(name)}
-          value={values[name]}
+          value={value}
           onChange={onChange}
           required={required}
           select={!!options}
           error={showError}
-          helperText={showError ? errors[name] : helper}
+          helperText={showError ? fieldError : helper}
           fullWidth
           state={state}
         >
@@ -289,8 +299,16 @@ const IconAdornment = ({ icon, state }) => {
   )
 }
 
-const handleEveryChange = ({ name, type, value, state, setState, schema }) => {
-  const error = checkByType({ name, type, value, schema })
+const handleEveryChange = ({
+  name,
+  type,
+  fieldSchema,
+  value,
+  state,
+  setState,
+  schema,
+}) => {
+  const error = checkByType({ name, type, fieldSchema, value, schema })
 
   const changeToMerge = {
     values: { [name]: value },
@@ -301,15 +319,10 @@ const handleEveryChange = ({ name, type, value, state, setState, schema }) => {
   setState(merge(state, changeToMerge))
 }
 
-export const checkByType = ({ name, type, value, schema }) => {
-  switch (type) {
-    case 'phone':
-      return phoneCheck({ name, value })
-    case 'switch':
-      return false
-    default:
-      return yupCheck({ name, value, schema })
-  }
+export const checkByType = ({ name, type, fieldSchema, value, schema }) => {
+  if (type === 'phone') return phoneCheck({ name, value })
+  if (fieldSchema) return yupCheck({ name, value, schema })
+  return false
 }
 
 const phoneCheck = ({ name, value }) =>
@@ -330,13 +343,14 @@ const yupCheck = ({ name, value, schema }) => {
 }
 
 // return an onChange function that matches the onChange signature the component uses
-const onChangeFor = ({ name, type, state, setState, schema }) => {
+const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
   switch (type) {
     case 'phone':
       return value =>
         handleEveryChange({
           name,
           type,
+          fieldSchema,
           value,
           state,
           setState,
@@ -346,6 +360,7 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
         handleEveryChange({
           name: event.target.name,
           type,
+          fieldSchema,
           value: checked,
           state,
           setState,
@@ -355,6 +370,7 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
         handleEveryChange({
           name,
           type,
+          fieldSchema,
           value,
           state,
           setState,
@@ -365,6 +381,7 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
         handleEveryChange({
           name,
           type,
+          fieldSchema,
           value: date,
           state,
           setState,
@@ -376,6 +393,7 @@ const onChangeFor = ({ name, type, state, setState, schema }) => {
         handleEveryChange({
           name,
           type,
+          fieldSchema,
           value,
           state,
           setState,

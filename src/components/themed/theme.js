@@ -21,12 +21,12 @@ const theme = createMuiTheme({
       padding: createdTheme.spacing.unit * 2,
       textAlign: 'center',
       title: {
-        typography: { ...createdTheme.typography.h6, ...{ fontSize: '5vw' } },
+        typography: { ...createdTheme.typography.h6, ...{ fontSize: '5.5vw' } },
       },
       subtitle: {
         typography: {
           ...createdTheme.typography.body1,
-          ...{ fontSize: '4vw', fontWeight: 300, color: '#333' },
+          ...{ fontSize: '4.5vw', fontWeight: 300, color: '#333' },
         },
       },
     },

@@ -3,6 +3,12 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './store/actions'
 
+import 'typeface-roboto'
+
+import { ThemeProvider } from '@material-ui/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import theme from './components/themed/theme'
+
 import Practice from './components/sync/Practice'
 import TradingUpdated from './components/graphql/TradingUpdated'
 import Topics from './components/sync/Topics'
@@ -12,16 +18,13 @@ import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import MerchantsRaw from './components/graphql/MerchantsRaw'
 import Merchants from './components/list/Merchants'
-import Next from './components/utility/Next'
 import Try from './components/utility/Try'
-import Delivery from './components/order/Delivery'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-import SearchForm from './components/forms/homemade/Wizard'
 import Wizard from './components/forms/homemade/Wizard'
-import { ThemeProvider } from '@material-ui/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import 'typeface-roboto'
-import theme from './components/themed/theme'
+import Next from './components/utility/Next'
+
+import Select from './components/app/Select'
+import Delivery from './components/app/Delivery'
 
 class App extends Component {
   componentDidMount() {
@@ -42,7 +45,10 @@ class App extends Component {
         <ThemeProvider theme={theme}>
           <Switch>
             <Redirect exact from="/" to="/select" />
-            <Route path="/select" component={SearchForm} />
+            <Route path="/select" component={Select} />
+            <Route path="/delivery" component={Delivery} />
+            <Route path="/next" component={Next} />
+
             <Route path="/wizard" component={Wizard} />
             <Route path="/practice" component={Practice} />
             <Route path="/cryptochart" component={CryptoChart} />
@@ -55,8 +61,6 @@ class App extends Component {
 
             <Route path="/merchantsRaw" component={MerchantsRaw} />
             <Route path="/merchants" component={Merchants} />
-            <Route path="/delivery" component={Delivery} />
-            <Route path="/next" component={Next} />
 
             <Route
               path="/asyncNotInitialRender"

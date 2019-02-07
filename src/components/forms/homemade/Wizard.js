@@ -79,6 +79,10 @@ export default function SearchForm() {
         {
           name: 'amount',
           type: 'number',
+          fieldSchema: number()
+            .required()
+            .min(10)
+            .typeError('Invalid number'),
           required: true,
           helper: 'How much of that currency do you need',
           icon: currencySymbol,
@@ -105,6 +109,9 @@ export default function SearchForm() {
         {
           name: 'email',
           type: 'default',
+          fieldSchema: string()
+            .email('Please enter a valid email address')
+            .required(),
           helper: 'My email address',
           required: true,
           icon: 'Email',

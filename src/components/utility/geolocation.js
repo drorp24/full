@@ -1,4 +1,5 @@
 import Geocode from 'react-geocode'
+import merge from 'lodash.merge'
 
 // Promisfy and configure the basic html5 geolocation API
 export const getCurrentPosition = () =>
@@ -27,3 +28,19 @@ export const getAddress = async ({ coords: { latitude, longitude } }) => {
     throw error.toString()
   }
 }
+
+export const getPositionAndAddress = async setState => {
+  try {
+    const position = await getCurrentPosition()
+    setState(state => merge(state, { geolocation: { error: null, position } }))
+    const address = await getAddress(position)
+    setState(state => merge(state, { geolocation: { error: null, address } }))
+  } catch (error) {
+    setState(state =>
+      merge(state, { geolocation: { error: error.toString() } })
+    )
+  }
+}
+
+export const address = state =>
+  (state.geolocation && state.geolocation.address) || ''

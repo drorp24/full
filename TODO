@@ -36,14 +36,28 @@ Todo:
       ✔ Learn MUI Grid @done(19-01-30 19:32)
       ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
       ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
-      One-Step, search Form:
+      Select Form:
         ✔ Move delivery switch to 1st page @done(19-02-05 00:11)
         ✔ Discard 2nd page. Wrap it in some component and save it for later stages (order) @done(19-02-06 00:39)
         ✔ Generated part 2: insert the populateFormState logic into useFormState, no useEffect may be needed! @done(19-02-06 14:59)
         ✔ Consider generifying the DotsMobileStepper to handle both multi-step and single-step forms. @done(19-02-06 16:11)
-        ☐ Add a 'look around' switch to first page, and a box to write the user's location
-        ☐ Add a live, subscription-based rate*amount of selected currency (bank, our lowest, whatever I can find)
-        ☐ (?) Only if place permits, and it helps: consider adding a google location box, that turning 'lokk around' switch populates with current location 
+        Notes:
+          ☐ I want to show as many UI widgets as possible already in the first page
+          ☐ I want the pages to look designed and *app-like* as much as possible
+        Center selection:
+          ☐ Make 'center' a google location box with:
+            ☐ https://github.com/hibiken/react-places-autocomplete#readme 
+          ☐ Add a 'look around' switch to first page, that once set, populates center with user's address
+        Currency selection:
+          ☐ Make currency selection autocompletable using:
+            ☐ https://material-ui.com/demos/autocomplete/#react-autosuggest
+            ☐ https://github.com/moroshko/react-autosuggest 
+          ☐ Use a long (preferrably: all) list of coins
+          ☐ Try using flags if svg and doesn't hit performance
+        Live rates:
+          ☐ Show interbank live rate as soon as currency pair is selected
+        Other:
+          ✘ Consider adding help (?) pages - only if it improves things @cancelled(19-02-07 15:36)
     Search:
       GraphQL Server:
         ☐ Update the GraphQL resolver  / mongoose query to address the form's content
@@ -53,22 +67,29 @@ Todo:
         ☐ Update the GraphQL client gql query to address the form's content
         ☐ Create the live, subscription-based rate client-side query 
         ☐ Update the crypto subscription query (client)
+    List:
       Merchants list:
         ☐ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters
         ☐ Respond to query result by displaying a (unedited yet) list of merchants
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
       Endless Scrolling:
+        ☐ Read about endless scrolling / lazy loading best practices in react
+        ☐ Try to find an npm package for that, look at 'react-window' and others (npms) 
         ☐ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom
     Map:
       ☐ Create a google map component whose center is user's location displaying nearby merchants
       ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
-    Header / Footer:
+    Header / Footer / Theme:
       ☐ Create a branded header
       ☐ Create a footer with action icons
       ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
+      ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
     Card:
       ☐ Create a merchant card
-       ☐ Make a list click link t   o mer chant's card
+      ☐ Make a list click link t   o mer chant's card
+    Information:
+      ☐ Make a reviews page like the one I had in Cambiu
+      ☐ Make a live ws-based crypto graph for 3 crypto currencies
     Menu:
       ☐ Consider creating a left-drawer menu
   Later:
