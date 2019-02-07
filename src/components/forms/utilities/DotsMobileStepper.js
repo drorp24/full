@@ -10,7 +10,7 @@ import {
   visitUntouched,
 } from './formUtilities'
 
-const DotsMobileStepper = ({ state, setState, schema, structure }) => {
+const DotsMobileStepper = ({ state, setState, schema, structure, show }) => {
   const [activeStep, setActiveStep] = useState(0)
 
   function handleNext() {
@@ -52,11 +52,11 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
         ) : (
           <Button
             component={Link}
-            to={`/${structure[0].next}`}
+            to={`/${show.next}`}
             size="small"
             disabled={!formValid(step)}
           >
-            {structure[0].submit || 'save'}
+            {show.submit || 'save'}
             <KeyboardArrowRight />
           </Button>
         )
@@ -78,6 +78,7 @@ const DotsMobileStepper = ({ state, setState, schema, structure }) => {
       structure={structure}
       step={activeStep}
       footer={footer}
+      show={show}
     />
   )
 }
