@@ -4,25 +4,29 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { Form, multiStepFormValidGeneric } from './formUtilities'
 
-const OneStepper = ({ structure, state, show, ...rest }) => {
+const OneStepper = ({ state, setState, schema, structure }) => {
   const formValid = () => multiStepFormValidGeneric(structure, 0, state)
 
   const footer = () => (
     <Grid container justify="center">
-      <Button component={Link} to={`/${show.next}`} disabled={!formValid()}>
-        {show.submit || 'save'}
+      <Button
+        component={Link}
+        to={`/${structure[0].next}`}
+        disabled={!formValid()}
+      >
+        {structure[0].submit || 'save'}
       </Button>
     </Grid>
   )
 
   return (
     <Form
-      structure={structure}
       state={state}
-      show={show}
-      footer={footer}
+      setState={setState}
+      schema={schema}
+      structure={structure}
       step={0}
-      {...rest}
+      footer={footer}
     />
   )
 }

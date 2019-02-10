@@ -2,11 +2,21 @@ import React from 'react'
 import DotsMobileStepper from './DotsMobileStepper'
 import OneStepper from './OneStepper'
 
-const FormContainr = props =>
-  props.structure.length > 1 ? (
-    <DotsMobileStepper {...props} />
+const FormContainr = ({ state, setState, schema, structure }) =>
+  structure.length > 1 ? (
+    <DotsMobileStepper
+      state={state}
+      setState={setState}
+      schema={schema}
+      structure={structure}
+    />
   ) : (
-    <OneStepper {...props} />
+    <OneStepper
+      state={state}
+      setState={setState}
+      schema={schema}
+      structure={structure}
+    />
   )
 
 export default FormContainr

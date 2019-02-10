@@ -56,20 +56,10 @@ export const createSchema = structure => {
 const FormContext = React.createContext()
 
 // TODO: Form is called for every keystroke (regardless of field)
-// EveryField stopped doing that as soon as it was memoized, but that didn't help Form
-export const Form = ({
-  state,
-  setState,
-  schema,
-  structure,
-  step,
-  show,
-  footer,
-}) => (
+// Field stopped doing that as soon as it was memoized, but that didn't help Form
+export const Form = ({ state, setState, schema, structure, step, footer }) => (
   <ErrorBoundary>
-    <FormContext.Provider
-      value={{ state, setState, schema, structure, step, show }}
-    >
+    <FormContext.Provider value={{ state, setState, schema, structure, step }}>
       <form autoComplete="off">
         <Page>
           <Box formVariant="header">
@@ -104,17 +94,14 @@ Form.propTypes = {
 }
 
 // This component is not exposed; Form has everything it needs to know in structure and schema props
-// Logic that pertains to all fields should be here, not in the display components
-//
-// There are currently 6 display components, 2 of MUI's and 4 external.
-// New types should be easy to add and not change the FormContainer interface.
-// Adding a new type requires:
+// Field is a container; it doesn't care for the display. <DisplayField /> does.
+// The latter has 5 display components, 2 of MUI's and 3 external libraries. Adding a new type requires:
 // - defining a new 'type', a dislpay component (<xField />) and an entry for it in DisplayField
 // - mapping its onChange signature to generic onChange in onChangeFor
 // - if custom validation check is required for that type then checkByType should be updated too
-const EveryField = ({ name }) => (
+const Field = ({ name, noError = false }) => (
   <FormContext.Consumer>
-    {({ state, setState, schema, structure, step, show }) => {
+    {({ state, setState, schema, structure, step }) => {
       const field = structure[step].fields.filter(
         field => field.name === name
       )[0]
@@ -127,10 +114,7 @@ const EveryField = ({ name }) => (
         errors: { [name]: fieldError },
       } = state
 
-      const error = !show.noError && fieldTouched && !!fieldError
-      const helperText = error ? fieldError : show.helper ? helper : ' '
-      const value =
-        typeof fieldValue === 'function' ? fieldValue(state) : fieldValue
+      const showError = !noError && fieldTouched && !!fieldError
 
       const onChange = onChangeFor({
         name,
@@ -140,6 +124,9 @@ const EveryField = ({ name }) => (
         setState,
         schema,
       })
+
+      const value =
+        typeof fieldValue === 'function' ? fieldValue(state) : fieldValue
 
       return (
         <DisplayField
@@ -151,9 +138,8 @@ const EveryField = ({ name }) => (
           onChange={onChange}
           required={required}
           select={!!options}
-          error={error}
-          helperText={helperText}
-          helper={helper}
+          error={showError}
+          helperText={showError ? fieldError : helper}
           fullWidth
           state={state}
         >
@@ -169,8 +155,8 @@ const EveryField = ({ name }) => (
   </FormContext.Consumer>
 )
 
-// Unless memoized, EveryField gets rendered 3 unnecessary times for each keystroke
-const MemoField = React.memo(EveryField)
+// Unless memoized, Field gets rendered 3 unnecessary times for each keystroke
+const MemoField = React.memo(Field)
 
 // Up until this point, everything is generic and shouldn't change much
 // Customization starts here
@@ -219,10 +205,10 @@ const PhoneField = ({
   )
 }
 
-const SwitchField = ({ name, value, helper, onChange }) => (
+const SwitchField = ({ name, value, helperText, onChange }) => (
   <Grid container direction="row" justify="space-between" alignItems="center">
     <MyTypography formColor={value ? '' : 'body.fields.disabled'}>
-      {helper}
+      {helperText}
     </MyTypography>
     <Switch color="primary" name={name} checked={value} onChange={onChange} />
   </Grid>
@@ -234,8 +220,7 @@ const NumberField = ({ icon, state, value, onChange, ...rest }) => {
   return (
     <TextField
       InputProps={{
-        startAdornment:
-          showAdornment(icon, value) && IconAdornment({ icon, state }),
+        startAdornment: IconAdornment({ icon, state }),
         className: classes.input,
         inputComponent: MyNumberFormat,
         inputProps: {
@@ -246,7 +231,6 @@ const NumberField = ({ icon, state, value, onChange, ...rest }) => {
         // NumberFormat triggers the onChange, so this one is redundant
         onChange: () => {},
       }}
-      value={value}
       {...rest}
     />
   )
@@ -269,8 +253,7 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
           TextFieldComponent={DefaultField}
           // not recognized by TimePicker , InputProps are passed onwards to DefaultField, which uses them to add the icon
           InputProps={{
-            startAdornment:
-              showAdornment(icon, value) && IconAdornment({ icon, state }),
+            startAdornment: IconAdornment({ icon, state }),
             className: classes.input,
           }}
         />
@@ -279,17 +262,15 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
     </FormControl>
   )
 }
-const DefaultField = ({ value, icon, children, state, ...rest }) => {
+const DefaultField = ({ icon, children, state, ...rest }) => {
   const classes = useFormStyles()
 
   return (
     <TextField
       InputProps={{
-        startAdornment:
-          showAdornment(icon, value) && IconAdornment({ icon, state }),
+        startAdornment: IconAdornment({ icon, state }),
         className: classes.input,
       }}
-      value={value}
       {...rest}
     >
       {children}
@@ -476,7 +457,3 @@ const getFields = structure =>
       curr.hasOwnProperty('fields') ? [...acc, ...curr.fields] : acc,
     []
   )
-
-// TODO: Separate adornments from fields, else empty fields' labels are lifted
-const showAdornment = (icon, value) =>
-  icon && typeof icon === 'function' ? !!value : !!icon
