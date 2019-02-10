@@ -1,7 +1,7 @@
 // Old format, before useFormState custom hook and createSchema
 
 import React from 'react'
-import { string, number, boolean } from 'yup'
+import { string, number } from 'yup'
 import FormContainer from '../utilities/FormContainer'
 import currencies, { currencySymbol } from '../../../queries/currencies'
 import { useFormState, createSchema } from '../utilities/formUtilities'
