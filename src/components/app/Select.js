@@ -8,7 +8,7 @@ import { getPositionAndAddress, address } from '../utility/geolocation'
 const structure = [
   {
     title: 'Looking for currency?',
-    subtitle: 'Specify your requirement and \n get the best offers around',
+    subtitle: 'Specify your needs and \n get the best offers around',
     fields: [
       {
         name: 'getCurrency',

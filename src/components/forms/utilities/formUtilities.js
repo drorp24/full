@@ -119,8 +119,6 @@ const EveryField = ({ name }) => (
         field => field.name === name
       )[0]
 
-      console.log('EveryField. name, state:', name)
-
       const { type, fieldSchema, required, options, helper, icon } = field
 
       const {
@@ -178,7 +176,6 @@ const MemoField = React.memo(EveryField)
 // Customization starts here
 
 const DisplayField = ({ type, ...rest }) => {
-  console.log('DisplayField, type, rest:', type, rest)
   const display = {
     phone: PhoneField,
     switch: SwitchField,
