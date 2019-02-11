@@ -115,11 +115,20 @@ Form.propTypes = {
 const EveryField = ({ name }) => (
   <FormContext.Consumer>
     {({ state, setState, schema, structure, step, show }) => {
+      //
       const field = structure[step].fields.filter(
         field => field.name === name
       )[0]
 
-      const { type, fieldSchema, required, options, helper, icon } = field
+      const {
+        type,
+        fieldSchema,
+        required,
+        label,
+        helper,
+        options,
+        icon,
+      } = field
 
       const {
         values: { [name]: fieldValue },
@@ -129,6 +138,11 @@ const EveryField = ({ name }) => (
 
       const error = !show.noError && fieldTouched && !!fieldError
       const helperText = error ? fieldError : show.helper ? helper : ' '
+      const fieldLabel = !show.label ? '' : label ? label : capitalize(name)
+
+      const fieldOptions =
+        typeof options === 'function' ? options(state) : options
+
       const value =
         typeof fieldValue === 'function' ? fieldValue(state) : fieldValue
 
@@ -146,19 +160,19 @@ const EveryField = ({ name }) => (
           name={name}
           type={type}
           icon={icon}
-          label={capitalize(name)}
+          label={fieldLabel}
           value={value}
           onChange={onChange}
           required={required}
-          select={!!options}
+          select={!!fieldOptions}
           error={error}
           helperText={helperText}
           helper={helper}
           fullWidth
           state={state}
         >
-          {options &&
-            options.map(option => (
+          {fieldOptions &&
+            fieldOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

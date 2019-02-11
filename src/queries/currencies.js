@@ -56,4 +56,8 @@ export const getCurrencySymbol = ({ values: { getCurrency } }) =>
   mdiIcons.includes(getCurrency) &&
   `Currency${capitalize(getCurrency.toLowerCase())}`
 
-export default currencies
+export const getCurrencyOptions = ({ values: { payCurrency } }) =>
+  currencies.filter(currency => currency.value !== payCurrency)
+
+export const payCurrencyOptions = ({ values: { getCurrency } }) =>
+  currencies.filter(currency => currency.value !== getCurrency)
