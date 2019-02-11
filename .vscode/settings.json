@@ -1,5 +1,7 @@
 {
   "browser-preview.startUrl": "http://localhost:3000",
   "editor.acceptSuggestionOnEnter": "smart",
-  "emmet.triggerExpansionOnTab": true
+  "emmet.triggerExpansionOnTab": true,
+  "workbench.list.keyboardNavigation": "filter",
+  "git.postCommitCommand": "push"
 }

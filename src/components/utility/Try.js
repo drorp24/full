@@ -1,49 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Page from '../themed/Page'
-import { getCurrentPosition, getAddress } from './geolocation'
+import LocationSearchInput from '../forms/utilities/LocationSearchInput'
+import { createClient } from '@google/maps'
 
 const Try = () => {
-  const [geolocation, setGeolocation] = useState({
-    position: null,
-    address: null,
-    error: null,
-  })
-
-  async function getPositionAndAddress() {
-    try {
-      const position = await getCurrentPosition()
-      setGeolocation(geolocation => ({ ...geolocation, position }))
-      const address = await getAddress(position)
-      setGeolocation(geolocation => ({ ...geolocation, address }))
-    } catch (error) {
-      setGeolocation(geolocation => ({
-        ...geolocation,
-        error: error.toString(),
-      }))
-    }
-  }
-
   useEffect(() => {
-    getPositionAndAddress()
+    // Didn't work
+    // const googleMapsClient = createClient({
+    //   key: process.env.GOOGLE_API_KEY,
+    //   Promise: Promise,
+    // })
   })
-
   return (
     <Page>
-      <h3>Position</h3>
-      {geolocation.position ? (
-        <>
-          <div>{geolocation.position.coords.latitude}</div>
-          <div>{geolocation.position.coords.longitude}</div>
-          <div>{geolocation.address}</div>
-          <div>{geolocation.error}</div>
-        </>
-      ) : (
-        <div>No position</div>
-      )}
+      <LocationSearchInput />
     </Page>
   )
 }
-
 Try.propTypes = {}
 
 export default Try
