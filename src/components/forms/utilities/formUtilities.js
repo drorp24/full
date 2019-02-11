@@ -375,63 +375,31 @@ const yupCheck = ({ name, value, schema }) => {
   }
 }
 
-// return an onChange function that matches the onChange signature the component uses
+// return an onChange function whose signature matches the onChange func the type of component uses
+// that returns one single function that deals with every change regardless of type
 const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
+  const handleChange = ({ name, value }) =>
+    handleEveryChange({
+      name,
+      type,
+      fieldSchema,
+      value,
+      state,
+      setState,
+      schema,
+    })
+
   switch (type) {
     case 'phone':
-      return value =>
-        handleEveryChange({
-          name,
-          type,
-          fieldSchema,
-          value,
-          state,
-          setState,
-        })
+      return value => handleChange({ name, value })
     case 'switch':
-      return (event, checked) =>
-        handleEveryChange({
-          name: event.target.name,
-          type,
-          fieldSchema,
-          value: checked,
-          state,
-          setState,
-        })
+      return ({ target: { name } }, value) => handleChange({ name, value })
     case 'number':
-      return ({ value }) =>
-        handleEveryChange({
-          name,
-          type,
-          fieldSchema,
-          value,
-          state,
-          setState,
-          schema,
-        })
+      return ({ value }) => handleChange({ name, value })
     case 'time':
-      return date => {
-        handleEveryChange({
-          name,
-          type,
-          fieldSchema,
-          value: date,
-          state,
-          setState,
-          schema,
-        })
-      }
+      return value => handleChange({ name, value })
     default:
-      return ({ target: { name, value } }) =>
-        handleEveryChange({
-          name,
-          type,
-          fieldSchema,
-          value,
-          state,
-          setState,
-          schema,
-        })
+      return ({ target: { name, value } }) => handleChange({ name, value })
   }
 }
 

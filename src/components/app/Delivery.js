@@ -54,12 +54,17 @@ const Delivery = () => {
   const [state, setState] = useFormState(structure)
   const schema = createSchema(structure)
 
+  const show = {
+    next: 'next',
+  }
+
   return (
     <FormContainer
       state={state}
       setState={setState}
       schema={schema}
       structure={structure}
+      show={show}
     />
   )
 }
