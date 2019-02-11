@@ -119,15 +119,7 @@ const EveryField = ({ name }) => (
         field => field.name === name
       )[0]
 
-      const {
-        type,
-        fieldSchema,
-        validation,
-        required,
-        options,
-        helper,
-        icon,
-      } = field
+      const { type, fieldSchema, required, options, helper, icon } = field
 
       const {
         values: { [name]: fieldValue },
@@ -144,7 +136,6 @@ const EveryField = ({ name }) => (
         name,
         type,
         fieldSchema,
-        validation,
         state,
         setState,
         schema,
@@ -331,22 +322,11 @@ const handleEveryChange = ({
   name,
   type,
   fieldSchema,
-  validation,
   value,
-  state,
   setState,
   schema,
 }) => {
-  console.log('handleEveryChange called with value:', value)
-  const error = checkByType({
-    name,
-    type,
-    fieldSchema,
-    validation,
-    value,
-    state,
-    schema,
-  })
+  const error = checkByType({ name, type, fieldSchema, value, schema })
 
   setState(
     produce(draft => {
@@ -358,16 +338,7 @@ const handleEveryChange = ({
   )
 }
 
-export const checkByType = ({
-  name,
-  type,
-  fieldSchema,
-  validation,
-  value,
-  state,
-  schema,
-}) => {
-  if (validation) return validation({ name, value, state })
+export const checkByType = ({ name, type, fieldSchema, value, schema }) => {
   if (type === 'phone') return phoneCheck({ name, value })
   if (fieldSchema) return yupCheck({ name, value, schema })
   return false
@@ -391,15 +362,7 @@ const yupCheck = ({ name, value, schema }) => {
 }
 
 // return an onChange function that matches the onChange signature the component uses
-const onChangeFor = ({
-  name,
-  type,
-  fieldSchema,
-  validation,
-  state,
-  setState,
-  schema,
-}) => {
+const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
   switch (type) {
     case 'phone':
       return value =>
@@ -407,7 +370,6 @@ const onChangeFor = ({
           name,
           type,
           fieldSchema,
-          validation,
           value,
           state,
           setState,
@@ -418,7 +380,6 @@ const onChangeFor = ({
           name: event.target.name,
           type,
           fieldSchema,
-          validation,
           value: checked,
           state,
           setState,
@@ -429,7 +390,6 @@ const onChangeFor = ({
           name,
           type,
           fieldSchema,
-          validation,
           value,
           state,
           setState,
@@ -441,7 +401,6 @@ const onChangeFor = ({
           name,
           type,
           fieldSchema,
-          validation,
           value: date,
           state,
           setState,
@@ -454,7 +413,6 @@ const onChangeFor = ({
           name,
           type,
           fieldSchema,
-          validation,
           value,
           state,
           setState,
