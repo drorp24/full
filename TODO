@@ -44,6 +44,7 @@ Todo:
         Notes:
           ☐ I want to show as many UI widgets as possible already in the first page
           ☐ I want the pages to look designed and *app-like* as much as possible
+     
         Center selection:
           ☐ Make 'center' a google location box with:
             ☐ https://github.com/hibiken/react-places-autocomplete#readme 
@@ -56,8 +57,7 @@ Todo:
           ☐ Try using flags if svg and doesn't hit performance
         Live rates:
           ☐ Show interbank live rate as soon as currency pair is selected
-        If time permits:
-          ☐ Separate adornments from fields (2 issues mentioned at the end of formUtilities)
+        Other:
           ✘ Consider adding help (?) pages - only if it improves things @cancelled(19-02-07 15:36)
     Search:
       GraphQL Server:
@@ -68,6 +68,11 @@ Todo:
         ☐ Update the GraphQL client gql query to address the form's content
         ☐ Create the live, subscription-based rate client-side query 
         ☐ Update the crypto subscription query (client)
+      State maintenance:
+        ☐ Use Redux to store the received merchants
+        ☐ Use Immer in the Redux Reducers  
+        ☐ https://github.com/mweststrate/immer#reducer-example 
+        ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
     List:
       Merchants list:
         ☐ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters

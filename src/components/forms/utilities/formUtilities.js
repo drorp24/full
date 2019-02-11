@@ -1,6 +1,6 @@
 import React, { Suspense, useState } from 'react'
 import PropTypes from 'prop-types'
-import merge from 'lodash.merge'
+import { produce } from 'immer'
 
 import { makeStyles } from '@material-ui/styles'
 import { FormHelperText } from '@material-ui/core'
@@ -119,8 +119,6 @@ const EveryField = ({ name }) => (
         field => field.name === name
       )[0]
 
-      console.log('EveryField. name, state:', name)
-
       const { type, fieldSchema, required, options, helper, icon } = field
 
       const {
@@ -178,7 +176,6 @@ const MemoField = React.memo(EveryField)
 // Customization starts here
 
 const DisplayField = ({ type, ...rest }) => {
-  console.log('DisplayField, type, rest:', type, rest)
   const display = {
     phone: PhoneField,
     switch: SwitchField,
@@ -326,19 +323,19 @@ const handleEveryChange = ({
   type,
   fieldSchema,
   value,
-  state,
   setState,
   schema,
 }) => {
   const error = checkByType({ name, type, fieldSchema, value, schema })
 
-  const changeToMerge = {
-    values: { [name]: value },
-    touched: { [name]: true },
-    errors: { [name]: error },
-  }
-
-  setState(merge(state, changeToMerge))
+  setState(
+    produce(draft => {
+      const { values, touched, errors } = draft
+      values[name] = value
+      touched[name] = true
+      errors[name] = error
+    })
+  )
 }
 
 export const checkByType = ({ name, type, fieldSchema, value, schema }) => {
