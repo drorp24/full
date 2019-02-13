@@ -46,7 +46,7 @@ export const getPositionAndAddress = async setState => {
   } catch (error) {
     setState(
       produce(draft => {
-        draft.geolocation.error = error.toString()
+        draft.geolocation = { error: error.toString() }
       })
     )
   }

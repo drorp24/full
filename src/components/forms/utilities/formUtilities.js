@@ -18,6 +18,7 @@ import 'react-phone-number-input/style.css'
 import NumberFormat from 'react-number-format'
 import { TimePicker, MuiPickersUtilsProvider } from 'material-ui-pickers'
 import DateFnsUtils from '@date-io/date-fns'
+import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
 import { Box, MyTypography } from '../../themed/Box'
 import Page from '../../themed/Page'
@@ -43,14 +44,22 @@ export const useFormState = structure => {
   return useState(state)
 }
 
-export const createSchema = structure => {
+export const createSchema = async (structure, setSchema) => {
   const shape = {}
 
-  getFields(structure).forEach(({ name, fieldSchema }) => {
+  getFields(structure).forEach(async ({ name, fieldSchema, fetchList }) => {
     shape[name] = fieldSchema
+    if (fetchList) {
+      // I assume fetchList is always a function
+      const list = await fetchList()
+      const permittedValues = list.map(item => item.display)
+      shape[name] = fieldSchema.oneOf(
+        permittedValues,
+        "We don't know this coin, sorry!"
+      )
+    }
+    setSchema(object(shape))
   })
-
-  return object(shape)
 }
 
 const FormContext = React.createContext()
@@ -128,6 +137,7 @@ const EveryField = ({ name }) => (
         helper,
         options,
         icon,
+        fetchList,
       } = field
 
       const {
@@ -170,6 +180,7 @@ const EveryField = ({ name }) => (
           helper={helper}
           fullWidth
           state={state}
+          fetchList={fetchList}
         >
           {fieldOptions &&
             fieldOptions.map(option => (
@@ -195,11 +206,23 @@ const DisplayField = ({ type, ...rest }) => {
     switch: SwitchField,
     number: NumberField,
     time: TimeField,
+    autosuggest: AutosuggestField,
     default: DefaultField,
   }
 
   const Display = display[type]
   return <Display {...rest} />
+}
+
+DisplayField.propTypes = {
+  type: PropTypes.oneOf([
+    'phone',
+    'switch',
+    'number',
+    'time',
+    'autosuggest',
+    'default',
+  ]),
 }
 
 // Using the classNames approach, as prop adaptation doesn't work here
@@ -242,7 +265,7 @@ const SwitchField = ({ name, value, helper, onChange }) => (
   </Grid>
 )
 
-const NumberField = ({ icon, state, value, onChange, ...rest }) => {
+const NumberField = ({ icon, state, value, onChange, fetchList, ...rest }) => {
   const classes = useFormStyles()
 
   return (
@@ -293,7 +316,41 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
     </FormControl>
   )
 }
-const DefaultField = ({ value, icon, children, state, ...rest }) => {
+
+const AutosuggestField = ({
+  icon,
+  value,
+  state,
+  onChange,
+  fetchList,
+  fullWidth,
+  ...rest
+}) => {
+  const classes = useFormStyles()
+
+  return (
+    <TextField
+      InputProps={{
+        startAdornment:
+          showAdornment(icon, value) && IconAdornment({ icon, state }),
+        className: classes.input,
+        inputComponent: MuiAutosuggest,
+        inputProps: {
+          value,
+          onChange,
+          fetchList,
+        },
+        // see NumberFormat
+        onChange: () => {},
+      }}
+      value={value}
+      fullWidth={fullWidth}
+      {...rest}
+    />
+  )
+}
+
+const DefaultField = ({ value, icon, children, state, fetchList, ...rest }) => {
   const classes = useFormStyles()
 
   return (
@@ -397,6 +454,8 @@ const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
     case 'number':
       return ({ value }) => handleChange({ name, value })
     case 'time':
+      return value => handleChange({ name, value })
+    case 'autosuggest':
       return value => handleChange({ name, value })
     default:
       return ({ target: { name, value } }) => handleChange({ name, value })

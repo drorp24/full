@@ -1,64 +1,114 @@
 
 Todo:
-  Now:
-    Styling:
-    Forms: 
-      Formik:
-        ✔ Learn `Formik` @done(19-01-15 13:57)
-        ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
-        ✔ Decide whether to use it or stick with home-made forms @done(19-01-15 13:58)
-        ✔ Document my decision in the proper note @done(19-01-15 13:59)
+  Practice:
+    Fetching:
+      Assets:
+        ☐ Amazon CloudFront
+      External Data: 
+        REST API:
+        ✔ CryptoCompare, Google places @done(19-02-12 16:48)
+        Websockets:
+        ✔ GDAX @done(19-02-12 17:30)
+      Internal Data:
+        stores:
+          ✔ MongoDB @done(19-02-12 15:57)
+          ✔ mongoose @done(19-02-12 15:58)
+          ✔ mLab DaaS @done(19-02-12 17:13)
+        GraphQL API:
+          ✔ Apollo Server 2, Apollo Client @done(19-02-12 17:27)
+          ✔ Subscriptions @done(19-02-12 15:49)
+          ☐ defer (server)
+          ☐ caching (client)
+          ☐ endless scrolling
+      Code:
+        ✔ Server-Side Rendering of components, styles, state and data @done(19-02-12 15:45)
+        ✔ Code splitting, exluded/included in initial render @done(19-02-12 15:45)
+        ✔ Web workers, caching (PWA) @done(19-02-12 16:05)
+        ☐ Dynamic import(), React.lazy, react-loadable
+        ☐ Preloading (fetching server data of unmounted yet components ahead of time)
+     UI:
+      State:
+        ✔ Classes @done(19-02-12 17:08)
+        ✔ Redux @done(19-02-12 15:53)
+        ✔ Hooks @done(19-02-12 16:00)
+        ✔ Immer @done(19-02-12 15:54)
+      Forms:
+        ✔ Formik @done(19-02-12 16:36)
+        ✔ My own @done(19-02-12 16:36)
+        ✔ Multi-step forms, wizards @done(19-02-12 16:37)
+        ✔ Yup @done(19-02-12 16:38)
+        ✔ External packages: phone number, pickers, autosuggest, Google places autocomplete @done(19-02-12 16:39)
+      Styling:
+        ✔ styled-components, JSS @done(19-02-12 15:56)
+        ✔ Material Design concepts, MUI @done(19-02-12 15:56)
+        ✔ hooks-based, theme-aware @done(19-02-12 16:23)
+        ✔ state-aware styling @done(19-02-12 16:23)
+        ✔ injecting custom properties, variants ('styled-system') @done(19-02-12 16:28)
+      Static typing:
+        ☐ Typescript
+      Testing:
+      ☐ ???
+    Deployment:
+      ✔ Heroku @done(19-02-12 15:58)
+    Serverless:
+      ☐ TBD
+  Prove:
+    Scores:
+    ☐ Lighthouse score
+    ☐ PWA check score
+  Do:
+    Onboarding: 
+      Purpose:
+        ☐ Confirm to self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
+      Forms infrastrcture: 
+        Formik:
+          ✔ Learn `Formik` @done(19-01-15 13:57)
+          ✔ Learn its integration with MUI [There's none] @done(19-01-15 13:58)
+          ✔ Decide whether to use it or stick with home-made forms @done(19-01-15 13:58)
+          ✔ Document my decision in the proper note @done(19-01-15 13:59)
         HomeMade:
-        ✔ Keep the home-made version (Yup.js), don't override it with Formik @done(19-01-20 20:38)
-    Onboarding, self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
-      ✔ Check Formik before doing any of the following @done(19-01-15 13:57)
-      ✔ Commit a working form @done(19-01-15 14:14)
-      ✘ Replace the link/button duplicate with one single <Link /> component (released today!) @cancelled(19-01-15 14:19)
-      ✔ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) @done(19-01-15 18:18)
-      ✔ Let the mobile stepper button be the link @done(19-01-15 18:18)
-      ✔ Make a vertical stepper @started(19-01-15 18:19) @done(19-01-15 20:19) @lasted(2h40s)
-      ✔ Formikate VerticalStepper.js (in a separate file!) @started(19-01-16 12:43) @done(19-01-17 16:00) @lasted(1d3h17m40s)
-      ✔ concentrate all state handling to a custom hook that's outside of the SearchForm. @done(19-01-17 16:15)
-      ✔ Consolidate ProductForm and ServiceForm into one Form whose fields are generated according to 'steps' @done(19-01-20 20:37)
-      ✔ Make HoC for injecting state, steps and schema into the generic form utility functions @done(19-01-20 20:37)
-      ✘ Extract the state hook into its own separate custom hook @cancelled(19-01-20 20:37)
-      ✔ Replace wrapping div with new <Box /> and try to doing w/o makeStyle/useStyles @done(19-01-21 15:02)
-      ✔ Solve the red Email issue @done(19-01-27 17:13)
-      ✔ Add the atomic MUI component responsible for underline and check it receives status @done(19-01-28 20:56)
-      ✔ Move visitUntouched to formUtilities @done(19-01-29 18:14)
-      ✔ Make the delivery checkbox a switch @done(19-01-30 14:50)
-      ✔ Change the switch helperText color and add a line iff switch is on @done(19-01-30 19:32)
-      ✔ Prefix every field with an icon @done(19-02-02 23:33)
-      ✔ Make the title & subtitle fonts proportionate to the container @done(19-02-03 12:56)
-      ✔ Create a time picker @done(19-02-04 00:50)
-      ✔ Apply MD style to the forms' fields by using MUI components for the form @done(19-01-30 19:32)
-      ✔ Validate the next two pages @done(19-02-02 23:33)
-      ✔ Learn MUI Grid @done(19-01-30 19:32)
-      ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
-      ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
-      Select Form:
-        ✔ Move delivery switch to 1st page @done(19-02-05 00:11)
-        ✔ Discard 2nd page. Wrap it in some component and save it for later stages (order) @done(19-02-06 00:39)
-        ✔ Generated part 2: insert the populateFormState logic into useFormState, no useEffect may be needed! @done(19-02-06 14:59)
-        ✔ Consider generifying the DotsMobileStepper to handle both multi-step and single-step forms. @done(19-02-06 16:11)
-        Notes:
-          ☐ I want to show as many UI widgets as possible already in the first page
-          ☐ I want the pages to look designed and *app-like* as much as possible
-     
-        Center selection:
-          ☐ Make 'center' a google location box with:
-            ☐ https://github.com/hibiken/react-places-autocomplete#readme 
-          ☐ Add a 'look around' switch to first page, that once set, populates center with user's address
-        Currency selection:
-          ☐ Make currency selection autocompletable using:
-            ☐ https://material-ui.com/demos/autocomplete/#react-autosuggest
-            ☐ https://github.com/moroshko/react-autosuggest 
-          ☐ Use a long (preferrably: all) list of coins
-          ☐ Try using flags if svg and doesn't hit performance
-        Live rates:
-          ☐ Show interbank live rate as soon as currency pair is selected
-        Other:
-          ✘ Consider adding help (?) pages - only if it improves things @cancelled(19-02-07 15:36)
+          ✔ Keep the home-made version (Yup.js), don't override it with Formik @done(19-01-20 20:38)
+          ✔ Check Formik before doing any of the following @done(19-01-15 13:57)
+          ✔ Commit a working form @done(19-01-15 14:14)
+          ✘ Replace the link/button duplicate with one single <Link /> component (released today!) @cancelled(19-01-15 14:19)
+          ✔ Add a mobile stepper bar (https://material-ui.com/demos/steppers/#mobile-stepper-progress) @done(19-01-15 18:18)
+          ✔ Let the mobile stepper button be the link @done(19-01-15 18:18)
+          ✔ Make a vertical stepper @started(19-01-15 18:19) @done(19-01-15 20:19) @lasted(2h40s)
+          ✔ Formikate VerticalStepper.js (in a separate file!) @started(19-01-16 12:43) @done(19-01-17 16:00) @lasted(1d3h17m40s)
+          ✔ concentrate all state handling to a custom hook that's outside of the SearchForm. @done(19-01-17 16:15)
+          ✔ Consolidate ProductForm and ServiceForm into one Form whose fields are generated according to 'steps' @done(19-01-20 20:37)
+          ✔ Make HoC for injecting state, steps and schema into the generic form utility functions @done(19-01-20 20:37)
+          ✘ Extract the state hook into its own separate custom hook @cancelled(19-01-20 20:37)
+          ✔ Replace wrapping div with new <Box /> and try to doing w/o makeStyle/useStyles @done(19-01-21 15:02)
+          ✔ Solve the red Email issue @done(19-01-27 17:13)
+          ✔ Add the atomic MUI component responsible for underline and check it receives status @done(19-01-28 20:56)
+          ✔ Move visitUntouched to formUtilities @done(19-01-29 18:14)
+          ✔ Make the delivery checkbox a switch @done(19-01-30 14:50)
+          ✔ Change the switch helperText color and add a line iff switch is on @done(19-01-30 19:32)
+          ✔ Prefix every field with an icon @done(19-02-02 23:33)
+          ✔ Make the title & subtitle fonts proportionate to the container @done(19-02-03 12:56)
+          ✔ Create a time picker @done(19-02-04 00:50)
+          ✔ Apply MD style to the forms' fields by using MUI components for the form @done(19-01-30 19:32)
+          ✔ Validate the next two pages @done(19-02-02 23:33)
+          ✔ Learn MUI Grid @done(19-01-30 19:32)
+          ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
+          ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
+      Center selection:
+        ☐ Make 'center' a google location box with:
+          ☐ https://github.com/hibiken/react-places-autocomplete#readme 
+        ☐ Add a 'look around' switch to first page, that once set, populates center with user's address
+      Currency selection:
+        ✔ Make currency selection autocompletable using: @done(19-02-13 11:37)
+          ✔ https://material-ui.com/demos/autocomplete/#react-autosuggest @done(19-02-13 11:37)
+          ✔ https://github.com/moroshko/react-autosuggest @done(19-02-13 11:37)
+        ✔ Use a long (preferrably: all) list of coins @done(19-02-13 11:37)
+        ✔ Add descriptions, perhaps more values (I read them anyway!) so user can key-in the description and have the value selected @done(19-02-13 17:15)
+        ✔ Update state @done(19-02-13 17:15)
+        ✔ Conform to theme (populated value should be blue) @done(19-02-13 23:10)
+        ☐ Fetch a long list of fiat currencies
+        ✔ Try using flags if svg and doesn't hit performance @done(19-02-13 17:18)
+      Live rates:
+        ☐ Show interbank live rate as soon as currency pair is selected
     Search:
       GraphQL Server:
         ☐ Update the GraphQL resolver  / mongoose query to address the form's content
@@ -98,9 +148,9 @@ Todo:
       ☐ Make a live ws-based crypto graph for 3 crypto currencies
     Menu:
       ☐ Consider creating a left-drawer menu
-  Later:
+  Delay:
     https:
-      ☐ Support httpsß
+      ☐ Support https
     Server-side rendering:
         Styles:
           ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)

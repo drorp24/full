@@ -1,37 +1,36 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { string, number } from 'yup'
 import { useFormState, createSchema } from '../forms/utilities/formUtilities'
 import FormContainer from '../forms/utilities/FormContainer'
 import {
   getCurrencySymbol,
-  getCurrencyOptions,
   payCurrencyOptions,
+  cryptoCurrencies,
 } from '../../queries/currencies'
 import { getPositionAndAddress, address } from '../utility/geolocation'
 
 const structure = [
   {
-    title: 'Looking for currency?',
-    subtitle: 'Specify your requirement and \n get the best offers around',
+    title: 'Looking for crypto?',
+    subtitle: "Select the coin you're after \n and  get the best offers around",
     fields: [
-      {
-        name: 'getCurrency',
-        type: 'default',
-        fieldSchema: string().required(),
-        required: true,
-        options: getCurrencyOptions,
-        label: 'What currency are you buying',
-        helper: "The currency I'm buying",
-      },
       {
         name: 'payCurrency',
         type: 'default',
         fieldSchema: string().required(),
-        value: 'ILS',
         required: true,
         options: payCurrencyOptions,
         label: 'What currency you are paying with',
         helper: "The currency I'm paying with",
+      },
+      {
+        name: 'getCurrency',
+        type: 'autosuggest',
+        fetchList: cryptoCurrencies,
+        fieldSchema: string().required('Please specify'),
+        required: true,
+        label: 'What coin are you looking for',
+        helper: "The currency I'm buying",
       },
       {
         name: 'center',
@@ -74,11 +73,13 @@ const structure = [
 
 const Select = () => {
   const [state, setState] = useFormState(structure)
-  const schema = createSchema(structure)
+  const [schema, setSchema] = useState({})
   window.state = state
+  window.schema = schema
 
   useEffect(() => {
     getPositionAndAddress(setState)
+    createSchema(structure, setSchema)
   }, [])
 
   const show = {
