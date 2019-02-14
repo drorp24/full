@@ -3,11 +3,7 @@
 import React from 'react'
 import { string, number } from 'yup'
 import FormContainer from '../utilities/FormContainer'
-import {
-  currencySymbol,
-  getCurrencyOptions,
-  payCurrencyOptions,
-} from '../../../queries/currencies'
+import { currencySymbol, getCurrencyOptions } from '../../../queries/currencies'
 import { useFormState, createSchema } from '../utilities/formUtilities'
 
 const structure = [

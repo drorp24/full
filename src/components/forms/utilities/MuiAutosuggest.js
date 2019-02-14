@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import deburr from 'lodash/deburr'
 import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
@@ -12,15 +11,6 @@ import { makeStyles } from '@material-ui/styles'
 import { produce } from 'immer'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
-
-const loadEntireList = async ({ fetchList, setState }) => {
-  const entireList = await fetchList()
-  setState(
-    produce(draft => {
-      draft.entireList = entireList
-    })
-  )
-}
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps
@@ -164,27 +154,22 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const MuiAutosuggest = ({ fetchList, label, quantity = 5, onChange }) => {
+const MuiAutosuggest = ({ entireList, label, quantity = 5, onChange }) => {
   const [state, setState] = useState({
     single: '',
     suggestions: [],
     entireList: [],
   })
 
-  useEffect(() => {
-    loadEntireList({ fetchList, setState })
-  }, [])
-
   const classes = useStyles()
 
   function getSuggestions(value) {
     const inputValue = deburr(value.trim()).toLowerCase()
     const inputLength = inputValue.length
-    const entireList = state.entireList
 
     let count = 0
 
-    return inputLength === 0
+    return inputLength === 0 || !entireList
       ? []
       : entireList.filter(suggestion => {
           const keep =
@@ -261,8 +246,6 @@ const MuiAutosuggest = ({ fetchList, label, quantity = 5, onChange }) => {
   )
 }
 
-MuiAutosuggest.propTypes = {
-  fetchList: PropTypes.func.isRequired,
-}
+MuiAutosuggest.propTypes = {}
 
 export default React.memo(MuiAutosuggest)

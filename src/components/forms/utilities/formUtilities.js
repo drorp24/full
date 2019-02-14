@@ -25,7 +25,11 @@ import Page from '../../themed/Page'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
+import { getList, setList } from './lists'
 
+//
+// A. Utility functions to create/modify state, lists and schema
+//
 export const useFormState = structure => {
   const state = { values: {}, touched: {}, errors: {} }
   const { values, touched, errors } = state
@@ -44,15 +48,23 @@ export const useFormState = structure => {
   return useState(state)
 }
 
-export const createSchema = async (structure, setSchema) => {
+export const setLists = (structure, setState) => {
+  console.log('setLists called')
+  getFields(structure)
+    .filter(field => !!field.list)
+    .forEach(({ list }) => {
+      setList({ list, setState })
+    })
+}
+
+export const createSchema = (structure, state, setSchema) => {
   const shape = {}
 
-  getFields(structure).forEach(async ({ name, fieldSchema, fetchList }) => {
+  getFields(structure).forEach(({ name, fieldSchema, list }) => {
     shape[name] = fieldSchema
-    if (fetchList) {
-      // I assume fetchList is always a function
-      const list = await fetchList()
-      const permittedValues = list.map(item => item.display)
+    const fetchedList = getList({ list, state })
+    if (fetchedList) {
+      const permittedValues = fetchedList.map(item => item.display)
       shape[name] = fieldSchema.oneOf(
         permittedValues,
         "We don't know this coin, sorry!"
@@ -62,9 +74,13 @@ export const createSchema = async (structure, setSchema) => {
   })
 }
 
+//
+// B. Form and sons: components & styling
+//
 const FormContext = React.createContext()
 
 // TODO: Form is called for every keystroke (regardless of field)
+// most probably because it gets state as a prop rather than creating its own
 // EveryField stopped doing that as soon as it was memoized, but that didn't help Form
 export const Form = ({
   state,
@@ -112,7 +128,7 @@ Form.propTypes = {
   footer: PropTypes.func,
 }
 
-// This component is not exposed; Form has everything it needs to know in structure and schema props
+// No Field component is ever exposed; Form gets everything it needs thru props like structure, schema and state
 // Logic that pertains to all fields should be here, not in the display components
 //
 // There are currently 6 display components, 2 of MUI's and 4 external.
@@ -121,6 +137,8 @@ Form.propTypes = {
 // - defining a new 'type', a dislpay component (<xField />) and an entry for it in DisplayField
 // - mapping its onChange signature to generic onChange in onChangeFor
 // - if custom validation check is required for that type then checkByType should be updated too
+// Unless memoized, EveryField gets rendered 3 unnecessary times for each keystroke
+
 const EveryField = ({ name }) => (
   <FormContext.Consumer>
     {({ state, setState, schema, structure, step, show }) => {
@@ -137,7 +155,7 @@ const EveryField = ({ name }) => (
         helper,
         options,
         icon,
-        fetchList,
+        list,
       } = field
 
       const {
@@ -180,7 +198,7 @@ const EveryField = ({ name }) => (
           helper={helper}
           fullWidth
           state={state}
-          fetchList={fetchList}
+          list={list}
         >
           {fieldOptions &&
             fieldOptions.map(option => (
@@ -194,7 +212,6 @@ const EveryField = ({ name }) => (
   </FormContext.Consumer>
 )
 
-// Unless memoized, EveryField gets rendered 3 unnecessary times for each keystroke
 const MemoField = React.memo(EveryField)
 
 // Up until this point, everything is generic and shouldn't change much
@@ -265,7 +282,7 @@ const SwitchField = ({ name, value, helper, onChange }) => (
   </Grid>
 )
 
-const NumberField = ({ icon, state, value, onChange, fetchList, ...rest }) => {
+const NumberField = ({ icon, state, value, onChange, ...rest }) => {
   const classes = useFormStyles()
 
   return (
@@ -322,11 +339,12 @@ const AutosuggestField = ({
   value,
   state,
   onChange,
-  fetchList,
   fullWidth,
+  list,
   ...rest
 }) => {
   const classes = useFormStyles()
+  const entireList = getList({ list, state })
 
   return (
     <TextField
@@ -338,7 +356,7 @@ const AutosuggestField = ({
         inputProps: {
           value,
           onChange,
-          fetchList,
+          entireList,
         },
         // see NumberFormat
         onChange: () => {},
@@ -350,7 +368,7 @@ const AutosuggestField = ({
   )
 }
 
-const DefaultField = ({ value, icon, children, state, fetchList, ...rest }) => {
+const DefaultField = ({ value, icon, children, state, ...rest }) => {
   const classes = useFormStyles()
 
   return (
@@ -389,6 +407,31 @@ const IconAdornment = ({ icon, state }) => {
   )
 }
 
+// External libraries that enable customizing their inner components do it with props like 'InputProps'
+// Hence for customization, MUI's classic styling below will yield the 'className'/'classes' to be passed to such props.
+// When all components are mine, on the other hand, it is better to use the newer prop-based method
+// as it enables the components' props to directly refer to theme values w/o the need to write makeStyles.
+const useFormStyles = makeStyles(theme => ({
+  input: {
+    color: theme.palette.primary.main,
+  },
+}))
+
+const usePhoneStyles = makeStyles(theme => ({
+  root: {
+    background: 'inherit',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
+    color: theme.palette.primary.main,
+  },
+  error: {
+    borderBottomColor: `${theme.palette.error.main} !important`,
+  },
+}))
+
+//
+// C. OnChange functions and validation
+//
+
 const handleEveryChange = ({
   name,
   type,
@@ -420,7 +463,7 @@ const phoneCheck = ({ name, value }) =>
     ? false
     : `Please enter a valid ${name} number`
 
-// Yup's async check created problems, and wans't required anyway
+// Yup's async check created problems, and wasn't required anyway
 const yupCheck = ({ name, value, schema }) => {
   try {
     schema.validateSyncAt(name, {
@@ -432,8 +475,8 @@ const yupCheck = ({ name, value, schema }) => {
   }
 }
 
-// return an onChange function whose signature matches the onChange func the type of component uses
-// that returns one single function that deals with every change regardless of type
+// return an onChange function whose signature matches the one used by the component type
+// that returns a single funified unction to deal with any change regardless of type
 const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
   const handleChange = ({ name, value }) =>
     handleEveryChange({
@@ -462,25 +505,6 @@ const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
   }
 }
 
-// Using MUI classic styling method rather than the newer, prop way
-// as these styles are passed to a deep component in some xClassName customization param
-const useFormStyles = makeStyles(theme => ({
-  input: {
-    color: theme.palette.primary.main,
-  },
-}))
-
-const usePhoneStyles = makeStyles(theme => ({
-  root: {
-    background: 'inherit',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
-    color: theme.palette.primary.main,
-  },
-  error: {
-    borderBottomColor: `${theme.palette.error.main} !important`,
-  },
-}))
-
 export const multiStepFormValidGeneric = (steps, step, state) => {
   const result =
     Object.entries(state.errors).filter(
@@ -491,7 +515,7 @@ export const multiStepFormValidGeneric = (steps, step, state) => {
 }
 
 // Not required if user is forced to populate all fields to have the next/submit button enabled
-// Demonstrates the power of destructuring
+// Destructuring at its best
 export const visitUntouched = ({
   state,
   setState,

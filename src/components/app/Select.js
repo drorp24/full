@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { string, number } from 'yup'
-import { useFormState, createSchema } from '../forms/utilities/formUtilities'
-import FormContainer from '../forms/utilities/FormContainer'
 import {
-  getCurrencySymbol,
-  payCurrencyOptions,
-  cryptoCurrencies,
-} from '../../queries/currencies'
+  useFormState,
+  createSchema,
+  setLists,
+} from '../forms/utilities/formUtilities'
+import FormContainer from '../forms/utilities/FormContainer'
+import { getCurrencySymbol, payCurrencyOptions } from '../../queries/currencies'
 import { getPositionAndAddress, address } from '../utility/geolocation'
+import { getCoins } from '../forms/utilities/lists'
 
 const structure = [
   {
@@ -26,7 +27,8 @@ const structure = [
       {
         name: 'getCurrency',
         type: 'autosuggest',
-        fetchList: cryptoCurrencies,
+        list: 'coins',
+        fetchList: getCoins,
         fieldSchema: string().required('Please specify'),
         required: true,
         label: 'What coin are you looking for',
@@ -74,13 +76,29 @@ const structure = [
 const Select = () => {
   const [state, setState] = useFormState(structure)
   const [schema, setSchema] = useState({})
+
   window.state = state
+  window.setState = setState // setState in Chrome and see if the proper useEffect is called!
   window.schema = schema
 
   useEffect(() => {
+    console.log('useEffect getPosition/SetLists called')
     getPositionAndAddress(setState)
-    createSchema(structure, setSchema)
+    // setLists should be re-called whenever either get- or payCurrency changes
+    // but writing [state.values.payCurrency, ...get...] will make it get called every keystroke
+    // so instead of using the useEffect [] mechanism I manually trigger it upon field blurring
+    setLists(structure, setState)
   }, [])
+
+  useEffect(() => {
+    // state.coin on the other hand is changed at once
+    // I should setState in chrome and see if it triggers this useEffect
+    console.log(
+      'useEffect createSchema called. state.coins.length at that point:',
+      state.coins && state.coins.length
+    )
+    createSchema(structure, state, setSchema)
+  }, [state.coins])
 
   const show = {
     helper: false,
