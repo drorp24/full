@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/styles'
 import { produce } from 'immer'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
+import 'currency-flags/dist/currency-flags.min.css'
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps
@@ -28,13 +29,12 @@ function renderInputComponent(inputProps) {
         },
       }}
       {...other}
-      style={{ color: 'currentColor' }}
     />
   )
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const { name, display, imageUrl, detail } = suggestion
+  const { name, display, imageUrl, inlineImg, detail } = suggestion
   const nameMatches = match(name, query)
   const nameParts = parse(name, nameMatches)
   const displayMatches = match(display, query)
@@ -68,18 +68,21 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
                     justify="center"
                     alignItems="center"
                   >
-                    <LazyLoadImage
-                      effect="black-and-white"
-                      alt={display}
-                      height="30"
-                      src={imageUrl}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justify: 'center',
-                        alignItems: 'center',
-                      }}
-                    />
+                    {imageUrl && (
+                      <LazyLoadImage
+                        effect="black-and-white"
+                        alt={display}
+                        height="30"
+                        src={imageUrl}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justify: 'center',
+                          alignItems: 'center',
+                        }}
+                      />
+                    )}
+                    {inlineImg && <div className={inlineImg} />}
                   </Grid>
                 </Grid>
                 <Grid item style={{ marginLeft: '0.75em' }}>
@@ -125,7 +128,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
 }
 
 function getSuggestionValue(suggestion) {
-  return suggestion.display
+  return suggestion.name
 }
 
 const useStyles = makeStyles(theme => ({
@@ -154,7 +157,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const MuiAutosuggest = ({ entireList, label, quantity = 5, onChange }) => {
+const MuiAutosuggest = ({
+  entireList,
+  label,
+  quantity = 5,
+  onChange,
+  onBlur,
+}) => {
   const [state, setState] = useState({
     single: '',
     suggestions: [],
@@ -230,6 +239,7 @@ const MuiAutosuggest = ({ entireList, label, quantity = 5, onChange }) => {
         label,
         value: state.single,
         onChange: handleChange('single'),
+        onBlur,
       }}
       theme={{
         container: classes.container,

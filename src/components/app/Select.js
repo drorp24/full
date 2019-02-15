@@ -8,7 +8,7 @@ import {
 import FormContainer from '../forms/utilities/FormContainer'
 import { getCurrencySymbol, payCurrencyOptions } from '../../queries/currencies'
 import { getPositionAndAddress, address } from '../utility/geolocation'
-import { getCoins } from '../forms/utilities/lists'
+import { mark } from '../utility/performance'
 
 const structure = [
   {
@@ -17,10 +17,11 @@ const structure = [
     fields: [
       {
         name: 'payCurrency',
-        type: 'default',
+        type: 'autosuggest',
+        list: 'currencies',
+        update: 'coins',
         fieldSchema: string().required(),
         required: true,
-        options: payCurrencyOptions,
         label: 'What currency you are paying with',
         helper: "The currency I'm paying with",
       },
@@ -28,7 +29,7 @@ const structure = [
         name: 'getCurrency',
         type: 'autosuggest',
         list: 'coins',
-        fetchList: getCoins,
+        update: 'coins',
         fieldSchema: string().required('Please specify'),
         required: true,
         label: 'What coin are you looking for',
@@ -82,21 +83,18 @@ const Select = () => {
   window.schema = schema
 
   useEffect(() => {
-    console.log('useEffect getPosition/SetLists called')
     getPositionAndAddress(setState)
     // setLists should be re-called whenever either get- or payCurrency changes
-    // but writing [state.values.payCurrency, ...get...] will make it get called every keystroke
+    // but writing [state.values.payCurrency, ...get...] calls it for every keystroke
     // so instead of using the useEffect [] mechanism I manually trigger it upon field blurring
     setLists(structure, setState)
   }, [])
 
   useEffect(() => {
-    // state.coin on the other hand is changed at once
-    // I should setState in chrome and see if it triggers this useEffect
-    console.log(
-      'useEffect createSchema called. state.coins.length at that point:',
-      state.coins && state.coins.length
-    )
+    // This useEffect is automatically triggered as soon as coins are firstly populated (which is good)
+    // and also whenever coins list is modified (which is bad, as it's only the rates which would get modified)
+    // However writing [state.coins && state.coins.map(coin => coin.name) made it loop infinitley.
+    mark('state.coins useEffect called')
     createSchema(structure, state, setSchema)
   }, [state.coins])
 

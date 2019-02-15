@@ -26,6 +26,8 @@ import Next from './components/utility/Next'
 import Select from './components/app/Select'
 import Delivery from './components/app/Delivery'
 
+import { measure } from './components/utility/performance'
+window.measure = measure
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {

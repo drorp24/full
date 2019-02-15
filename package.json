@@ -20,6 +20,7 @@
     "axios": "^0.18.0",
     "chart.js": "^2.7.3",
     "concurrently": "^4.1.0",
+    "currency-flags": "https://github.com/transferwise/currency-flags.git",
     "date-fns": "2.0.0-alpha.25",
     "express": "^4.16.4",
     "flow-bin": "^0.85.0",

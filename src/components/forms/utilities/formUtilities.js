@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { produce } from 'immer'
 
@@ -26,6 +26,7 @@ import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
 import { getList, setList } from './lists'
+import { mark } from '../../utility/performance'
 
 //
 // A. Utility functions to create/modify state, lists and schema
@@ -64,10 +65,10 @@ export const createSchema = (structure, state, setSchema) => {
     shape[name] = fieldSchema
     const fetchedList = getList({ list, state })
     if (fetchedList) {
-      const permittedValues = fetchedList.map(item => item.display)
+      const permittedValues = fetchedList.map(item => item.name)
       shape[name] = fieldSchema.oneOf(
         permittedValues,
-        "We don't know this coin, sorry!"
+        'Start typing and select from the list'
       )
     }
     setSchema(object(shape))
@@ -140,6 +141,15 @@ Form.propTypes = {
 // Unless memoized, EveryField gets rendered 3 unnecessary times for each keystroke
 
 const EveryField = ({ name }) => (
+  // TODO: props passing
+  // 1. state and setState should be consumed by the interested components rather than getting passed by as props
+  // 2. Group unique field properties (e.g., list, update) i.e., any field that doesn't interest *all* types
+  //    into one uniqProps obj prop so it can be "gotten ridden of" (not passed onwards) as one property by the ubinterested components.
+  //    Currently, any such uninteresting prop should be *updated* in any type that passes all props downwards
+  //    so it can get rid of that and not pass it onwards (otherwise it leaks to the DOM, yielding an error).
+  // 3. Group the interest-all (e.g., name) props into one single obj too. That will enable using the JSX shorthand {...}
+  //    which like JS saves the need to write things like name={name}.
+
   <FormContext.Consumer>
     {({ state, setState, schema, structure, step, show }) => {
       //
@@ -156,6 +166,7 @@ const EveryField = ({ name }) => (
         options,
         icon,
         list,
+        update,
       } = field
 
       const {
@@ -183,6 +194,8 @@ const EveryField = ({ name }) => (
         schema,
       })
 
+      const uniqProps = { update }
+
       return (
         <DisplayField
           name={name}
@@ -199,6 +212,7 @@ const EveryField = ({ name }) => (
           fullWidth
           state={state}
           list={list}
+          uniqProps={uniqProps}
         >
           {fieldOptions &&
             fieldOptions.map(option => (
@@ -282,7 +296,7 @@ const SwitchField = ({ name, value, helper, onChange }) => (
   </Grid>
 )
 
-const NumberField = ({ icon, state, value, onChange, ...rest }) => {
+const NumberField = ({ icon, state, value, onChange, uniqProps, ...rest }) => {
   const classes = useFormStyles()
 
   return (
@@ -335,16 +349,29 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
 }
 
 const AutosuggestField = ({
+  name,
   icon,
   value,
-  state,
   onChange,
   fullWidth,
   list,
+  uniqProps: { update },
   ...rest
 }) => {
   const classes = useFormStyles()
+  const context = useContext(FormContext)
+  const { state, setState } = context
   const entireList = getList({ list, state })
+
+  const onBlur = (event, { highlightedSuggestion }) => {
+    if (!update) return
+    mark(name + ' blurred')
+    console.log(
+      'onBlur activated.  highlightedSuggestion:',
+      highlightedSuggestion
+    )
+    setList({ list: update, state, setState })
+  }
 
   return (
     <TextField
@@ -356,7 +383,9 @@ const AutosuggestField = ({
         inputProps: {
           value,
           onChange,
+          onBlur,
           entireList,
+          quantity: 9,
         },
         // see NumberFormat
         onChange: () => {},
@@ -368,7 +397,7 @@ const AutosuggestField = ({
   )
 }
 
-const DefaultField = ({ value, icon, children, state, ...rest }) => {
+const DefaultField = ({ value, icon, children, state, uniqProps, ...rest }) => {
   const classes = useFormStyles()
 
   return (
