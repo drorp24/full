@@ -48,6 +48,7 @@ function renderInputComponent({
   entireListObj,
   ...other
 }) {
+  console.log('>>  renderInputComponent. value: ', value)
   const EndAdornment = () => (
     <InputAdornment position="end">
       <>
@@ -83,6 +84,8 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   const nameParts = parse(name, nameMatches)
   const displayMatches = match(display, query)
   const displayParts = parse(display, displayMatches)
+
+  console.log('renderSuggestion. sugestion:', suggestion)
 
   const Parts = ({ parts }) => {
     return parts.map((part, index) =>
@@ -184,10 +187,15 @@ const useStyles = makeStyles(theme => ({
 
 const MuiAutosuggest = ({
   entireList,
+  passedSuggestions,
   label,
   quantity = 5,
-  onChange,
+  passedOnChange,
+  onChange, // TODO: Obvious
   onBlur,
+  passedInputProps = {},
+  passedOnSelect,
+  value,
 }) => {
   const [state, setState] = useState({
     single: '',
@@ -225,7 +233,9 @@ const MuiAutosuggest = ({
   const handleSuggestionsFetchRequested = ({ value }) => {
     setState(
       produce(draft => {
-        draft.suggestions = getSuggestions(value)
+        draft.suggestions = passedSuggestions
+          ? passedSuggestions
+          : getSuggestions(value)
       })
     )
   }
@@ -238,13 +248,43 @@ const MuiAutosuggest = ({
     )
   }
 
+  // TODO: Remove?? the single state is passed from parent
   const handleChange = name => (event, { newValue }) => {
     setState(
       produce(draft => {
         draft[name] = newValue
       })
     )
-    onChange(newValue)
+    if (onChange) onChange(newValue)
+  }
+
+  const onSuggestionHighlighted = props => {
+    if (!props || !props.suggestion) return
+    const {
+      suggestion: { name },
+    } = props
+    if (!name) return
+    console.log('>>>>>>>>>   onSuggestionHighlighted. suggestion.name:', name)
+    // setState(
+    //   produce(draft => {
+    //     draft.single = name
+    //   })
+    // )
+    if (passedOnChange) passedOnChange(name) // TODO: Obvious
+    // renderInputComponent({ value: name, classes })
+  }
+
+  // Never triggered; onSuggestionHighlighted cacthes clicks too
+  const onSuggestionSelected = props => {
+    if (!props || !props.suggestion) return
+    console.log(
+      '00000000000000000000000000000000   onSuggestionSelected. props:',
+      props
+    )
+    const {
+      suggestion: { name },
+    } = props
+    if (passedOnSelect) passedOnSelect({ address: name })
   }
 
   const autosuggestProps = {
@@ -254,33 +294,55 @@ const MuiAutosuggest = ({
     onSuggestionsClearRequested: handleSuggestionsClearRequested,
     getSuggestionValue,
     renderSuggestion,
+    onSuggestionHighlighted,
+    onSuggestionSelected,
+  }
+
+  // const value = state.single
+  // console.log('state.single: ', state.single)
+
+  const entireListObj =
+    entireList && entireList.length ? arrayToObject(entireList, 'name') : null
+
+  const inputProps = {
+    classes,
+    label,
+    value,
+    onChange: handleChange('single'),
+    onBlur,
+    entireListObj,
+    ...passedInputProps,
   }
 
   return (
     <Autosuggest
       {...autosuggestProps}
-      inputProps={{
-        classes,
-        label,
-        value: state.single,
-        onChange: handleChange('single'),
-        onBlur,
-        entireListObj:
-          entireList && entireList.length
-            ? arrayToObject(entireList, 'name')
-            : null,
-      }}
+      inputProps={inputProps}
       theme={{
         container: classes.container,
         suggestionsContainerOpen: classes.suggestionsContainerOpen,
         suggestionsList: classes.suggestionsList,
         suggestion: classes.suggestion,
       }}
-      renderSuggestionsContainer={options => (
-        <Paper {...options.containerProps} square style={{ width: '100%' }}>
-          {options.children}
-        </Paper>
-      )}
+      renderSuggestionsContainer={options => {
+        // console.log(
+        //   'options.children[0]: ',
+        //   options.children && options.children[0] && options.children[0]
+        // )
+        // console.log(
+        //   'options.children[1]: ',
+        //   options.children && options.children[1] && options.children[1]
+        // )
+        // console.log(
+        //   'options.children[2]: ',
+        //   options.children && options.children[2] && options.children[2]
+        // )
+        return (
+          <Paper {...options.containerProps} square style={{ width: '100%' }}>
+            {options.children}
+          </Paper>
+        )
+      }}
     />
   )
 }

@@ -388,7 +388,7 @@ const AutosuggestField = ({
         className: classes.input,
         inputComponent: MuiAutosuggest,
         inputProps: {
-          value,
+          // value,
           onChange,
           onBlur,
           entireList,

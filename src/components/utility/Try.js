@@ -1,5 +1,6 @@
 import React from 'react'
+import LocationSearchInput from '../forms/utilities/LocationSearchInput.1'
 
-const Try = () => <div>Hellow World</div>
+const Try = () => <LocationSearchInput />
 
 export default Try
