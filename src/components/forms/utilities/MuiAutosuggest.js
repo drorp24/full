@@ -12,9 +12,51 @@ import { produce } from 'immer'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import 'currency-flags/dist/currency-flags.min.css'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import { arrayToObject } from '../../utility/shortcuts'
 
-function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps
+const Flag = ({ imageUrl, inlineImg, display }) => (
+  <>
+    {imageUrl && (
+      <Grid container direction="column" justify="center" alignItems="center">
+        <LazyLoadImage
+          effect="black-and-white"
+          alt={display}
+          height="30"
+          src={imageUrl}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justify: 'center',
+            alignItems: 'center',
+            marginBottom: '7px',
+            width: '24px',
+            height: '24px',
+          }}
+        />
+      </Grid>
+    )}
+    {inlineImg && <div className={inlineImg} />}
+  </>
+)
+
+function renderInputComponent({
+  value,
+  classes,
+  inputRef = () => {},
+  ref,
+  entireListObj,
+  ...other
+}) {
+  const EndAdornment = () => (
+    <InputAdornment position="end">
+      <>
+        {value && entireListObj && entireListObj[value] && (
+          <Flag {...entireListObj[value]} />
+        )}
+      </>
+    </InputAdornment>
+  )
 
   return (
     <TextField
@@ -27,7 +69,9 @@ function renderInputComponent(inputProps) {
         classes: {
           input: classes.input,
         },
+        endAdornment: EndAdornment(),
       }}
+      value={value}
       {...other}
     />
   )
@@ -39,6 +83,21 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   const nameParts = parse(name, nameMatches)
   const displayMatches = match(display, query)
   const displayParts = parse(display, displayMatches)
+
+  const Parts = ({ parts }) => {
+    return parts.map((part, index) =>
+      part.highlight ? (
+        <span key={String(index)} style={{ fontWeight: 500 }}>
+          {part.text}
+        </span>
+      ) : (
+        <strong key={String(index)} style={{ fontWeight: 300 }}>
+          {part.text}
+        </strong>
+      )
+    )
+  }
+
   return (
     <MenuItem selected={isHighlighted} component="div">
       <Grid
@@ -68,35 +127,11 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
                     justify="center"
                     alignItems="center"
                   >
-                    {imageUrl && (
-                      <LazyLoadImage
-                        effect="black-and-white"
-                        alt={display}
-                        height="30"
-                        src={imageUrl}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justify: 'center',
-                          alignItems: 'center',
-                        }}
-                      />
-                    )}
-                    {inlineImg && <div className={inlineImg} />}
+                    <Flag {...{ imageUrl, inlineImg, display }} />
                   </Grid>
                 </Grid>
                 <Grid item style={{ marginLeft: '0.75em' }}>
-                  {displayParts.map((part, index) =>
-                    part.highlight ? (
-                      <span key={String(index)} style={{ fontWeight: 500 }}>
-                        {part.text}
-                      </span>
-                    ) : (
-                      <strong key={String(index)} style={{ fontWeight: 300 }}>
-                        {part.text}
-                      </strong>
-                    )
-                  )}
+                  <Parts parts={displayParts} />
                 </Grid>
               </Grid>
             </Grid>
@@ -110,17 +145,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
           </Grid>
         </Grid>
         <Grid item>
-          {nameParts.map((part, index) =>
-            part.highlight ? (
-              <span key={String(index)} style={{ fontWeight: 500 }}>
-                {part.text}
-              </span>
-            ) : (
-              <strong key={String(index)} style={{ fontWeight: 300 }}>
-                {part.text}
-              </strong>
-            )
-          )}
+          <Parts parts={nameParts} />
         </Grid>
       </Grid>
     </MenuItem>
@@ -240,6 +265,10 @@ const MuiAutosuggest = ({
         value: state.single,
         onChange: handleChange('single'),
         onBlur,
+        entireListObj:
+          entireList && entireList.length
+            ? arrayToObject(entireList, 'name')
+            : null,
       }}
       theme={{
         container: classes.container,

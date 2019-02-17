@@ -150,6 +150,7 @@ const EveryField = ({ name }) => (
   // 3. Group the interest-all (e.g., name) props into one single obj too. That will enable using the JSX shorthand {...}
   //    which like JS saves the need to write things like name={name}.
 
+  // I left this but next I'll use useContext hook as it's simpler
   <FormContext.Consumer>
     {({ state, setState, schema, structure, step, show }) => {
       //
@@ -196,30 +197,33 @@ const EveryField = ({ name }) => (
 
       const uniqProps = { update }
 
+      const Options = () =>
+        fieldOptions.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))
+
+      const displayFieldProps = {
+        name,
+        type,
+        icon,
+        label: fieldLabel,
+        value,
+        onChange,
+        required,
+        select: !!fieldOptions,
+        error,
+        helperText,
+        helper,
+        state,
+        list,
+        uniqProps,
+      }
+
       return (
-        <DisplayField
-          name={name}
-          type={type}
-          icon={icon}
-          label={fieldLabel}
-          value={value}
-          onChange={onChange}
-          required={required}
-          select={!!fieldOptions}
-          error={error}
-          helperText={helperText}
-          helper={helper}
-          fullWidth
-          state={state}
-          list={list}
-          uniqProps={uniqProps}
-        >
-          {fieldOptions &&
-            fieldOptions.map(option => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
+        <DisplayField {...displayFieldProps} fullWidth>
+          {fieldOptions && Options}
         </DisplayField>
       )
     }}
@@ -231,6 +235,9 @@ const MemoField = React.memo(EveryField)
 // Up until this point, everything is generic and shouldn't change much
 // Customization starts here
 
+// This is the way to include a dynamic Component whose name is derived from a prop (in this case, 'type')
+// There's no 'Display' Component per ce, it's just a cover for a host of other components
+// Dynamic component is for cases where different components all require the same props but each does differet things with these same props
 const DisplayField = ({ type, ...rest }) => {
   const display = {
     phone: PhoneField,
@@ -256,7 +263,7 @@ DisplayField.propTypes = {
   ]),
 }
 
-// Using the classNames approach, as prop adaptation doesn't work here
+// An example for using the classNames approach for customization (rather than props for instance)
 const PhoneField = ({
   error,
   fullWidth,

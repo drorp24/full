@@ -6,7 +6,6 @@ import {
   setLists,
 } from '../forms/utilities/formUtilities'
 import FormContainer from '../forms/utilities/FormContainer'
-import { getCurrencySymbol, payCurrencyOptions } from '../../queries/currencies'
 import { getPositionAndAddress, address } from '../utility/geolocation'
 import { mark } from '../utility/performance'
 
@@ -52,7 +51,7 @@ const structure = [
         required: true,
         label: 'How much do you need',
         helper: 'The amount I need',
-        icon: getCurrencySymbol,
+        // icon: getCurrencySymbol,
       },
       {
         name: 'delivery',

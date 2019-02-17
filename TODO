@@ -105,7 +105,7 @@ Todo:
         ✔ Add descriptions, perhaps more values (I read them anyway!) so user can key-in the description and have the value selected @done(19-02-13 17:15)
         ✔ Update state @done(19-02-13 17:15)
         ✔ Conform to theme (populated value should be blue) @done(19-02-13 23:10)
-        ☐ Fetch a long list of fiat currencies
+        ✔ Fetch a long list of fiat currencies @done(19-02-15 03:21)
         ✔ Try using flags if svg and doesn't hit performance @done(19-02-13 17:18)
       Live rates:
         ☐ Show interbank live rate as soon as currency pair is selected

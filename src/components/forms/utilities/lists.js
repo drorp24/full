@@ -3,7 +3,7 @@ import axios from 'axios'
 import { produce } from 'immer'
 import { mark } from '../../utility/performance'
 
-export const getCoins = async ({ currency = 'USD', limit = 30 } = {}) => {
+export const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
   const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${currency}&api_key=${
     process.env.REACT_APP_CRYPTOCOMPARE_API_KEY
   }`
@@ -23,7 +23,7 @@ export const getCoins = async ({ currency = 'USD', limit = 30 } = {}) => {
           value: coin.CoinInfo.Name,
           display: coin.CoinInfo.FullName,
           imageUrl: `http://www.cryptocompare.com${coin.CoinInfo.ImageUrl}`,
-          detail: coin.DISPLAY[currency].PRICE,
+          detail: coin.DISPLAY ? coin.DISPLAY[currency].PRICE : '',
         }))
       } else {
         console.warn('cryptocompare responded with only: ', response)
