@@ -188,13 +188,11 @@ const useStyles = makeStyles(theme => ({
 const MuiAutosuggest = ({
   entireList,
   passedSuggestions,
+  passedInputProps = {},
   label,
   quantity = 5,
-  passedOnChange,
-  onChange, // TODO: Obvious
+  onChange,
   onBlur,
-  passedInputProps = {},
-  passedOnSelect,
   value,
 }) => {
   const [state, setState] = useState({
@@ -248,43 +246,10 @@ const MuiAutosuggest = ({
     )
   }
 
-  // TODO: Remove?? the single state is passed from parent
-  const handleChange = name => (event, { newValue }) => {
-    setState(
-      produce(draft => {
-        draft[name] = newValue
-      })
-    )
-    if (onChange) onChange(newValue)
-  }
-
-  const onSuggestionHighlighted = props => {
-    if (!props || !props.suggestion) return
-    const {
-      suggestion: { name },
-    } = props
-    if (!name) return
-    console.log('>>>>>>>>>   onSuggestionHighlighted. suggestion.name:', name)
-    // setState(
-    //   produce(draft => {
-    //     draft.single = name
-    //   })
-    // )
-    if (passedOnChange) passedOnChange(name) // TODO: Obvious
-    // renderInputComponent({ value: name, classes })
-  }
-
-  // Never triggered; onSuggestionHighlighted cacthes clicks too
-  const onSuggestionSelected = props => {
-    if (!props || !props.suggestion) return
-    console.log(
-      '00000000000000000000000000000000   onSuggestionSelected. props:',
-      props
-    )
-    const {
-      suggestion: { name },
-    } = props
-    if (passedOnSelect) passedOnSelect({ address: name })
+  // Required in 'passedSuggestions' mode only. See note on LocationSearchInput
+  const onSuggestionHighlighted = ({ suggestion }) => {
+    if (passedSuggestions && suggestion && suggestion.name)
+      onChange(suggestion.name)
   }
 
   const autosuggestProps = {
@@ -295,11 +260,7 @@ const MuiAutosuggest = ({
     getSuggestionValue,
     renderSuggestion,
     onSuggestionHighlighted,
-    onSuggestionSelected,
   }
-
-  // const value = state.single
-  // console.log('state.single: ', state.single)
 
   const entireListObj =
     entireList && entireList.length ? arrayToObject(entireList, 'name') : null
@@ -308,7 +269,7 @@ const MuiAutosuggest = ({
     classes,
     label,
     value,
-    onChange: handleChange('single'),
+    onChange,
     onBlur,
     entireListObj,
     ...passedInputProps,
@@ -324,25 +285,11 @@ const MuiAutosuggest = ({
         suggestionsList: classes.suggestionsList,
         suggestion: classes.suggestion,
       }}
-      renderSuggestionsContainer={options => {
-        // console.log(
-        //   'options.children[0]: ',
-        //   options.children && options.children[0] && options.children[0]
-        // )
-        // console.log(
-        //   'options.children[1]: ',
-        //   options.children && options.children[1] && options.children[1]
-        // )
-        // console.log(
-        //   'options.children[2]: ',
-        //   options.children && options.children[2] && options.children[2]
-        // )
-        return (
-          <Paper {...options.containerProps} square style={{ width: '100%' }}>
-            {options.children}
-          </Paper>
-        )
-      }}
+      renderSuggestionsContainer={options => (
+        <Paper {...options.containerProps} square style={{ width: '100%' }}>
+          {options.children}
+        </Paper>
+      )}
     />
   )
 }

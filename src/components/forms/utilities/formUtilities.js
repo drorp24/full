@@ -535,7 +535,10 @@ const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
     case 'time':
       return value => handleChange({ name, value })
     case 'autosuggest':
-      return value => handleChange({ name, value })
+      return (event, target) => {
+        if (event && target)
+          return handleChange({ name, value: target.newValue })
+      }
     default:
       return ({ target: { name, value } }) => handleChange({ name, value })
   }
