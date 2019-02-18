@@ -50,7 +50,6 @@ export const useFormState = structure => {
 }
 
 export const setLists = (structure, setState) => {
-  console.log('setLists called')
   getFields(structure)
     .filter(field => !!field.list)
     .forEach(({ list }) => {
@@ -373,10 +372,6 @@ const AutosuggestField = ({
   const onBlur = (event, { highlightedSuggestion }) => {
     if (!update) return
     mark(name + ' blurred')
-    console.log(
-      'onBlur activated.  highlightedSuggestion:',
-      highlightedSuggestion
-    )
     setList({ list: update, state, setState })
   }
 

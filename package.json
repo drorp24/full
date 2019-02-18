@@ -35,6 +35,7 @@
     "lodash.merge": "^4.6.1",
     "material-ui-pickers": "^2.1.2",
     "mdi-material-ui": "^5.9.0",
+    "moize": "^5.4.2",
     "prettier": "^1.15.1",
     "prop-types": "^15.6.2",
     "react": "^16.8.0-alpha.1",

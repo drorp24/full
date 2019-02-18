@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import deburr from 'lodash/deburr'
 import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
@@ -14,8 +14,11 @@ import 'react-lazy-load-image-component/src/effects/blur.css'
 import 'currency-flags/dist/currency-flags.min.css'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import { arrayToObject } from '../../utility/shortcuts'
+import moize from 'moize'
 
-const Flag = ({ imageUrl, inlineImg, display }) => (
+moize.collectStats()
+
+const FlagPure = ({ imageUrl, inlineImg, display }) => (
   <>
     {imageUrl && (
       <Grid container direction="column" justify="center" alignItems="center">
@@ -40,7 +43,9 @@ const Flag = ({ imageUrl, inlineImg, display }) => (
   </>
 )
 
-function renderInputComponent({
+const Flag = moize.react(FlagPure, { profileName: 'Flag' })
+
+function renderInputComponentPure({
   value,
   classes,
   inputRef = () => {},
@@ -48,7 +53,6 @@ function renderInputComponent({
   entireListObj,
   ...other
 }) {
-  console.log('>>  renderInputComponent. value: ', value)
   const EndAdornment = () => (
     <InputAdornment position="end">
       <>
@@ -78,14 +82,28 @@ function renderInputComponent({
   )
 }
 
-function renderSuggestion(suggestion, { query, isHighlighted }) {
+// const renderInputComponent = moize(renderInputComponentPure, {
+//   profileName: 'renderInputComponent',
+//   equals(cacheKeyArgument, keyArgument) {
+//     console.log('keyArgument: ', keyArgument)
+//     console.log('cacheKeyArgument: ', cacheKeyArgument)
+
+//     return cacheKeyArgument.name && cacheKeyArgument.name === keyArgument.name
+//   },
+// })
+
+// For some obscure reason, every arrow move updates value twice:
+// once for the actual selected value, another for ''
+// This makes the entire chain from AutosuggestField to renderInputComponent render twice
+// Unrelated, moize cache behaved really strangely
+const renderInputComponent = renderInputComponentPure
+
+function renderSuggestionPure(suggestion, { query, isHighlighted }) {
   const { name, display, imageUrl, inlineImg, detail } = suggestion
   const nameMatches = match(name, query)
   const nameParts = parse(name, nameMatches)
   const displayMatches = match(display, query)
   const displayParts = parse(display, displayMatches)
-
-  console.log('renderSuggestion. sugestion:', suggestion)
 
   const Parts = ({ parts }) => {
     return parts.map((part, index) =>
@@ -155,6 +173,11 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   )
 }
 
+// moize'd renderSuggestion is called for the dropdown items only. After that, it's all cache hits.
+const renderSuggestion = moize.react(renderSuggestionPure, {
+  profileName: 'renderSuggestion',
+})
+
 function getSuggestionValue(suggestion) {
   return suggestion.name
 }
@@ -201,6 +224,10 @@ const MuiAutosuggest = ({
     entireList: [],
   })
 
+  // useEffect(() => {
+  //   console.log('MuiAutosuggest moize.getStats():', moize.getStats())
+  // })
+
   const classes = useStyles()
 
   function getSuggestions(value) {
@@ -246,7 +273,8 @@ const MuiAutosuggest = ({
     )
   }
 
-  // Required in 'passedSuggestions' mode only. See note on LocationSearchInput
+  // For passedSuggestions, this is the only opportunity to update the value,
+  // since they don't have an input component with an onChange function, only dropdown, whose changes this function listens to.
   const onSuggestionHighlighted = ({ suggestion }) => {
     if (passedSuggestions && suggestion && suggestion.name)
       onChange(suggestion.name)

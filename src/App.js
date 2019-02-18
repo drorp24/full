@@ -27,17 +27,25 @@ import Select from './components/app/Select'
 import Delivery from './components/app/Delivery'
 
 import { measure } from './components/utility/performance'
-window.measure = measure
+import moize from 'moize'
+import Dashboard from './components/utility/Dashboard'
+
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
       this.props.setMessage('Client')
     }
+
     // This hack puts the hook stylesheet that has every custom styling last so it can really override
     // Not clear why MUI put it first; since i'm using an alpha version of hooks, this might be a bug
     const head = document.getElementsByTagName('head')[0]
     const hookStylesheet = document.querySelectorAll('style[data-meta=Hook]')[0]
+
     if (hookStylesheet) head.insertBefore(hookStylesheet, null)
+
+    window.measure = measure
+    moize.collectStats()
+    window.moize = moize
   }
 
   render() {
@@ -50,6 +58,7 @@ class App extends Component {
             <Route path="/select" component={Select} />
             <Route path="/delivery" component={Delivery} />
             <Route path="/next" component={Next} />
+            <Route path="/dashboard" component={Dashboard} />
 
             <Route path="/wizard" component={Wizard} />
             <Route path="/practice" component={Practice} />

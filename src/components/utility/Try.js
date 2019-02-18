@@ -1,5 +1,5 @@
 import React from 'react'
-import LocationSearchInput from '../forms/utilities/LocationSearchInput.1'
+import LocationSearchInput from '../forms/utilities/LocationSearchInput'
 
 const Try = () => <LocationSearchInput />
 

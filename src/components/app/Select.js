@@ -81,6 +81,7 @@ const Select = () => {
   window.setState = setState // setState in Chrome and see if the proper useEffect is called!
   window.schema = schema
 
+  // TODO: setLists and createSchema should be performed in FormContainer, not by a caller like Select
   useEffect(() => {
     getPositionAndAddress(setState)
     // setLists should be re-called whenever either get- or payCurrency changes

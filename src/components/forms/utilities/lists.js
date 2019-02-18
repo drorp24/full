@@ -92,6 +92,5 @@ window.setCurrencies = setCurrencies
 export const getList = ({ list, state }) => (list && state[list]) || null
 
 export const setList = async ({ list, state, setState }) => {
-  console.log('setList called for list ' + list)
   return window[`set${capitalize(list)}`]({ state, setState })
 }
