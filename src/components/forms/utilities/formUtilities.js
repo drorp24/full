@@ -11,6 +11,7 @@ import FormLabel from '@material-ui/core/FormLabel'
 import FormControl from '@material-ui/core/FormControl'
 import Switch from '@material-ui/core/Switch'
 import Grid from '@material-ui/core/Grid'
+import Cancel from '@material-ui/icons/Cancel'
 
 import { object } from 'yup'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
@@ -27,6 +28,8 @@ import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
 import { getList, setList } from './lists'
 import { mark } from '../../utility/performance'
+import LocationSearchInput from './LocationSearchInput'
+import { geocode } from '../../utility/geolocation'
 
 //
 // A. Utility functions to create/modify state, lists and schema
@@ -167,6 +170,7 @@ const EveryField = ({ name }) => (
         icon,
         list,
         update,
+        clearable,
       } = field
 
       const {
@@ -218,6 +222,7 @@ const EveryField = ({ name }) => (
         state,
         list,
         uniqProps,
+        clearable,
       }
 
       return (
@@ -244,6 +249,7 @@ const DisplayField = ({ type, ...rest }) => {
     number: NumberField,
     time: TimeField,
     autosuggest: AutosuggestField,
+    location: LocationField,
     default: DefaultField,
   }
 
@@ -258,6 +264,7 @@ DisplayField.propTypes = {
     'number',
     'time',
     'autosuggest',
+    'location',
     'default',
   ]),
 }
@@ -293,17 +300,37 @@ const PhoneField = ({
   )
 }
 
-const SwitchField = ({ name, value, helper, onChange }) => (
-  <Grid container direction="row" justify="space-between" alignItems="center">
-    <MyTypography formColor={value ? '' : 'body.fields.disabled'}>
-      {helper}
-    </MyTypography>
-    <Switch color="primary" name={name} checked={value} onChange={onChange} />
-  </Grid>
-)
-
-const NumberField = ({ icon, state, value, onChange, uniqProps, ...rest }) => {
+const SwitchField = ({ name, value, helper, onChange }) => {
   const classes = useFormStyles()
+  return (
+    <Grid container direction="row" justify="space-between" alignItems="center">
+      <MyTypography formColor={value ? '' : 'body.fields.disabled'}>
+        {helper}
+      </MyTypography>
+      <Switch
+        color="primary"
+        name={name}
+        checked={value}
+        onChange={onChange}
+        className={classes.switch}
+      />
+    </Grid>
+  )
+}
+
+const NumberField = ({
+  name,
+  icon,
+  state,
+  value,
+  onChange,
+  uniqProps,
+  clearable,
+  ...rest
+}) => {
+  const classes = useFormStyles()
+  const context = useContext(FormContext)
+  const { setState } = context
 
   return (
     <TextField
@@ -319,7 +346,11 @@ const NumberField = ({ icon, state, value, onChange, uniqProps, ...rest }) => {
         },
         // NumberFormat triggers the onChange, so this one is redundant
         onChange: () => {},
+        ...(clearable && {
+          endAdornment: <ClearIcon {...{ name, setState }} />,
+        }),
       }}
+      name={name}
       value={value}
       {...rest}
     />
@@ -399,8 +430,32 @@ const AutosuggestField = ({
   )
 }
 
-const DefaultField = ({ value, icon, children, state, uniqProps, ...rest }) => {
+const LocationField = ({ name, value, onChange, clearable }) => {
+  const context = useContext(FormContext)
+  const { setState } = context
+  const locationProps = {
+    value,
+    onChange,
+    ...(clearable && {
+      endAdornment: () => <ClearIcon {...{ name, setState }} />,
+    }),
+  }
+  return <LocationSearchInput {...locationProps} />
+}
+
+const DefaultField = ({
+  name,
+  value,
+  icon,
+  children,
+  state,
+  clearable = false,
+  uniqProps,
+  ...rest
+}) => {
   const classes = useFormStyles()
+  const context = useContext(FormContext)
+  const { setState } = context
 
   return (
     <TextField
@@ -408,8 +463,12 @@ const DefaultField = ({ value, icon, children, state, uniqProps, ...rest }) => {
         startAdornment:
           showAdornment(icon, value) && IconAdornment({ icon, state }),
         className: classes.input,
+        ...(clearable && {
+          endAdornment: <ClearIcon {...{ name, setState }} />,
+        }),
       }}
       value={value}
+      name={name}
       {...rest}
     >
       {children}
@@ -446,6 +505,9 @@ const useFormStyles = makeStyles(theme => ({
   input: {
     color: theme.palette.primary.main,
   },
+  switch: {
+    transform: 'translate(12px, 0)',
+  },
 }))
 
 const usePhoneStyles = makeStyles(theme => ({
@@ -481,6 +543,10 @@ const handleEveryChange = ({
       errors[name] = error
     })
   )
+
+  if (type === 'location') {
+    geocode({ value, setState })
+  }
 }
 
 export const checkByType = ({ name, type, fieldSchema, value, schema }) => {
@@ -534,6 +600,8 @@ const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
         if (event && target)
           return handleChange({ name, value: target.newValue })
       }
+    case 'location':
+      return value => handleChange({ name, value })
     default:
       return ({ target: { name, value } }) => handleChange({ name, value })
   }
@@ -579,3 +647,20 @@ const getFields = structure =>
 // TODO: Separate adornments from fields, else empty fields' labels are lifted
 const showAdornment = (icon, value) =>
   icon && typeof icon === 'function' ? !!value : !!icon
+
+const ClearIcon = ({ name, setState }) => {
+  const classes = useFormStyles()
+
+  const clearValue = name => () => {
+    setState(
+      produce(draft => {
+        draft.values[name] = ''
+      })
+    )
+  }
+  return (
+    <span onClick={clearValue(name)} className={classes.input}>
+      <Cancel />
+    </span>
+  )
+}

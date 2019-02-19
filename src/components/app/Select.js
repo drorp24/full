@@ -36,21 +36,23 @@ const structure = [
       },
       {
         name: 'center',
-        type: 'default',
+        type: 'location',
         value: address,
         label: 'Where to search for offers',
         helper: 'Center the search here',
+        clearable: true,
       },
       {
         name: 'amount',
         type: 'number',
         fieldSchema: number()
           .required()
-          .min(10, 'Amount should be bigger than 10')
-          .typeError('Invalid number'),
+          .min(10, 'Amount should be greater than 10')
+          .typeError('Please fill in'),
         required: true,
         label: 'How much do you need',
         helper: 'The amount I need',
+        clearable: true,
         // icon: getCurrencySymbol,
       },
       {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState /* , useEffect */ } from 'react'
 import deburr from 'lodash/deburr'
 import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
@@ -51,17 +51,23 @@ function renderInputComponentPure({
   inputRef = () => {},
   ref,
   entireListObj,
+  endAdornment = null,
   ...other
 }) {
-  const EndAdornment = () => (
-    <InputAdornment position="end">
-      <>
-        {value && entireListObj && entireListObj[value] && (
-          <Flag {...entireListObj[value]} />
-        )}
-      </>
-    </InputAdornment>
-  )
+  const PassedEndAdornment =
+    endAdornment && (() => <span>{endAdornment()}</span>)
+  const EndAdornment = () =>
+    endAdornment ? (
+      <PassedEndAdornment />
+    ) : (
+      <InputAdornment position="end">
+        <>
+          {value && entireListObj && entireListObj[value] && (
+            <Flag {...entireListObj[value]} />
+          )}
+        </>
+      </InputAdornment>
+    )
 
   return (
     <TextField
@@ -217,6 +223,7 @@ const MuiAutosuggest = ({
   onChange,
   onBlur,
   value,
+  endAdornment,
 }) => {
   const [state, setState] = useState({
     single: '',
@@ -258,6 +265,7 @@ const MuiAutosuggest = ({
   const handleSuggestionsFetchRequested = ({ value }) => {
     setState(
       produce(draft => {
+        draft.single = value
         draft.suggestions = passedSuggestions
           ? passedSuggestions
           : getSuggestions(value)
@@ -280,8 +288,27 @@ const MuiAutosuggest = ({
       onChange(suggestion.name)
   }
 
+  // Autosuggest for some reason doesn't pass 'value' prop into 'renderInputComponent' so this hack fixes that
+  const renderInputComponentWithTrueValue = trueValue => ({
+    value: trueValue,
+    classes,
+    inputRef = () => {},
+    ref,
+    entireListObj,
+    ...other
+  }) =>
+    renderInputComponent({
+      value,
+      classes,
+      inputRef,
+      ref,
+      entireListObj,
+      endAdornment,
+      ...other,
+    })
+
   const autosuggestProps = {
-    renderInputComponent,
+    renderInputComponent: renderInputComponentWithTrueValue(value),
     suggestions: state.suggestions,
     onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
     onSuggestionsClearRequested: handleSuggestionsClearRequested,

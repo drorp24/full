@@ -1,5 +1,5 @@
 import React /* , { useEffect } */ from 'react'
-import PlacesAutocomplete from 'react-places-autocomplete' // getLatLng, // geocodeByAddress,
+import PlacesAutocomplete from 'react-places-autocomplete'
 import MuiAutosuggest from './MuiAutosuggest'
 import moize from 'moize'
 
@@ -10,16 +10,13 @@ const LocationContext = React.createContext()
 class LocationSearchInput extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { address: '' }
+    this.state = { address: props.value || '' }
   }
 
   handleChange = address => {
     if (address) {
       this.setState({ address })
-      // geocodeByAddress(address)
-      //   .then(results => getLatLng(results[0]))
-      //   .then(latLng => console.log('Success', latLng))
-      //   .catch(error => console.error('Error', error))
+      this.props.onChange(address)
     }
   }
 
@@ -29,7 +26,9 @@ class LocationSearchInput extends React.Component {
       // Context enables MuiAutosuggest to access onChange, thus updating the state according to user's selection
       <LocationContext.Provider
         value={{
+          value: this.props.value,
           onChange: this.handleChange,
+          endAdornment: this.props.endAdornment,
         }}
       >
         <PlacesAutocomplete
@@ -63,12 +62,14 @@ const LocationAutoSuggestPure = ({ getInputProps, suggestions }) => {
 
   return (
     <LocationContext.Consumer>
-      {({ onChange }) => (
+      {({ value, onChange, endAdornment }) => (
         <MuiAutosuggest
           {...{
             passedSuggestions,
             passedInputProps: getInputProps(),
+            value,
             onChange,
+            endAdornment,
           }}
         />
       )}

@@ -1,4 +1,5 @@
 import Geocode from 'react-geocode'
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 import { produce } from 'immer'
 
 // Promisfy and configure the basic html5 geolocation API
@@ -35,21 +36,47 @@ export const getPositionAndAddress = async setState => {
     setState(
       produce(draft => {
         draft.geolocation = { position }
+        const { latitude, longitude } = position.coords
+        draft.values.latLng = { lat: latitude, lng: longitude, error: false }
       })
     )
     const address = await getAddress(position)
     setState(
       produce(draft => {
         draft.geolocation.address = address
+        draft.values.center = address
       })
     )
   } catch (error) {
     setState(
       produce(draft => {
         draft.geolocation = { error: error.toString() }
+        draft.values.latLng = { error: error.toString() }
       })
     )
   }
+}
+
+export const geocode = ({ value, setState }) => {
+  geocodeByAddress(value)
+    .then(results => {
+      getLatLng(results[0]).then(latLng => {
+        setState(
+          produce(draft => {
+            const { lat, lng } = latLng
+            draft.values.latLng = { lat, lng, error: false }
+          })
+        )
+      })
+    })
+    .catch(error => {
+      setState(
+        produce(draft => {
+          draft.values.latLng = { error }
+        })
+      )
+      console.warn('geocodeByAddress error', error)
+    })
 }
 
 export const address = state =>
