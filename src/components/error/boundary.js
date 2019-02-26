@@ -1,6 +1,6 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import Page from '../themed/Page'
+import Page from '../page/Page'
 import { MyTypography } from '../themed/Box'
 import { Typography } from '@material-ui/core'
 

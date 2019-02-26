@@ -4,7 +4,8 @@ import Chart from '../utility/Chart'
 
 const styles = theme => ({
   'chart-container': {
-    height: 400,
+    // minHeight: 200,
+    width: '100%',
   },
 })
 

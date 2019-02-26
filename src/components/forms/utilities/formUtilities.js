@@ -2,7 +2,7 @@ import React, { Suspense, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { produce } from 'immer'
 
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import { FormHelperText } from '@material-ui/core'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField from '@material-ui/core/TextField'
@@ -22,7 +22,6 @@ import DateFnsUtils from '@date-io/date-fns'
 import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
 import { Box, MyTypography } from '../../themed/Box'
-import Page from '../../themed/Page'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
@@ -98,26 +97,38 @@ export const Form = ({
     <FormContext.Provider
       value={{ state, setState, schema, structure, step, show }}
     >
-      <form autoComplete="off">
-        <Page>
-          <Box formVariant="header">
-            <MyTypography formVariant="header.title.typography" gutterBottom>
-              {structure[step].title}
-            </MyTypography>
-            <MyTypography formVariant="header.subtitle.typography" gutterBottom>
-              <span style={{ whiteSpace: 'pre-line' }}>
-                {structure[step].subtitle}
-              </span>
-            </MyTypography>
-          </Box>
+      <Box formVariant="root">
+        <form autoComplete="off">
+          {(structure[step].title || structure[step].subtitle) && (
+            <Box formVariant="header">
+              {structure[step].title && (
+                <MyTypography
+                  formVariant="header.title.typography"
+                  gutterBottom
+                >
+                  {structure[step].title}
+                </MyTypography>
+              )}
+              {structure[step].subtitle && (
+                <MyTypography
+                  formVariant="header.subtitle.typography"
+                  gutterBottom
+                >
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {structure[step].subtitle}
+                  </span>
+                </MyTypography>
+              )}
+            </Box>
+          )}
           <Box formVariant="body" formColor="body.color">
             {structure[step].fields.map(({ name }) => (
               <MemoField name={name} key={name} />
             ))}
           </Box>
           <Box formVariant="footer">{footer && footer(step)}</Box>
-        </Page>
-      </form>
+        </form>
+      </Box>
     </FormContext.Provider>
   </ErrorBoundary>
 )
@@ -279,10 +290,10 @@ const PhoneField = ({
   onChange,
   helperText,
 }) => {
-  const classes = usePhoneStyles()
+  const classes = useFormStyles()
   return (
     <FormControl error={error} fullWidth={fullWidth}>
-      <FormLabel required={required} style={{ fontSize: '0.75rem' }}>
+      <FormLabel className={classes.label} required={required}>
         {label}
       </FormLabel>
       <PhoneInput
@@ -291,8 +302,8 @@ const PhoneField = ({
         onChange={onChange}
         inputClassName={
           error
-            ? classes.root + ' ' + classes.error // classNames-style working solution
-            : classes.root
+            ? classes.phone + ' ' + classes.error // classNames-style working solution
+            : classes.phone
         }
       />
       <FormHelperText component="p">{helperText}</FormHelperText>
@@ -301,12 +312,10 @@ const PhoneField = ({
 }
 
 const SwitchField = ({ name, value, helper, onChange }) => {
-  const classes = useFormStyles()
+  const classes = useFormStyles({ checked: value })
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
-      <MyTypography formColor={value ? '' : 'body.fields.disabled'}>
-        {helper}
-      </MyTypography>
+      <span className={classes.switchLabel}>{helper}</span>
       <Switch
         color="primary"
         name={name}
@@ -344,11 +353,17 @@ const NumberField = ({
           thousandSeparator: true,
           onValueChange: onChange,
         },
-        // NumberFormat triggers the onChange, so this one is redundant
+        // Typically with TextField, 'value' and 'onChange' are props of TextField,
+        // that in turn passes them onto the inputComponent, but has to know the value too, as well as error and helpText passed in ...rest
+        // this is since it is TextField not the inner component which controls the label state (shrink), error state, and helperText
+        // The onChange: () => {} in this case is since MyNumberFormat doesn't recognize 'onChange' but 'onValueChange' instead
         onChange: () => {},
         ...(clearable && {
           endAdornment: <ClearIcon {...{ name, setState }} />,
         }),
+      }}
+      InputLabelProps={{
+        className: classes.label,
       }}
       name={name}
       value={value}
@@ -365,6 +380,7 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
   const classes = useFormStyles()
 
   return (
+    // I'm sure I could use here TextField as well
     <FormControl>
       <FormLabel style={{ fontSize: '0.75rem' }}>{label}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -377,6 +393,9 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
             startAdornment:
               showAdornment(icon, value) && IconAdornment({ icon, state }),
             className: classes.input,
+          }}
+          InputLabelProps={{
+            className: classes.label,
           }}
         />
       </MuiPickersUtilsProvider>
@@ -414,15 +433,15 @@ const AutosuggestField = ({
         className: classes.input,
         inputComponent: MuiAutosuggest,
         inputProps: {
-          // value,
-          onChange,
           onBlur,
           entireList,
-          quantity: 9,
+          quantity: 90,
         },
-        // see NumberFormat
-        onChange: () => {},
       }}
+      InputLabelProps={{
+        className: classes.label,
+      }}
+      onChange={onChange}
       value={value}
       fullWidth={fullWidth}
       {...rest}
@@ -430,17 +449,41 @@ const AutosuggestField = ({
   )
 }
 
-const LocationField = ({ name, value, onChange, clearable }) => {
+const LocationField = ({
+  name,
+  value,
+  onChange,
+  clearable,
+  label,
+  fullWidth,
+  uniqProps,
+  ...rest
+}) => {
+  const classes = useFormStyles()
   const context = useContext(FormContext)
   const { setState } = context
-  const locationProps = {
-    value,
-    onChange,
-    ...(clearable && {
-      endAdornment: () => <ClearIcon {...{ name, setState }} />,
-    }),
-  }
-  return <LocationSearchInput {...locationProps} />
+
+  return (
+    <TextField
+      InputProps={{
+        className: classes.input,
+        inputComponent: LocationSearchInput,
+        inputProps: {
+          ...(clearable && {
+            endAdornment: () => <ClearIcon {...{ name, setState }} />,
+          }),
+        },
+      }}
+      InputLabelProps={{
+        className: classes.label,
+      }}
+      value={value}
+      onChange={onChange}
+      fullWidth={fullWidth}
+      label={label}
+      {...rest}
+    />
+  )
 }
 
 const DefaultField = ({
@@ -497,21 +540,23 @@ const IconAdornment = ({ icon, state }) => {
   )
 }
 
-// External libraries that enable customizing their inner components do it with props like 'InputProps'
-// Hence for customization, MUI's classic styling below will yield the 'className'/'classes' to be passed to such props.
-// When all components are mine, on the other hand, it is better to use the newer prop-based method
-// as it enables the components' props to directly refer to theme values w/o the need to write makeStyles.
+// External libraries whose customization requires passing className (e.g. in 'InputProps')
+// require using makeStyles, which generates an obj named 'classes' with a className for each first-level (only!) key here.
+// If I just need to style any of my *own* components then useTheme will give me direct access to theme
+// but useTheme does not generate className's.
 const useFormStyles = makeStyles(theme => ({
   input: {
     color: theme.palette.primary.main,
   },
+  label: theme.form.body.fields.label,
+  switchLabel: props =>
+    !props.checked
+      ? theme.form.body.fields.label.unchecked
+      : theme.form.body.fields.label,
   switch: {
     transform: 'translate(12px, 0)',
   },
-}))
-
-const usePhoneStyles = makeStyles(theme => ({
-  root: {
+  phone: {
     background: 'inherit',
     borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
     color: theme.palette.primary.main,
@@ -657,6 +702,7 @@ const ClearIcon = ({ name, setState }) => {
         draft.values[name] = ''
       })
     )
+    // should have called handleEveryChange (e.g., to warn if fieldSchema doesn't allow it to stay blank)
   }
   return (
     <span onClick={clearValue(name)} className={classes.input}>

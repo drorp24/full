@@ -1,6 +1,14 @@
 
 Todo:
-  Practice:
+  Purpose:
+    ☐ Demonstrate proficiency with live, sophisticated product
+    ☐ Do it in as few as possible screens. One, two would be ideal
+  Demonstrate:
+    Serverless:
+      ☐ AWS API Gateway 
+      ☐ AWS Lambda
+    Typescript:
+      ☐ At least some of the components
     Fetching:
       Assets:
         ☐ Amazon CloudFront
@@ -27,6 +35,12 @@ Todo:
         ☐ Dynamic import(), React.lazy, react-loadable
         ☐ Preloading (fetching server data of unmounted yet components ahead of time)
      UI:
+      Performance:
+        ✔ Lazy loading with React.Lazy & Suspense @done(19-02-19 21:03)
+        ✔ Lazy loading with run-time, variable file names and no code splitting (/* webpackMode: "eager" */): (icons) @done(19-02-19 21:04)
+        ✔ Lazy loading of images and of Base64 inline images with blur effect falback @done(19-02-19 21:14)
+        ✔ Memoization with React.memo and moize @done(19-02-19 21:06)
+
       State:
         ✔ Classes @done(19-02-12 17:08)
         ✔ Redux @done(19-02-12 15:53)
@@ -38,6 +52,8 @@ Todo:
         ✔ Multi-step forms, wizards @done(19-02-12 16:37)
         ✔ Yup @done(19-02-12 16:38)
         ✔ External packages: phone number, pickers, autosuggest, Google places autocomplete @done(19-02-12 16:39)
+        ✔ Integrating react-autosuggest with MUI @done(19-02-19 21:08)
+        ✔ Integrating both with Google places autocomplete @done(19-02-19 21:09)
       Styling:
         ✔ styled-components, JSS @done(19-02-12 15:56)
         ✔ Material Design concepts, MUI @done(19-02-12 15:56)
@@ -59,7 +75,7 @@ Todo:
   Do:
     Onboarding: 
       Purpose:
-        ☐ Confirm to self-select model (https://material.io/design/communication/onboarding.html#self-select-model):
+        ✔ Conform to self-select model (https://material.io/design/communication/onboarding.html#self-select-model): @done(19-02-26 14:50)
       Forms infrastrcture: 
         Formik:
           ✔ Learn `Formik` @done(19-01-15 13:57)
@@ -94,9 +110,9 @@ Todo:
           ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
           ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
       Center selection:
-        ☐ Make 'center' a google location box with:
-          ☐ https://github.com/hibiken/react-places-autocomplete#readme 
-        ☐ Add a 'look around' switch to first page, that once set, populates center with user's address
+        ✔ Make 'center' a google location box with: @done(19-02-20 17:51)
+          ✔ https://github.com/hibiken/react-places-autocomplete#readme @done(19-02-20 17:51)
+        ✘ Add a 'look around' switch to first page, that once set, populates center with user's address @cancelled(19-02-20 17:52)
       Currency selection:
         ✔ Make currency selection autocompletable using: @done(19-02-13 11:37)
           ✔ https://material-ui.com/demos/autocomplete/#react-autosuggest @done(19-02-13 11:37)
@@ -108,7 +124,7 @@ Todo:
         ✔ Fetch a long list of fiat currencies @done(19-02-15 03:21)
         ✔ Try using flags if svg and doesn't hit performance @done(19-02-13 17:18)
       Live rates:
-        ☐ Show interbank live rate as soon as currency pair is selected
+        ☐ Show interbank live rate as soon as currency pair is selected - with green and red colors @started(19-02-20 17:52)
     Search:
       GraphQL Server:
         ☐ Update the GraphQL resolver  / mongoose query to address the form's content

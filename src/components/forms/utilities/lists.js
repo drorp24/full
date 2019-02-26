@@ -13,7 +13,6 @@ export const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
       if (response.data.Response === 'Error') {
         console.warn('cryptocompare has an error:')
         console.warn(response.data.Message)
-        console.warn('response.data.RateLimit: ', response.data.RateLimit)
         return
       }
       const coins = response.data && response.data.Data
@@ -94,3 +93,55 @@ export const getList = ({ list, state }) => (list && state[list]) || null
 export const setList = async ({ list, state, setState }) => {
   return window[`set${capitalize(list)}`]({ state, setState })
 }
+
+export const getCoinbaseProducts = async () => {
+  const url = 'https://api.pro.coinbase.com/products'
+  try {
+    const response = await axios.get(url)
+    if (response && response.data) {
+      return response.data.map(item => item.id)
+    } else {
+      console.error('no response from Coinbase /products endpoint')
+    }
+  } catch (error) {
+    console.error('Coinbase /products API error:', error)
+  }
+}
+
+export const coinbaseProducts = [
+  'BCH-USD',
+  'BCH-BTC',
+  'BTC-GBP',
+  'BTC-EUR',
+  'BCH-GBP',
+  'MKR-USDC',
+  'BCH-EUR',
+  'BTC-USD',
+  'ZEC-USDC',
+  'DNT-USDC',
+  'LOOM-USDC',
+  'DAI-USDC',
+  'GNT-USDC',
+  'ZIL-USDC',
+  'MANA-USDC',
+  'CVC-USDC',
+  'ETH-USDC',
+  'ZRX-EUR',
+  'BAT-USDC',
+  'ETC-EUR',
+  'BTC-USDC',
+  'ZRX-USD',
+  'ETH-BTC',
+  'ETH-EUR',
+  'ETH-USD',
+  'LTC-BTC',
+  'LTC-EUR',
+  'LTC-USD',
+  'ETC-USD',
+  'ETC-BTC',
+  'ZRX-BTC',
+  'ETC-GBP',
+  'ETH-GBP',
+  'LTC-GBP',
+]
+window.getCoinbaseProducts = getCoinbaseProducts

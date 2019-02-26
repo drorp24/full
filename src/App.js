@@ -5,7 +5,7 @@ import { setMessage, setCount } from './store/actions'
 
 import 'typeface-roboto'
 
-import { ThemeProvider } from '@material-ui/styles'
+import { ThemeProvider, install } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './components/themed/theme'
 
@@ -32,6 +32,7 @@ import Dashboard from './components/utility/Dashboard'
 
 class App extends Component {
   componentDidMount() {
+    install()
     if (!this.props.message) {
       this.props.setMessage('Client')
     }

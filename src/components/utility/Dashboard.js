@@ -1,5 +1,5 @@
 import React from 'react'
-import Page from '../themed/Page'
+import Page from '../page/Page'
 import { measure } from './performance'
 
 const Dashboard = () => (

@@ -22,6 +22,8 @@ import {
   typography,
 } from '@material-ui/system'
 import Typography from '@material-ui/core/Typography'
+import React from 'react'
+import Grid from '@material-ui/core/Grid'
 
 // This is one way to do this: configure new props
 // With each prop corresponding to one definition in the theme object
@@ -78,7 +80,7 @@ export const Box = styled('div')(
     spacing,
     palette,
     typography,
-    page,
+    variant('page'),
     form
   )
 )
@@ -91,3 +93,56 @@ Box.displayName = 'Box'
 // using the new props to indicate the theme's path from 'form' that holds the value
 export const MyTypography = styled(Typography)(form)
 MyTypography.displayName = 'MyTypography'
+
+const Arrange = ({ children, direction }) => (
+  <Grid
+    container
+    direction={direction}
+    justify="space-between"
+    alignItems="center"
+  >
+    {children}
+  </Grid>
+)
+
+export const Column = ({ children }) => (
+  <Arrange direction="column" {...{ children }} />
+)
+export const Row = ({ children }) => (
+  <Arrange direction="row" {...{ children }} />
+)
+
+export const MyGrid = ({
+  container,
+  item,
+  direction,
+  justify,
+  alignItems,
+  width,
+  ml,
+  mr,
+  fs,
+  ...other
+}) => {
+  const dir = container ? { direction: direction || 'row' } : {}
+  const just = container ? { justify: justify || 'center' } : {}
+  const align = container ? { alignItems: alignItems || 'center' } : {}
+  const style = {
+    ...(item &&
+      width && {
+        flexBasis: width,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }),
+    ...(ml && { marginLeft: `${ml}em` }),
+    ...(mr && { marginRight: `${mr}em` }),
+    ...(fs && { fontSize: `${fs}em` }),
+  }
+
+  return (
+    <Grid
+      {...{ container, ...dir, ...just, ...align, ...{ style }, ...other }}
+    />
+  )
+}

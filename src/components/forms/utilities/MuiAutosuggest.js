@@ -6,7 +6,6 @@ import parse from 'autosuggest-highlight/parse'
 import TextField from '@material-ui/core/TextField'
 import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
-import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/styles'
 import { produce } from 'immer'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
@@ -15,32 +14,27 @@ import 'currency-flags/dist/currency-flags.min.css'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import { arrayToObject } from '../../utility/shortcuts'
 import moize from 'moize'
+import { MyGrid } from '../../themed/Box'
 
 moize.collectStats()
 
 const FlagPure = ({ imageUrl, inlineImg, display }) => (
-  <>
-    {imageUrl && (
-      <Grid container direction="column" justify="center" alignItems="center">
+  <MyGrid container direction="column">
+    {imageUrl ? (
+      <MyGrid
+        style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
+      >
         <LazyLoadImage
           effect="black-and-white"
           alt={display}
-          height="30"
+          height="25px"
           src={imageUrl}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justify: 'center',
-            alignItems: 'center',
-            marginBottom: '7px',
-            width: '24px',
-            height: '24px',
-          }}
         />
-      </Grid>
+      </MyGrid>
+    ) : (
+      <div className={inlineImg} />
     )}
-    {inlineImg && <div className={inlineImg} />}
-  </>
+  </MyGrid>
 )
 
 const Flag = moize.react(FlagPure, { profileName: 'Flag' })
@@ -111,70 +105,52 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
   const displayMatches = match(display, query)
   const displayParts = parse(display, displayMatches)
 
-  const Parts = ({ parts }) => {
-    return parts.map((part, index) =>
-      part.highlight ? (
-        <span key={String(index)} style={{ fontWeight: 500 }}>
-          {part.text}
-        </span>
-      ) : (
-        <strong key={String(index)} style={{ fontWeight: 300 }}>
-          {part.text}
-        </strong>
-      )
-    )
-  }
+  const Parts = ({ parts }) => (
+    <span>
+      {parts.map((part, index) =>
+        part.highlight ? (
+          <span
+            key={String(index)}
+            style={{
+              fontWeight: 500,
+            }}
+          >
+            {part.text}
+          </span>
+        ) : (
+          <strong
+            key={String(index)}
+            style={{
+              fontWeight: 300,
+            }}
+          >
+            {part.text}
+          </strong>
+        )
+      )}
+    </span>
+  )
 
+  // Flex's 'nowrap' aligns the right-hand 2 items to the right beautifully. It's not the 'space-around' that does that
   return (
     <MenuItem selected={isHighlighted} component="div">
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-      >
-        <Grid item style={{ flexBasis: '80%' }}>
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              <Grid
-                container
-                direction="row"
-                justify="flex-start"
-                alignItems="center"
-              >
-                <Grid item>
-                  <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
-                  >
-                    <Flag {...{ imageUrl, inlineImg, display }} />
-                  </Grid>
-                </Grid>
-                <Grid item style={{ marginLeft: '0.75em' }}>
-                  <Parts parts={displayParts} />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <Grid container direction="column" justify="center">
-                <Grid item style={{ fontSize: '0.75em' }}>
-                  {detail}
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item>
+      <MyGrid container justify="flex-start" wrap="nowrap">
+        <MyGrid item style={{ maxWidth: '100%' }}>
           <Parts parts={nameParts} />
-        </Grid>
-      </Grid>
+        </MyGrid>
+
+        <MyGrid item width="70%" ml={1}>
+          <Parts parts={displayParts} />
+        </MyGrid>
+
+        <MyGrid item mr={1} fs={0.75}>
+          {detail}
+        </MyGrid>
+
+        <MyGrid item>
+          <Flag {...{ imageUrl, inlineImg, display }} />
+        </MyGrid>
+      </MyGrid>
     </MenuItem>
   )
 }
@@ -315,6 +291,7 @@ const MuiAutosuggest = ({
     getSuggestionValue,
     renderSuggestion,
     onSuggestionHighlighted,
+    focusInputOnSuggestionClick: false,
   }
 
   const entireListObj =
@@ -341,7 +318,11 @@ const MuiAutosuggest = ({
         suggestion: classes.suggestion,
       }}
       renderSuggestionsContainer={options => (
-        <Paper {...options.containerProps} square style={{ width: '100%' }}>
+        <Paper
+          {...options.containerProps}
+          square
+          style={{ maxWidth: '100%', maxHeight: '40vh', overflow: 'auto' }}
+        >
           {options.children}
         </Paper>
       )}

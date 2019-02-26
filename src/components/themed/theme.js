@@ -12,10 +12,23 @@ const theme = createMuiTheme({
     useNextVariants: true,
   },
   page: {
-    padding: 40,
-    height: '100vh',
+    container: {
+      height: '100vh',
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
+      padding: '0 2.5rem',
+    },
   },
   form: {
+    root: {
+      width: '100%',
+    },
     header: {
       height: '20%',
       padding: createdTheme.spacing.unit * 2,
@@ -37,7 +50,13 @@ const theme = createMuiTheme({
       justifyContent: 'space-evenly',
       color: createdTheme.palette.text.secondary,
       fields: {
-        disabled: createdTheme.palette.action.disabled,
+        label: {
+          color: createdTheme.palette.action.active,
+          fontSize: '0.9em',
+          unchecked: {
+            color: createdTheme.palette.action.disabled,
+          },
+        },
       },
     },
     footer: {
@@ -45,6 +64,8 @@ const theme = createMuiTheme({
     },
   },
 })
+
+console.log('theme', theme)
 
 // console.log('theme', theme)
 export default theme

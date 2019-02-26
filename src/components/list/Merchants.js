@@ -1,6 +1,6 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
-import Page from '../themed/Page'
+import Page from '../page/Page'
 
 const Merchants = props => (
   <Page>
