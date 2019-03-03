@@ -5,7 +5,8 @@ import { setMessage, setCount } from './store/actions'
 
 import 'typeface-roboto'
 
-import { ThemeProvider, install } from '@material-ui/styles'
+import { ThemeProvider } from '@material-ui/styles'
+
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './components/themed/theme'
 
@@ -14,7 +15,7 @@ import TradingUpdated from './components/graphql/TradingUpdated'
 import Topics from './components/sync/Topics'
 import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
-import CryptoChart from './components/websocket/CryptoChart'
+// import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
 import MerchantsRaw from './components/graphql/MerchantsRaw'
 import Merchants from './components/list/Merchants'
@@ -32,7 +33,6 @@ import Dashboard from './components/utility/Dashboard'
 
 class App extends Component {
   componentDidMount() {
-    install()
     if (!this.props.message) {
       this.props.setMessage('Client')
     }
@@ -63,7 +63,7 @@ class App extends Component {
 
             <Route path="/wizard" component={Wizard} />
             <Route path="/practice" component={Practice} />
-            <Route path="/cryptochart" component={CryptoChart} />
+            {/* <Route path="/cryptochart" component={CryptoChart} /> */}
             {/* <Route
         	      path="/cryptochartUsingHooks"
         	      component={CryptoChartUsingHooks}

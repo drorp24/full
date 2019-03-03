@@ -18,14 +18,14 @@ const useStyles = makeStyles(theme => ({
     width: '90%',
   },
   button: {
-    marginTop: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
   actionsContainer: {
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing(2),
   },
   resetContainer: {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
 }))
 
@@ -168,12 +168,9 @@ const ProductForm = () => {
   const Form = ({ handleChange, handleBlur, values, touched, errors }) => {
     const [_, updateState] = useGlobalState()
 
-    useEffect(
-      () => {
-        updateState(values, touched, errors)
-      },
-      [values, touched, errors]
-    )
+    useEffect(() => {
+      updateState(values, touched, errors)
+    }, [values, touched, errors])
 
     return (
       <form autoComplete="off">
@@ -233,12 +230,9 @@ const ServiceForm = () => {
   const Form = ({ handleChange, handleBlur, values, touched, errors }) => {
     const [_, updateState] = useGlobalState()
 
-    useEffect(
-      () => {
-        updateState(values, touched, errors)
-      },
-      [values, touched, errors]
-    )
+    useEffect(() => {
+      updateState(values, touched, errors)
+    }, [values, touched, errors])
 
     return (
       <form autoComplete="off">

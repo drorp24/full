@@ -94,22 +94,23 @@ Box.displayName = 'Box'
 export const MyTypography = styled(Typography)(form)
 MyTypography.displayName = 'MyTypography'
 
-const Arrange = ({ children, direction }) => (
+const Arrange = ({ children, direction, ...other }) => (
   <Grid
     container
     direction={direction}
     justify="space-between"
     alignItems="center"
+    {...other}
   >
     {children}
   </Grid>
 )
 
-export const Column = ({ children }) => (
-  <Arrange direction="column" {...{ children }} />
+export const Column = ({ children, ...other }) => (
+  <Arrange direction="column" {...{ children, ...other }} />
 )
-export const Row = ({ children }) => (
-  <Arrange direction="row" {...{ children }} />
+export const Row = ({ children, ...other }) => (
+  <Arrange direction="row" {...{ children, ...other }} />
 )
 
 export const MyGrid = ({

@@ -2,7 +2,7 @@ import React, { Suspense, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { produce } from 'immer'
 
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/styles'
 import { FormHelperText } from '@material-ui/core'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField from '@material-ui/core/TextField'
@@ -10,7 +10,6 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormLabel from '@material-ui/core/FormLabel'
 import FormControl from '@material-ui/core/FormControl'
 import Switch from '@material-ui/core/Switch'
-import Grid from '@material-ui/core/Grid'
 import Cancel from '@material-ui/icons/Cancel'
 
 import { object } from 'yup'
@@ -21,7 +20,7 @@ import { TimePicker, MuiPickersUtilsProvider } from 'material-ui-pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
-import { Box, MyTypography } from '../../themed/Box'
+import { Box, Row } from '../../themed/Box'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../error/boundary'
 import Loader from '../../utility/Loader'
@@ -29,6 +28,7 @@ import { getList, setList } from './lists'
 import { mark } from '../../utility/performance'
 import LocationSearchInput from './LocationSearchInput'
 import { geocode } from '../../utility/geolocation'
+import getSymbolFromCurrency from 'currency-symbol-map'
 
 //
 // A. Utility functions to create/modify state, lists and schema
@@ -91,44 +91,22 @@ export const Form = ({
   structure,
   step,
   show,
+  header,
   footer,
 }) => (
   <ErrorBoundary>
     <FormContext.Provider
       value={{ state, setState, schema, structure, step, show }}
     >
-      <Box formVariant="root">
-        <form autoComplete="off">
-          {(structure[step].title || structure[step].subtitle) && (
-            <Box formVariant="header">
-              {structure[step].title && (
-                <MyTypography
-                  formVariant="header.title.typography"
-                  gutterBottom
-                >
-                  {structure[step].title}
-                </MyTypography>
-              )}
-              {structure[step].subtitle && (
-                <MyTypography
-                  formVariant="header.subtitle.typography"
-                  gutterBottom
-                >
-                  <span style={{ whiteSpace: 'pre-line' }}>
-                    {structure[step].subtitle}
-                  </span>
-                </MyTypography>
-              )}
-            </Box>
-          )}
-          <Box formVariant="body" formColor="body.color">
-            {structure[step].fields.map(({ name }) => (
-              <MemoField name={name} key={name} />
-            ))}
-          </Box>
-          <Box formVariant="footer">{footer && footer(step)}</Box>
-        </form>
-      </Box>
+      <form autoComplete="off" style={{ height: '100%', width: '100%' }}>
+        <Box formVariant="header">{header && header()}</Box>
+        <Box formVariant="body" formColor="body.color">
+          {structure[step].fields.map(({ name }) => (
+            <MemoField name={name} key={name} />
+          ))}
+        </Box>
+        <Box formVariant="footer">{footer && footer(step)}</Box>
+      </form>
     </FormContext.Provider>
   </ErrorBoundary>
 )
@@ -164,6 +142,7 @@ const EveryField = ({ name }) => (
   //    which like JS saves the need to write things like name={name}.
 
   // I left this but next I'll use useContext hook as it's simpler
+  // The 6 s's are too contextual to be passed as displayFieldProps; instead they are available in context
   <FormContext.Consumer>
     {({ state, setState, schema, structure, step, show }) => {
       //
@@ -230,7 +209,6 @@ const EveryField = ({ name }) => (
         error,
         helperText,
         helper,
-        state,
         list,
         uniqProps,
         clearable,
@@ -311,26 +289,47 @@ const PhoneField = ({
   )
 }
 
+// It's best to separate use<component>style and place it just before the customized component
+// since then I can use the very same class names used by the componments I'm customizing
+// which are not namespaced (e.g., 'root').]
+// It's also more convenient that the custom styles are next to the components
+const useSwitchStyles = makeStyles(theme => ({
+  root: {
+    transform: 'translate(12px)',
+  },
+  switchLabel: ({ checked }) =>
+    !checked
+      ? theme.form.body.fields.label.unchecked
+      : theme.form.body.fields.label,
+}))
+
+// Using a prop ('checked') to create a prop-based dynamic style ('switchLabel')
+// 'checked' prop is passed to makeStyles as an argument, and switchLabel is defined as a function of 'checked'
+// This reaplaces the 'classNames' solution and is in my mind the most important feature of mui's v4
+// It's also the ultimate use case for CSS-in-JS:
+// the ability to define styling declaratively: as a function of state (rather than imperatively switching classes back and forth)
 const SwitchField = ({ name, value, helper, onChange }) => {
-  const classes = useFormStyles({ checked: value })
+  const classes = useSwitchStyles({ checked: value })
+  const { root, switchLabel } = classes
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
-      <span className={classes.switchLabel}>{helper}</span>
+    <Row>
+      <span className={switchLabel}>{helper}</span>
       <Switch
         color="primary"
         name={name}
         checked={value}
+        classes={{
+          root,
+        }}
         onChange={onChange}
-        className={classes.switch}
       />
-    </Grid>
+    </Row>
   )
 }
 
 const NumberField = ({
   name,
   icon,
-  state,
   value,
   onChange,
   uniqProps,
@@ -339,19 +338,23 @@ const NumberField = ({
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { setState } = context
+  const { state, setState } = context
+  const {
+    values: { getCurrency },
+  } = state
 
   return (
     <TextField
       InputProps={{
         startAdornment:
           showAdornment(icon, value) && IconAdornment({ icon, state }),
-        className: classes.input,
+        className: classes.primary,
         inputComponent: MyNumberFormat,
         inputProps: {
           value,
           thousandSeparator: true,
           onValueChange: onChange,
+          prefix: getSymbolFromCurrency(getCurrency),
         },
         // Typically with TextField, 'value' and 'onChange' are props of TextField,
         // that in turn passes them onto the inputComponent, but has to know the value too, as well as error and helpText passed in ...rest
@@ -362,9 +365,9 @@ const NumberField = ({
           endAdornment: <ClearIcon {...{ name, setState }} />,
         }),
       }}
-      InputLabelProps={{
-        className: classes.label,
-      }}
+      // InputLabelProps={{
+      //   className: classes.label,
+      // }}
       name={name}
       value={value}
       {...rest}
@@ -376,8 +379,10 @@ const NumberField = ({
 // <NumberFormat /> doesn't recognize it, so it passes it onwards to native <input>, which complains about not recognizing it either
 const MyNumberFormat = ({ inputRef, ...rest }) => <NumberFormat {...rest} />
 
-const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
+const TimeField = ({ value, onChange, icon, label, helperText }) => {
   const classes = useFormStyles()
+  const context = useContext(FormContext)
+  const { state } = context
 
   return (
     // I'm sure I could use here TextField as well
@@ -392,7 +397,7 @@ const TimeField = ({ value, onChange, icon, state, label, helperText }) => {
           InputProps={{
             startAdornment:
               showAdornment(icon, value) && IconAdornment({ icon, state }),
-            className: classes.input,
+            className: classes.primary,
           }}
           InputLabelProps={{
             className: classes.label,
@@ -430,7 +435,6 @@ const AutosuggestField = ({
       InputProps={{
         startAdornment:
           showAdornment(icon, value) && IconAdornment({ icon, state }),
-        className: classes.input,
         inputComponent: MuiAutosuggest,
         inputProps: {
           onBlur,
@@ -466,7 +470,6 @@ const LocationField = ({
   return (
     <TextField
       InputProps={{
-        className: classes.input,
         inputComponent: LocationSearchInput,
         inputProps: {
           ...(clearable && {
@@ -491,21 +494,20 @@ const DefaultField = ({
   value,
   icon,
   children,
-  state,
   clearable = false,
   uniqProps,
   ...rest
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { setState } = context
+  const { state, setState } = context
 
   return (
     <TextField
       InputProps={{
         startAdornment:
           showAdornment(icon, value) && IconAdornment({ icon, state }),
-        className: classes.input,
+        className: classes.primary,
         ...(clearable && {
           endAdornment: <ClearIcon {...{ name, setState }} />,
         }),
@@ -545,17 +547,10 @@ const IconAdornment = ({ icon, state }) => {
 // If I just need to style any of my *own* components then useTheme will give me direct access to theme
 // but useTheme does not generate className's.
 const useFormStyles = makeStyles(theme => ({
-  input: {
+  primary: {
     color: theme.palette.primary.main,
   },
   label: theme.form.body.fields.label,
-  switchLabel: props =>
-    !props.checked
-      ? theme.form.body.fields.label.unchecked
-      : theme.form.body.fields.label,
-  switch: {
-    transform: 'translate(12px, 0)',
-  },
   phone: {
     background: 'inherit',
     borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
@@ -705,7 +700,7 @@ const ClearIcon = ({ name, setState }) => {
     // should have called handleEveryChange (e.g., to warn if fieldSchema doesn't allow it to stay blank)
   }
   return (
-    <span onClick={clearValue(name)} className={classes.input}>
+    <span onClick={clearValue(name)} className={classes.primary}>
       <Cancel />
     </span>
   )

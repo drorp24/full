@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { string } from 'yup'
-import { useFormState, createSchema } from '../forms/utilities/formUtilities'
+import {
+  useFormState,
+  createSchema,
+  setLists,
+} from '../forms/utilities/formUtilities'
+
 import FormContainer from '../forms/utilities/FormContainer'
+import Page from '../page/Page'
 
 const structure = [
   {
@@ -52,20 +58,30 @@ const structure = [
 
 const Delivery = () => {
   const [state, setState] = useFormState(structure)
-  const schema = createSchema(structure)
+  const [schema, setSchema] = useState({})
+
+  useEffect(() => {
+    setLists(structure, setState)
+  }, [])
+
+  useEffect(() => {
+    createSchema(structure, state, setSchema)
+  }, [state.coins])
 
   const show = {
     next: 'next',
   }
 
   return (
-    <FormContainer
-      state={state}
-      setState={setState}
-      schema={schema}
-      structure={structure}
-      show={show}
-    />
+    <Page>
+      <FormContainer
+        state={state}
+        setState={setState}
+        schema={schema}
+        structure={structure}
+        show={show}
+      />
+    </Page>
   )
 }
 

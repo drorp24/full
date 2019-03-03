@@ -8,11 +8,14 @@ import {
 import FormContainer from '../forms/utilities/FormContainer'
 import { getPositionAndAddress, address } from '../utility/geolocation'
 import { mark } from '../utility/performance'
+import LiveRates from '../websocket/LiveRates'
+import Page from '../page/Page'
+import { Box, MyTypography } from '../themed/Box'
 
 const structure = [
   {
-    title: 'Looking for crypto?',
-    subtitle: "Select the coin you're after \n and  get the best offers around",
+    title: 'Crypto Purchase',
+    // subtitle: "Select the coin you're after \n and  get the best offers around",
     fields: [
       {
         name: 'payCurrency',
@@ -21,7 +24,7 @@ const structure = [
         update: 'coins',
         fieldSchema: string().required(),
         required: true,
-        label: 'What currency you are paying with',
+        label: 'What are you paying with',
         helper: "The currency I'm paying with",
       },
       {
@@ -31,13 +34,14 @@ const structure = [
         update: 'coins',
         fieldSchema: string().required('Please specify'),
         required: true,
-        label: 'What coin are you looking for',
+        label: 'What are you looking for',
         helper: "The currency I'm buying",
       },
       {
         name: 'center',
         type: 'location',
         value: address,
+        fieldSchema: string().required('Please specify'),
         label: 'Where to search for offers',
         helper: 'Center the search here',
         clearable: true,
@@ -47,7 +51,7 @@ const structure = [
         type: 'number',
         fieldSchema: number()
           .required()
-          .min(10, 'Amount should be greater than 10')
+          // .min(10, 'Amount should be greater than 10')
           .typeError('Please fill in'),
         required: true,
         label: 'How much do you need',
@@ -79,10 +83,6 @@ const Select = () => {
   const [state, setState] = useFormState(structure)
   const [schema, setSchema] = useState({})
 
-  window.state = state
-  window.setState = setState // setState in Chrome and see if the proper useEffect is called!
-  window.schema = schema
-
   // TODO: setLists and createSchema should be performed in FormContainer, not by a caller like Select
   useEffect(() => {
     getPositionAndAddress(setState)
@@ -107,14 +107,32 @@ const Select = () => {
     next: 'next',
   }
 
+  const header = () => {
+    const { title, subtitle } = structure[0]
+    const { getCurrency: coin, payCurrency: curr } = state.values
+    const selected = coin && curr
+    return (
+      <Box formVariant="header">
+        <MyTypography formVariant="header.title.typography">
+          {selected ? coin : title}
+        </MyTypography>
+
+        <MyTypography
+          formVariant="header.subtitle.typography"
+          style={{ whiteSpace: 'pre-line' }}
+        >
+          {selected ? <LiveRates {...{ coin, curr }} /> : subtitle}
+        </MyTypography>
+      </Box>
+    )
+  }
+
   return (
-    <FormContainer
-      state={state}
-      setState={setState}
-      schema={schema}
-      structure={structure}
-      show={show}
-    />
+    <Page>
+      <FormContainer
+        {...{ state, setState, schema, structure, show, header }}
+      />
+    </Page>
   )
 }
 

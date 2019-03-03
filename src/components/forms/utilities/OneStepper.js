@@ -9,22 +9,19 @@ const OneStepper = ({ structure, state, show, ...rest }) => {
 
   const footer = () => (
     <Grid container justify="center">
-      <Button component={Link} to={`/${show.next}`} disabled={!formValid()}>
+      <Button
+        variant="contained"
+        color="primary"
+        component={Link}
+        to={`/${show.next}`}
+        disabled={!formValid()}
+      >
         {show.submit || 'save'}
       </Button>
     </Grid>
   )
 
-  return (
-    <Form
-      structure={structure}
-      state={state}
-      show={show}
-      footer={footer}
-      step={0}
-      {...rest}
-    />
-  )
+  return <Form {...{ structure, state, show, footer, step: 0, ...rest }} />
 }
 
 export default OneStepper
