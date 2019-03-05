@@ -4,22 +4,23 @@ import { PropTypes } from 'prop-types'
 import getSymbolFromCurrency from 'currency-symbol-map'
 import NumberFormat from 'react-number-format'
 import { useTheme } from '@material-ui/styles'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
-const LiveRates = ({ coin, curr }) => {
-  const pair = `${coin}-${curr}`
+const LiveRates = ({ get, pay, amount }) => {
+  const pair = `${get}-${pay}`
   return coinbaseProducts.includes(pair) ? (
-    <GetLiveRates {...{ curr, pair }} />
+    <GetLiveRates {...{ pay, pair, amount }} />
   ) : (
-    <span />
+    <span>&nbsp;</span>
   )
 }
 
 LiveRates.propTypes = {
-  coin: PropTypes.string.isRequired,
-  curr: PropTypes.string.isRequired,
+  get: PropTypes.string.isRequired,
+  pay: PropTypes.string.isRequired,
 }
 
-const GetLiveRates = ({ curr, pair }) => {
+const GetLiveRates = ({ pay, pair, amount }) => {
   // This lazy form of useState is essential to avoid 429 responses (too many calls)
   const [websocket] = useState(
     () => new WebSocket('wss://ws-feed.pro.coinbase.com')
@@ -74,15 +75,20 @@ const GetLiveRates = ({ curr, pair }) => {
     secondary: { main: sec },
   } = theme.palette
 
-  return (
+  const { price, direction } = ticker
+  const paying = amount ? price * amount : null
+
+  return price ? (
     <NumberFormat
-      value={ticker.price}
+      value={paying || price}
       displayType={'text'}
       thousandSeparator={true}
       decimalScale={2}
-      prefix={getSymbolFromCurrency(curr)}
-      style={{ color: ticker.direction === 'up' ? sec : pri }}
+      prefix={getSymbolFromCurrency(pay)}
+      style={{ color: direction === 'up' ? sec : pri }}
     />
+  ) : (
+    <LinearProgress style={{ width: '100%' }} />
   )
 }
 

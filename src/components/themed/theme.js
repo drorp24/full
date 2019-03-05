@@ -33,33 +33,11 @@ const theme = createMuiTheme({
     },
   },
   form: {
-    root: {
-      width: '100%',
-      height: '100%',
-    },
     header: {
       height: '15%',
-      background: '#888', //temporary
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
       padding: createdTheme.spacing(2),
       textAlign: 'center',
-      title: {
-        typography: {
-          fontSize: '8vmin',
-          color: '#fff',
-          fontWeight: '300',
-        },
-      },
-      subtitle: {
-        typography: {
-          fontSize: '8vmin',
-          fontWeight: 300,
-          color: '#fff',
-        },
-      },
+      color: createdTheme.palette.action.active,
     },
     body: {
       height: '70%',
@@ -84,6 +62,27 @@ const theme = createMuiTheme({
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    typography: {
+      title: {
+        height: '50%',
+        fontSize: '6vmin',
+        color: '#000000',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      subtitle: {
+        height: '50%',
+        fontSize: '5vmin',
+        color: createdTheme.palette.text.secondary,
+        whiteSpace: 'pre-line',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
     },
   },
 })

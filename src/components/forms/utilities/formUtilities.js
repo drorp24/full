@@ -81,6 +81,34 @@ export const createSchema = (structure, state, setSchema) => {
 //
 const FormContext = React.createContext()
 
+// External libraries whose customization requires passing className (e.g. in 'InputProps')
+// require using makeStyles, which generates an obj named 'classes' with a className for each first-level (only!) key here.
+// If I just need to style any of my *own* components then useTheme will give me direct access to theme
+// but useTheme does not generate className's.
+const useFormStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: '1',
+    width: '100%',
+  },
+  primary: {
+    color: theme.palette.primary.main,
+  },
+  label: theme.form.body.fields.label,
+  phone: {
+    background: 'inherit',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
+    color: theme.palette.primary.main,
+  },
+  error: {
+    borderBottomColor: `${theme.palette.error.main} !important`,
+  },
+}))
+
+const Fields = ({ structure, step }) =>
+  structure[step].fields.map(({ name }) => <MemoField name={name} key={name} />)
+
 // TODO: Form is called for every keystroke (regardless of field)
 // most probably because it gets state as a prop rather than creating its own
 // EveryField stopped doing that as soon as it was memoized, but that didn't help Form
@@ -93,23 +121,24 @@ export const Form = ({
   show,
   header,
   footer,
-}) => (
-  <ErrorBoundary>
-    <FormContext.Provider
-      value={{ state, setState, schema, structure, step, show }}
-    >
-      <form autoComplete="off" style={{ height: '100%', width: '100%' }}>
-        <Box formVariant="header">{header && header()}</Box>
-        <Box formVariant="body" formColor="body.color">
-          {structure[step].fields.map(({ name }) => (
-            <MemoField name={name} key={name} />
-          ))}
-        </Box>
-        <Box formVariant="footer">{footer && footer(step)}</Box>
-      </form>
-    </FormContext.Provider>
-  </ErrorBoundary>
-)
+}) => {
+  const classes = useFormStyles()
+  return (
+    <ErrorBoundary>
+      <FormContext.Provider
+        value={{ state, setState, schema, structure, step, show }}
+      >
+        <form autoComplete="off" className={classes.root}>
+          <Box formVariant="header">{header && header()}</Box>
+          <Box formVariant="body" formColor="body.color">
+            <Fields {...{ structure, step }} />
+          </Box>
+          <Box formVariant="footer">{footer && footer(step)}</Box>
+        </form>
+      </FormContext.Provider>
+    </ErrorBoundary>
+  )
+}
 
 Form.propTypes = {
   state: PropTypes.object,
@@ -365,9 +394,9 @@ const NumberField = ({
           endAdornment: <ClearIcon {...{ name, setState }} />,
         }),
       }}
-      // InputLabelProps={{
-      //   className: classes.label,
-      // }}
+      InputLabelProps={{
+        className: classes.label,
+      }}
       name={name}
       value={value}
       {...rest}
@@ -441,6 +470,7 @@ const AutosuggestField = ({
           entireList,
           quantity: 90,
         },
+        disableUnderline: true,
       }}
       InputLabelProps={{
         className: classes.label,
@@ -476,6 +506,7 @@ const LocationField = ({
             endAdornment: () => <ClearIcon {...{ name, setState }} />,
           }),
         },
+        disableUnderline: true,
       }}
       InputLabelProps={{
         className: classes.label,
@@ -541,25 +572,6 @@ const IconAdornment = ({ icon, state }) => {
     </InputAdornment>
   )
 }
-
-// External libraries whose customization requires passing className (e.g. in 'InputProps')
-// require using makeStyles, which generates an obj named 'classes' with a className for each first-level (only!) key here.
-// If I just need to style any of my *own* components then useTheme will give me direct access to theme
-// but useTheme does not generate className's.
-const useFormStyles = makeStyles(theme => ({
-  primary: {
-    color: theme.palette.primary.main,
-  },
-  label: theme.form.body.fields.label,
-  phone: {
-    background: 'inherit',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
-    color: theme.palette.primary.main,
-  },
-  error: {
-    borderBottomColor: `${theme.palette.error.main} !important`,
-  },
-}))
 
 //
 // C. OnChange functions and validation

@@ -22,7 +22,9 @@ const FlagPure = ({ imageUrl, inlineImg, display }) => (
   <MyGrid container direction="column">
     {imageUrl ? (
       <MyGrid
+        container
         style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
+        justify="flex-end"
       >
         <LazyLoadImage
           effect="black-and-white"
@@ -106,7 +108,7 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
   const displayParts = parse(display, displayMatches)
 
   const Parts = ({ parts }) => (
-    <span>
+    <span style={{ marginRight: '1em' }}>
       {parts.map((part, index) =>
         part.highlight ? (
           <span
@@ -133,21 +135,28 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
 
   // Flex's 'nowrap' aligns the right-hand 2 items to the right beautifully. It's not the 'space-around' that does that
   return (
-    <MenuItem selected={isHighlighted} component="div">
-      <MyGrid container justify="flex-start" wrap="nowrap">
-        <MyGrid item style={{ maxWidth: '100%' }}>
-          <Parts parts={nameParts} />
+    <MenuItem
+      selected={isHighlighted}
+      component="div"
+      style={{ fontSize: '0.9rem' }}
+    >
+      <MyGrid container justify="space-between" wrap="nowrap">
+        <MyGrid item width={detail ? '60%' : '90%'}>
+          <MyGrid container justify="flex-start">
+            <MyGrid item width="3.6em">
+              <Parts parts={nameParts} />
+            </MyGrid>
+            <MyGrid item>
+              <Parts parts={displayParts} />
+            </MyGrid>
+          </MyGrid>
         </MyGrid>
 
-        <MyGrid item width="70%" ml={1}>
-          <Parts parts={displayParts} />
-        </MyGrid>
-
-        <MyGrid item mr={1} fs={0.75}>
+        <MyGrid item width={detail ? '30%' : '0%'} mr={1} fs={0.75}>
           {detail}
         </MyGrid>
 
-        <MyGrid item>
+        <MyGrid item width="10%">
           <Flag {...{ imageUrl, inlineImg, display }} />
         </MyGrid>
       </MyGrid>

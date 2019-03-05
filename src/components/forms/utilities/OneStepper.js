@@ -15,6 +15,7 @@ const OneStepper = ({ structure, state, show, ...rest }) => {
         component={Link}
         to={`/${show.next}`}
         disabled={!formValid()}
+        size="large"
       >
         {show.submit || 'save'}
       </Button>

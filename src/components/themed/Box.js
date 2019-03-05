@@ -94,6 +94,9 @@ Box.displayName = 'Box'
 export const MyTypography = styled(Typography)(form)
 MyTypography.displayName = 'MyTypography'
 
+// I still don't understand how can this method enable preventing custom props from leaking into native tags:
+// export const MyForm = ({ formVariant, ...other }) => styled('form')(form) ???
+
 const Arrange = ({ children, direction, ...other }) => (
   <Grid
     container
@@ -120,6 +123,7 @@ export const MyGrid = ({
   justify,
   alignItems,
   width,
+  wrap,
   ml,
   mr,
   fs,
@@ -128,6 +132,7 @@ export const MyGrid = ({
   const dir = container ? { direction: direction || 'row' } : {}
   const just = container ? { justify: justify || 'center' } : {}
   const align = container ? { alignItems: alignItems || 'center' } : {}
+  const wrp = container ? { wrap: wrap || 'nowrap' } : {}
   const style = {
     ...(item &&
       width && {
@@ -143,7 +148,15 @@ export const MyGrid = ({
 
   return (
     <Grid
-      {...{ container, ...dir, ...just, ...align, ...{ style }, ...other }}
+      {...{
+        container,
+        ...dir,
+        ...just,
+        ...align,
+        ...wrp,
+        ...{ style },
+        ...other,
+      }}
     />
   )
 }

@@ -1,9 +1,13 @@
 import React from 'react'
 import { Box } from '../themed/Box'
+import AppBar from './AppBar'
 
-const Page = ({ children }) => (
+const Page = ({ title, children }) => (
   <Box pageVariant="container">
-    <Box pageVariant="content">{children}</Box>
+    <Box pageVariant="content">
+      <AppBar title={title} />
+      {children}
+    </Box>
   </Box>
 )
 
