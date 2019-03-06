@@ -133,7 +133,7 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
     </span>
   )
 
-  // Flex's 'nowrap' aligns the right-hand 2 items to the right beautifully. It's not the 'space-around' that does that
+  // TODO: This calls for CSS Grid
   return (
     <MenuItem
       selected={isHighlighted}
@@ -141,22 +141,30 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
       style={{ fontSize: '0.9rem' }}
     >
       <MyGrid container justify="space-between" wrap="nowrap">
-        <MyGrid item width={detail ? '60%' : '90%'}>
+        <MyGrid
+          item
+          width={detail ? '60%' : imageUrl || inlineImg ? '90%' : '100%'}
+        >
           <MyGrid container justify="flex-start">
-            <MyGrid item width="3.6em">
+            <MyGrid item width={detail ? '3.6em' : '100%'}>
               <Parts parts={nameParts} />
             </MyGrid>
-            <MyGrid item>
+            <MyGrid>
               <Parts parts={displayParts} />
             </MyGrid>
           </MyGrid>
         </MyGrid>
 
-        <MyGrid item width={detail ? '30%' : '0%'} mr={1} fs={0.75}>
+        <MyGrid
+          item
+          width={detail ? '30%' : '0%'}
+          mr={detail ? 1 : 0}
+          fs={0.75}
+        >
           {detail}
         </MyGrid>
 
-        <MyGrid item width="10%">
+        <MyGrid item width={imageUrl || inlineImg ? '10%' : '0%'}>
           <Flag {...{ imageUrl, inlineImg, display }} />
         </MyGrid>
       </MyGrid>

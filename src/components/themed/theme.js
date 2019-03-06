@@ -16,7 +16,9 @@ const theme = createMuiTheme({
     useNextVariants: true,
   },
   palette: {
-    primary: purple, // any of Mui's set colors (purple in this case) is an entire obj with 'main', 'light', 'dark', 'contrastText' and [x] shade keys
+    primary: {
+      main: '#6200f2',
+    },
     secondary: green,
   },
   page: {
@@ -26,7 +28,7 @@ const theme = createMuiTheme({
     content: {
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      justifyContent: 'space-between',
       alignItems: 'center',
       width: '100%',
       height: '100%',
@@ -75,7 +77,7 @@ const theme = createMuiTheme({
       },
       subtitle: {
         height: '50%',
-        fontSize: '5vmin',
+        fontSize: '4.5vmin',
         color: createdTheme.palette.text.secondary,
         whiteSpace: 'pre-line',
         display: 'flex',

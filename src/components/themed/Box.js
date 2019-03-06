@@ -124,6 +124,7 @@ export const MyGrid = ({
   alignItems,
   width,
   wrap,
+  display,
   ml,
   mr,
   fs,
@@ -155,6 +156,7 @@ export const MyGrid = ({
         ...align,
         ...wrp,
         ...{ style },
+        ...display,
         ...other,
       }}
     />

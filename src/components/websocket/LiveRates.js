@@ -84,6 +84,7 @@ const GetLiveRates = ({ pay, pair, amount }) => {
       displayType={'text'}
       thousandSeparator={true}
       decimalScale={2}
+      fixedDecimalScale={true}
       prefix={getSymbolFromCurrency(pay)}
       style={{ color: direction === 'up' ? sec : pri }}
     />
