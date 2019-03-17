@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { setMessage, setCount } from './store/actions'
+import { setMessage, setCount } from './redux/actions'
 
 import 'typeface-roboto'
 
@@ -17,7 +17,7 @@ import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
 // import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
-import MerchantsRaw from './components/graphql/MerchantsRaw'
+import MerchantsTest from './components/graphql/Merchants'
 import Merchants from './components/list/Merchants'
 import Try from './components/utility/Try'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
@@ -71,7 +71,28 @@ class App extends Component {
             <Route path="/realtimetrading/" component={TradingUpdated} />
             <Route path="/trading" component={Trading} />
 
-            <Route path="/merchantsRaw" component={MerchantsRaw} />
+            <Route
+              path="/MerchantsTest"
+              render={() => (
+                <MerchantsTest
+                  currency="EUR"
+                  variables={{
+                    currency: 'EUR',
+                    area: {
+                      lat: 32.05,
+                      lng: 34.77,
+                      distance: 50,
+                    },
+                    services: {
+                      delivery: false,
+                    },
+                    results: {
+                      count: 3,
+                    },
+                  }}
+                />
+              )}
+            />
             <Route path="/merchants" component={Merchants} />
 
             <Route

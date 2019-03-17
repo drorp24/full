@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { setCount } from '../../store/actions'
+import { setCount } from '../../redux/actions'
 
 const Counter = props => (
   <button onClick={props.setCount}>Redux - {props.count} Clicks</button>

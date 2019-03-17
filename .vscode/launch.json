@@ -28,6 +28,18 @@
       "request": "launch",
       "name": "Browser Preview: Launch",
       "url": "http://localhost:3000"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/server/index .js",
+
+      "serverReadyAction": {
+        "pattern": "listening on port ([0-9]+)",
+        "uriFormat": "http://localhost:%s",
+        "action": "openExternally"
+      }
     }
   ]
 }

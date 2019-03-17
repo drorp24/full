@@ -108,7 +108,7 @@ Todo:
           ✔ Learn MUI Grid @done(19-01-30 19:32)
           ✔ Add a title, complete the page to adhere to MD's self-select model @done(19-01-30 11:43)
           ✔ Add a results page, which will eventually contain the list returned from server @done(19-02-04 23:53)
-          ☐ Move list and scheme creation from caller (e.g., 'Select', 'Delivery') to FormContainer
+          ✔ Move list and scheme creation from caller (e.g., 'Select', 'Delivery') to FormContainer @done(19-03-06 16:29)
       Center selection:
         ✔ Make 'center' a google location box with: @done(19-02-20 17:51)
           ✔ https://github.com/hibiken/react-places-autocomplete#readme @done(19-02-20 17:51)
@@ -125,19 +125,21 @@ Todo:
         ✔ Try using flags if svg and doesn't hit performance @done(19-02-13 17:18)
       Live rates:
         ✔ Show interbank live rate as soon as currency pair is selected - with green and red colors @started(19-02-20 17:52) @done(19-03-03 19:47) @lasted(1w4d1h55m21s)
-        ☐ Either move live rates from form header to App bar or better style form header 
+        ✔ Either move live rates from form header to App bar or better style form header @done(19-03-06 16:28)
     Search:
       GraphQL Server:
         ☐ Update the GraphQL resolver  / mongoose query to address the form's content
+        ☐ Support cursor-based pagination (define the page size  in 'results')
         ☐ Create the live, subscription-based rate server-side query 
         ☐ Update the crypto subscription query (server)
+        ☐ Use the apollo feature that * gradually / lazily * fetches more details (even if not required performance wise)
       GraphQL Client:
         ☐ Update the GraphQL client gql query to address the form's content
         ☐ Create the live, subscription-based rate client-side query 
         ☐ Update the crypto subscription query (client)
       State maintenance:
         ☐ Use Redux to store the received merchants
-        ☐ Use Immer in the Redux Reducers  
+        ☐ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?]
         ☐ https://github.com/mweststrate/immer#reducer-example 
         ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
     List:
@@ -146,7 +148,8 @@ Todo:
         ☐ Respond to query result by displaying a (unedited yet) list of merchants
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
       Endless Scrolling:
-        ☐ Read about endless scrolling / lazy loading best practices in react
+        ☐ Read about endless scrolling / lazy loading best practices in react:
+        https://addyosmani.com/blog/react-window/ 
         ☐ Try to find an npm package for that, look at 'react-window' and others (npms) 
         ☐ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom
     Map:
