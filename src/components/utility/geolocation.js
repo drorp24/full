@@ -37,7 +37,7 @@ export const getPositionAndAddress = async setState => {
       produce(draft => {
         draft.geolocation = { position }
         const { latitude, longitude } = position.coords
-        draft.values.latLng = { lat: latitude, lng: longitude, error: false }
+        draft.values.location = { lat: latitude, lng: longitude, error: false }
       })
     )
     const address = await getAddress(position)
@@ -51,7 +51,7 @@ export const getPositionAndAddress = async setState => {
     setState(
       produce(draft => {
         draft.geolocation = { error: error.toString() }
-        draft.values.latLng = { error: error.toString() }
+        draft.values.location = { error: error.toString() }
       })
     )
   }
@@ -60,11 +60,11 @@ export const getPositionAndAddress = async setState => {
 export const geocode = ({ value, setState }) => {
   geocodeByAddress(value)
     .then(results => {
-      getLatLng(results[0]).then(latLng => {
+      getLatLng(results[0]).then(location => {
         setState(
           produce(draft => {
-            const { lat, lng } = latLng
-            draft.values.latLng = { lat, lng, error: false }
+            const { lat, lng } = location
+            draft.values.location = { lat, lng, error: false }
           })
         )
       })
@@ -72,7 +72,7 @@ export const geocode = ({ value, setState }) => {
     .catch(error => {
       setState(
         produce(draft => {
-          draft.values.latLng = { error }
+          draft.values.location = { lat: null, lng: null, error }
         })
       )
       console.warn('geocodeByAddress error', error)

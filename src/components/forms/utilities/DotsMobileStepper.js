@@ -9,8 +9,18 @@ import {
   multiStepFormValidGeneric,
   visitUntouched,
 } from './formUtilities'
+import { connect } from 'react-redux'
+import { setSearch } from '../../../redux/actions'
+import mapStateToSearch from './mapStateToSearch'
 
-const DotsMobileStepper = ({ state, setState, schema, structure, show }) => {
+const DotsMobileStepper = ({
+  state,
+  setState,
+  schema,
+  structure,
+  show,
+  setSearch,
+}) => {
   const [activeStep, setActiveStep] = useState(0)
 
   function handleNext() {
@@ -37,6 +47,8 @@ const DotsMobileStepper = ({ state, setState, schema, structure, show }) => {
 
   const formValid = step => multiStepFormValidGeneric(structure, step, state)
 
+  const updateSearch = () => mapStateToSearch(state, setSearch)
+
   const footer = step => (
     <MobileStepper
       variant="dots"
@@ -55,6 +67,7 @@ const DotsMobileStepper = ({ state, setState, schema, structure, show }) => {
             to={`/${show.next}`}
             size="small"
             disabled={!formValid(step)}
+            onClick={updateSearch}
           >
             {show.submit || 'save'}
             <KeyboardArrowRight />
@@ -83,4 +96,7 @@ const DotsMobileStepper = ({ state, setState, schema, structure, show }) => {
   )
 }
 
-export default DotsMobileStepper
+export default connect(
+  ({ search }) => ({ search }),
+  { setSearch }
+)(DotsMobileStepper)

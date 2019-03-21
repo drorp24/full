@@ -10,18 +10,20 @@ const httpLink = new HttpLink({
   uri: process.env.REACT_APP_GRAPHQL_HTTP_ENDPOINT,
 })
 
-// errorLink is the only way to notice errors coming from the server
-// as they aren't included in Query's 'error' or 'data'
-const errorLink = onError(({ operation, graphQLErrors, networkError }) => {
-  console.log('errorLink:')
-  // Nice hack to safely access deeply nested obj keys
-  console.log('networkError: ', networkError)
-  console.log(
-    'query: ',
-    (((operation.query || {}).loc || {}).source || {}).body || {}
-  )
-  console.log('graphQLErrors: ', graphQLErrors)
-})
+// errorLink is the only way to identify   errors coming from the server
+// particularly when the query is wrongly structured or the data makes it fail (both yielding status 400)
+const errorLink = onError(
+  ({ operation, response, graphQLErrors, networkError }) => {
+    console.log('errorLink:')
+    // Nice hack to safely access deeply nested obj keys
+    console.log('networkError: ', networkError)
+    console.log(
+      'query: ',
+      (((operation.query || {}).loc || {}).source || {}).body || {}
+    )
+    console.log('graphQLErrors: ', graphQLErrors)
+  }
+)
 
 const wsLink = new WebSocketLink({
   uri: process.env.REACT_APP_GRAPHQL_WS_ENDPOINT,

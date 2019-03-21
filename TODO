@@ -128,7 +128,7 @@ Todo:
         ✔ Either move live rates from form header to App bar or better style form header @done(19-03-06 16:28)
     Search:
       GraphQL Server:
-        ☐ Update the GraphQL resolver  / mongoose query to address the form's content
+        ✔ Update the GraphQL resolver  / mongoose query to address the form's content @done(19-03-20 16:36)
         ☐ Support cursor-based pagination (define the page size  in 'results')
         ☐ Create the live, subscription-based rate server-side query 
         ☐ Update the crypto subscription query (server)

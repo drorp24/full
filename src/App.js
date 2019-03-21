@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { setMessage, setCount } from './redux/actions'
+import { setMessage, setCount, setSearch } from './redux/actions'
 
 import 'typeface-roboto'
 
@@ -17,8 +17,7 @@ import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
 import Trading from './components/graphql/Trading'
 // import CryptoChart from './components/websocket/CryptoChart'
 // import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
-import MerchantsTest from './components/graphql/Merchants'
-import Merchants from './components/list/Merchants'
+import Merchants from './components/app/Merchants'
 import Try from './components/utility/Try'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
 import Wizard from './components/forms/homemade/Wizard'
@@ -30,12 +29,16 @@ import Delivery from './components/app/Delivery'
 import { measure } from './components/utility/performance'
 import moize from 'moize'
 import Dashboard from './components/utility/Dashboard'
+import ErrorBoundary from './components/utility/boundary'
 
 class App extends Component {
   componentDidMount() {
     if (!this.props.message) {
       this.props.setMessage('Client')
     }
+
+    window.search = this.props.search
+    window.setSearch = this.props.setSearch
 
     // This hack puts the hook stylesheet that has every custom styling last so it can really override
     // Not clear why MUI put it first; since i'm using an alpha version of hooks, this might be a bug
@@ -51,7 +54,7 @@ class App extends Component {
 
   render() {
     return (
-      <>
+      <ErrorBoundary>
         <CssBaseline />
         <ThemeProvider theme={theme}>
           <Switch>
@@ -60,7 +63,6 @@ class App extends Component {
             <Route path="/delivery" component={Delivery} />
             <Route path="/next" component={Next} />
             <Route path="/dashboard" component={Dashboard} />
-
             <Route path="/wizard" component={Wizard} />
             <Route path="/practice" component={Practice} />
             {/* <Route path="/cryptochart" component={CryptoChart} /> */}
@@ -70,42 +72,17 @@ class App extends Component {
         	  /> */}
             <Route path="/realtimetrading/" component={TradingUpdated} />
             <Route path="/trading" component={Trading} />
-
-            <Route
-              path="/MerchantsTest"
-              render={() => (
-                <MerchantsTest
-                  currency="EUR"
-                  variables={{
-                    currency: 'EUR',
-                    area: {
-                      lat: 32.05,
-                      lng: 34.77,
-                      distance: 50,
-                    },
-                    services: {
-                      delivery: false,
-                    },
-                    results: {
-                      count: 3,
-                    },
-                  }}
-                />
-              )}
-            />
             <Route path="/merchants" component={Merchants} />
-
             <Route
               path="/asyncNotInitialRender"
               component={AsyncNotInitialRender}
             />
             <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
-
             <Route path="/topics" component={Topics} />
             <Route path="/try" component={Try} />
           </Switch>
         </ThemeProvider>
-      </>
+      </ErrorBoundary>
     )
   }
 }
@@ -114,13 +91,15 @@ class App extends Component {
 // most use the long version for no reason, having to use a different prop name
 export default withRouter(
   connect(
-    ({ text: { message }, counter: { count } }) => ({
+    ({ text: { message }, counter: { count }, search }) => ({
       message,
       count,
+      search,
     }),
     {
       setMessage,
       setCount,
+      setSearch,
     }
   )(App)
 )

@@ -67,6 +67,8 @@ const GetLiveRates = ({ pay, pair, amount }) => {
     websocket.onerror = response => {
       console.warn('a websocket error occured: ', response)
     }
+
+    if (subscribed) request('unsubscribe', subscribed)
   })
 
   const theme = useTheme()

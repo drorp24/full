@@ -1,4 +1,4 @@
-import { SET_MESSAGE, SET_COUNT } from './types'
+import { SET_MESSAGE, SET_COUNT, SET_SEARCH } from './types'
 
 export const setMessage = message => ({
   type: SET_MESSAGE,
@@ -23,3 +23,8 @@ export const setCount = () => (dispatch, getState) => {
     type: SET_COUNT,
   })
 }
+
+export const setSearch = search => ({
+  type: SET_SEARCH,
+  search,
+})

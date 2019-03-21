@@ -22,7 +22,7 @@ import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
 import { Box, Row } from '../../themed/Box'
 import capitalize from '../../utility/capitalize'
-import ErrorBoundary from '../../error/boundary'
+import ErrorBoundary from '../../utility/boundary'
 import Loader from '../../utility/Loader'
 import { getList, setList } from './lists'
 import { mark } from '../../utility/performance'
@@ -257,6 +257,7 @@ const MemoField = React.memo(EveryField)
 // Up until this point, everything is generic and shouldn't change much
 // Customization starts here
 
+// * Generate a dynamic (run-time) component name
 // This is the way to include a dynamic Component whose name is derived from a prop (in this case, 'type')
 // There's no 'Display' Component per ce, it's just a cover for a host of other components
 // Dynamic component is for cases where different components all require the same props but each does differet things with these same props
@@ -586,6 +587,7 @@ const handleEveryChange = ({
   schema,
 }) => {
   const error = checkByType({ name, type, fieldSchema, value, schema })
+  if (type === 'number') value = Number(value)
 
   setState(
     produce(draft => {

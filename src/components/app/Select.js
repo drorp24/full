@@ -10,7 +10,7 @@ const structure = [
     subtitle: 'Get the best offers',
     fields: [
       {
-        name: 'payCurrency',
+        name: 'quote',
         type: 'autosuggest',
         list: 'currencies',
         update: 'coins',
@@ -20,7 +20,7 @@ const structure = [
         helper: "The currency I'm paying with",
       },
       {
-        name: 'getCurrency',
+        name: 'base',
         type: 'autosuggest',
         list: 'coins',
         update: 'coins',
@@ -76,7 +76,7 @@ const Select = () => {
     helper: false,
     label: true,
     submit: 'get offers',
-    next: 'next',
+    next: 'merchants',
   }
 
   return (

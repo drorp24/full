@@ -2,15 +2,17 @@ import { gql } from 'apollo-boost'
 
 const NearbyMerchants = gql`
   query NearbyMerchants(
-    $currency: String!
-    $area: Area!
-    $services: Services!
+    $product: Product!
+    $amount: Float!
+    $service: Service
+    $area: Area
     $results: Results
   ) {
     merchants(
-      currency: $currency
+      product: $product
+      amount: $amount
+      service: $service
       area: $area
-      services: $services
       results: $results
     ) {
       id
@@ -19,8 +21,12 @@ const NearbyMerchants = gql`
       name_he
       delivery
       phone
-      quotation(currency: $currency) {
-        buy
+      quote(product: $product, amount: $amount) {
+        base
+        quote
+        amount
+        price
+        created
       }
     }
   }
