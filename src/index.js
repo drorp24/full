@@ -28,11 +28,11 @@ const AppBundle = (
   // <React.StrictMode>
   <ApolloProvider client={client}>
     <ReduxProvider store={store}>
-      {/* <PersistGate loading={null} persistor={persistor}> */}
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-      {/* </PersistGate> */}
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PersistGate>
     </ReduxProvider>
   </ApolloProvider>
   // </React.StrictMode>
