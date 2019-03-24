@@ -10,6 +10,7 @@ import Loadable from 'react-loadable'
 
 import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './redux/configureStore'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import { ApolloProvider } from 'react-apollo'
 import client from '../src/apollo/client'
@@ -17,7 +18,8 @@ import client from '../src/apollo/client'
 // in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
 // as there's no server to replace it with anything
 // it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
-const store = configureStore(module.hot ? {} : window.REDUX_STATE || {})
+const storeConfig = configureStore(module.hot ? {} : window.REDUX_STATE || {})
+const { store, persistor } = storeConfig
 
 // Wrap <App /> here with browser-specific components only
 //(put server-specific ones in server/middleware/renderer)
@@ -26,9 +28,11 @@ const AppBundle = (
   // <React.StrictMode>
   <ApolloProvider client={client}>
     <ReduxProvider store={store}>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
       <BrowserRouter>
         <App />
       </BrowserRouter>
+      {/* </PersistGate> */}
     </ReduxProvider>
   </ApolloProvider>
   // </React.StrictMode>
