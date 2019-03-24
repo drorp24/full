@@ -56,7 +56,6 @@
     "react-scripts": "2.1.1",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
-    "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
