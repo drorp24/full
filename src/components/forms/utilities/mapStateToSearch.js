@@ -4,7 +4,7 @@ const mapStateToSearch = (state, setSearch) => {
     quote,
     amount,
     delivery,
-    location: { lat, lng },
+    location: { lat = 32.0853, lng = 34.781769 },
     lookaround,
   } = state.values
 
@@ -22,8 +22,11 @@ const mapStateToSearch = (state, setSearch) => {
       lng,
       distance: lookaround ? 5 : 50,
     },
-    results: {
-      count: 10,
+    pagination: {
+      sortKey: '_id',
+      sortOrder: 'ascending',
+      after: '',
+      count: 2,
     },
   }
 

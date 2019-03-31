@@ -129,7 +129,7 @@ Todo:
     Search:
       GraphQL Server:
         ✔ Update the GraphQL resolver  / mongoose query to address the form's content @done(19-03-20 16:36)
-        ☐ ? persist redux so it survives page reloads
+        ✔ Persist redux so it survives page reloads @done(19-03-24 19:00)
         ☐ Support cursor-based pagination (define the page size  in 'results')
         ☐ Create the live, subscription-based rate server-side query 
         ☐ Update the crypto subscription query (server)
