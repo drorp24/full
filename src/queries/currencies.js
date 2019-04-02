@@ -51,13 +51,13 @@ export const currencySymbol = ({ values: { currency } }) =>
   mdiIcons.includes(currency) &&
   `Currency${capitalize(currency.toLowerCase())}`
 
-export const getCurrencySymbol = ({ values: { getCurrency } }) =>
-  !!getCurrency &&
-  mdiIcons.includes(getCurrency) &&
-  `Currency${capitalize(getCurrency.toLowerCase())}`
+export const baseSymbol = ({ values: { base } }) =>
+  !!base &&
+  mdiIcons.includes(base) &&
+  `Currency${capitalize(base.toLowerCase())}`
 
-export const getCurrencyOptions = ({ values: { payCurrency } }) =>
-  currencies.filter(currency => currency.value !== payCurrency)
+export const baseOptions = ({ values: { quote } }) =>
+  currencies.filter(currency => currency.value !== quote)
 
-export const payCurrencyOptions = ({ values: { getCurrency } }) =>
-  currencies.filter(currency => currency.value !== getCurrency)
+export const quoteOptions = ({ values: { base } }) =>
+  currencies.filter(currency => currency.value !== base)

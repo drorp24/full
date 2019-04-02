@@ -1,98 +1,140 @@
 import React, { useEffect, useState } from 'react'
-import { coinbaseProducts } from '../forms/utilities/lists'
 import { PropTypes } from 'prop-types'
 import getSymbolFromCurrency from 'currency-symbol-map'
 import NumberFormat from 'react-number-format'
-import { useTheme } from '@material-ui/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
-const LiveRates = ({ get, pay, amount }) => {
-  const pair = `${get}-${pay}`
-  return coinbaseProducts.includes(pair) ? (
-    <GetLiveRates {...{ pay, pair, amount }} />
-  ) : (
-    <span>&nbsp;</span>
-  )
-}
-
-LiveRates.propTypes = {
-  get: PropTypes.string.isRequired,
-  pay: PropTypes.string.isRequired,
-}
-
-const GetLiveRates = ({ pay, pair, amount }) => {
+const LiveRates = ({ base, quote, quantity }) => {
   // This lazy form of useState is essential to avoid 429 responses (too many calls)
   const [websocket] = useState(
     () => new WebSocket('wss://ws-feed.pro.coinbase.com')
   )
+
+  // 'subscribed' isn't used as neither websocket.x nor request are able to access it (See comments)
   const [subscribed, setSubscribed] = useState(null)
+
   const [ticker, setTicker] = useState({
     product_id: null,
     price: null,
     direction: null,
   })
 
-  const request = (type, pair) => {
-    const message = {
-      type,
-      channels: [
-        {
-          name: 'ticker',
-          product_ids: [pair],
-        },
-      ],
-    }
-    websocket.send(JSON.stringify(message))
-    setSubscribed(type === 'subscribe' ? pair : null)
+  // ? The unsubscribe paradox
+  // ? TL;DR: unsubscribe requires calling useEffect with '[]', which prevents it from accessing state,
+  // ? which forces you to call state update functional form only to access state, which is forbidden while unmounting
+  //
+  // since useEffect can't provide 'pair's value to unsubscribe (see comment there), request has to come up with it
+  // but simply accessing 'subscribed' will show empty value
+  // maybe because caller useEffect calls 'request' only upon mounting, which makes 'request' capture the initial, empty 'subscribed' value
+  // so in order to obtain the 'pair' value I'm wrapping everything in 'request' in a state update functional form
+  // (same thing I did with websocket.onmessage, that had to access current price in order to populate direction)
+  // but then I'm being yelled at for updating state while unmounting ('Can't perform a React state update on an unmounted component')
+  // since there is no other way to access the current subscribed pair, I see no other way but to live with it!
+  //
+  // I may be missing something here, as unsubscribing typically requires using useEffect with '[]',
+  // so if calling it with [] means its cleanup function wouldn't be able to access current state,
+  // or make you compelled to update state only to obtain its value, which is forbidden upon unmounting,
+  // then this would imply react hooks would have a serious flaw, which i find it hard to believe
+  const request = (type, pair = null) => {
+    console.log('request called with: ', type)
+
+    setSubscribed(currSubscribed => {
+      console.log('currSubscribed: ', currSubscribed)
+      const product_ids = pair ? [pair] : currSubscribed
+
+      const message = {
+        type,
+        channels: [
+          {
+            name: 'ticker',
+            product_ids,
+          },
+        ],
+      }
+
+      websocket.send(JSON.stringify(message))
+
+      return [pair]
+    })
   }
 
   useEffect(() => {
+    const pair = `${base}-${quote}`
+
     websocket.onopen = () => {
-      if (subscribed) request('unsubscribe', subscribed)
       request('subscribe', pair)
     }
 
     websocket.onmessage = response => {
       const data = JSON.parse(response.data)
-      const { type, product_id, price, message, reason } = data
-      if (type === 'error') {
-        const error = `${message}: ${reason}`
-        console.warn('Coinbase error:', error)
-        return
+      switch (data.type) {
+        case 'subscriptions': {
+          // console.log('Coinbase subscription message. Channels: ', data.channels)
+          break
+        }
+        case 'ticker': {
+          const { product_id, price } = data
+          // console.log('Coinbase ticker message: ', product_id, price)
+          if (product_id && price) {
+            // using the functional form is the only way to get curr ticker's value. 'ticker' itself looks empty when accessed!
+            setTicker(currTicker => ({
+              product_id,
+              price,
+              direction: price > (currTicker.price || 0) ? 'up' : 'down',
+            }))
+          } else {
+            console.log("ticker message doesn't include product_id && price")
+          }
+          break
+        }
+        case 'error': {
+          const { message, reason } = data
+          const error = `${message}: ${reason}`
+          console.warn('Coinbase error message:', error)
+          break
+        }
+        default: {
+          console.log('Coinbase websocket unidentified data received: ', data)
+        }
       }
-      const direction = price > Number(ticker.price) ? 'up' : 'down'
-      setTicker({ product_id, price, direction })
     }
 
     websocket.onerror = response => {
-      console.warn('a websocket error occured: ', response)
+      console.warn('Coinbase websocket error: ', response)
     }
 
-    if (subscribed) request('unsubscribe', subscribed)
-  })
-
-  const theme = useTheme()
-  const {
-    primary: { main: pri },
-    secondary: { main: sec },
-  } = theme.palette
+    // without [], cleanup will be called after each render, not upon unmount
+    // however calling useEffect upon mount & unmount only ([]) makes it unable to read up-to-date 'subscribed' value
+    return () => {
+      request('unsubscribe')
+    }
+  }, [])
 
   const { price, direction } = ticker
-  const paying = amount ? price * amount : null
+  const value = Number(price)
 
-  return price ? (
+  return <Price {...{ value, quantity, direction, quote }} />
+}
+
+const Price = ({ value, quantity, direction = 'up', quote }) =>
+  value ? (
     <NumberFormat
-      value={paying || price}
+      value={value * quantity}
       displayType={'text'}
       thousandSeparator={true}
       decimalScale={2}
       fixedDecimalScale={true}
-      prefix={getSymbolFromCurrency(pay)}
-      style={{ color: direction === 'up' ? sec : pri }}
+      prefix={getSymbolFromCurrency(quote)}
+      style={{ color: direction === 'up' ? 'green' : 'red' }}
     />
   ) : (
     <LinearProgress style={{ width: '100%' }} />
   )
+
+LiveRates.propTypes = {
+  base: PropTypes.string.isRequired,
+  quote: PropTypes.string.isRequired,
+  quantity: PropTypes.number.isRequired,
 }
 
 export default LiveRates

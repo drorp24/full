@@ -370,7 +370,7 @@ const NumberField = ({
   const context = useContext(FormContext)
   const { state, setState } = context
   const {
-    values: { getCurrency },
+    values: { base },
   } = state
 
   return (
@@ -384,7 +384,7 @@ const NumberField = ({
           value,
           thousandSeparator: true,
           onValueChange: onChange,
-          prefix: getSymbolFromCurrency(getCurrency),
+          prefix: getSymbolFromCurrency(base),
         },
         // Typically with TextField, 'value' and 'onChange' are props of TextField,
         // that in turn passes them onto the inputComponent, but has to know the value too, as well as error and helpText passed in ...rest

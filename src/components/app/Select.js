@@ -40,7 +40,7 @@ const structure = [
         label: 'How much do you need',
         helper: 'The amount I need',
         clearable: true,
-        // icon: getCurrencySymbol,
+        // icon: baseSymbol,
       },
       {
         name: 'center',

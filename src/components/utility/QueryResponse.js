@@ -1,6 +1,5 @@
 import React from 'react'
 import Messages from '../utility/Messages'
-import Merchant from '../app/Merchant'
 import Loader from '../utility/Loader'
 import Button from '@material-ui/core/Button'
 
@@ -28,7 +27,7 @@ const QueryResponse = ({
       const Component = component
       return (
         <>
-          {data[entity].records.map(record => (
+          {records.map(record => (
             <Component record={record} key={record.id} />
           ))}
           {hasMore && (

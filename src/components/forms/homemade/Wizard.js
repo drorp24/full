@@ -3,7 +3,7 @@
 import React from 'react'
 import { string, number } from 'yup'
 import FormContainer from '../utilities/FormContainer'
-import { currencySymbol, getCurrencyOptions } from '../../../queries/currencies'
+import { currencySymbol, baseOptions } from '../../../queries/currencies'
 import { useFormState, createSchema } from '../utilities/formUtilities'
 
 const structure = [
@@ -17,7 +17,7 @@ const structure = [
         fieldSchema: string().required(),
         required: true,
         // value: 'USD',
-        options: getCurrencyOptions,
+        options: baseOptions,
         helper: 'Which currency do you wish to buy',
         icon: 'Cash',
       },
