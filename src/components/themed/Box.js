@@ -97,11 +97,11 @@ MyTypography.displayName = 'MyTypography'
 // I still don't understand how can this method enable preventing custom props from leaking into native tags:
 // export const MyForm = ({ formVariant, ...other }) => styled('form')(form) ???
 
-const Arrange = ({ children, direction, ...other }) => (
+const Arrange = ({ children, direction, justify, ...other }) => (
   <Grid
     container
     direction={direction}
-    justify="space-between"
+    justify={justify || 'space-between'}
     alignItems="center"
     {...other}
   >
@@ -109,11 +109,11 @@ const Arrange = ({ children, direction, ...other }) => (
   </Grid>
 )
 
-export const Column = ({ children, ...other }) => (
-  <Arrange direction="column" {...{ children, ...other }} />
+export const Column = ({ children, justify, ...other }) => (
+  <Arrange direction="column" {...{ children, justify, ...other }} />
 )
-export const Row = ({ children, ...other }) => (
-  <Arrange direction="row" {...{ children, ...other }} />
+export const Row = ({ children, justify, ...other }) => (
+  <Arrange direction="row" {...{ children, justify, ...other }} />
 )
 
 export const MyGrid = ({

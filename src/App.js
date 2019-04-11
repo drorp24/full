@@ -54,35 +54,41 @@ class App extends Component {
 
   render() {
     return (
-      <ErrorBoundary>
+      <>
         <CssBaseline />
         <ThemeProvider theme={theme}>
-          <Switch>
-            <Redirect exact from="/" to="/select" />
-            <Route path="/select" component={Select} />
-            <Route path="/delivery" component={Delivery} />
-            <Route path="/next" component={Next} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/wizard" component={Wizard} />
-            <Route path="/practice" component={Practice} />
-            {/* <Route path="/cryptochart" component={CryptoChart} /> */}
-            {/* <Route
+          {/* ! ErrorBoundary must be beneath ThemeProvider */}
+          <ErrorBoundary>
+            <Switch>
+              <Redirect exact from="/" to="/select" />
+              <Route path="/select" component={Select} />
+              <Route path="/delivery" component={Delivery} />
+              <Route path="/next" component={Next} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/wizard" component={Wizard} />
+              <Route path="/practice" component={Practice} />
+              {/* <Route path="/cryptochart" component={CryptoChart} /> */}
+              {/* <Route
         	      path="/cryptochartUsingHooks"
         	      component={CryptoChartUsingHooks}
         	  /> */}
-            <Route path="/realtimetrading/" component={TradingUpdated} />
-            <Route path="/trading" component={Trading} />
-            <Route path="/merchants" component={Merchants} />
-            <Route
-              path="/asyncNotInitialRender"
-              component={AsyncNotInitialRender}
-            />
-            <Route path="/asyncLazyComponent" component={AsyncLazyComponent} />
-            <Route path="/topics" component={Topics} />
-            <Route path="/try" component={Try} />
-          </Switch>
+              <Route path="/realtimetrading/" component={TradingUpdated} />
+              <Route path="/trading" component={Trading} />
+              <Route path="/merchants" component={Merchants} />
+              <Route
+                path="/asyncNotInitialRender"
+                component={AsyncNotInitialRender}
+              />
+              <Route
+                path="/asyncLazyComponent"
+                component={AsyncLazyComponent}
+              />
+              <Route path="/topics" component={Topics} />
+              <Route path="/try" component={Try} />
+            </Switch>
+          </ErrorBoundary>
         </ThemeProvider>
-      </ErrorBoundary>
+      </>
     )
   }
 }

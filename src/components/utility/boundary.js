@@ -17,6 +17,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    console.log('componentDidCatch: reached ErrorBoudary')
     // Catch errors in any components below and re-render with error message
     this.setState({
       error: error,
@@ -36,7 +37,7 @@ export default class ErrorBoundary extends React.Component {
             justify="center"
             alignContent="center"
             alignItems="center"
-            style={{ height: '50vh' }}
+            style={{ height: '100vh' }}
           >
             <Grid item>
               <Typography variant="h3" gutterBottom>

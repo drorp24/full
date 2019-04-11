@@ -26,7 +26,7 @@ const mapStateToSearch = (state, setSearch) => {
       sortKey: '_id',
       sortOrder: 'ascending',
       after: '',
-      count: 2,
+      count: 1000,
     },
   }
 

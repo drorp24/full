@@ -146,14 +146,18 @@ Todo:
         ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
     List:
       Merchants list:
-        ☐ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters
-        ☐ Respond to query result by displaying a (unedited yet) list of merchants
+        ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
+        ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
-      Endless Scrolling:
-        ☐ Read about endless scrolling / lazy loading best practices in react:
+      Endless Scrolling and lazy loading (not the same thing):
+        ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
         https://addyosmani.com/blog/react-window/ 
-        ☐ Try to find an npm package for that, look at 'react-window' and others (npms) 
-        ☐ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom
+        ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
+        ✘ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom @cancelled(19-04-08 16:56)
+        ✔ use react-window for windowing (= rendering only what's visible with every scroll) @done(19-04-11 15:59)
+        ✔ use react-virtualized-auto-sizer to capture all available space if required @done(19-04-11 16:00)
+        ☐ Use react-window-infinite-loader for lazy loading (using graphql's implemented pagination)
+        ✘ use react-virtualized/WindowScroller for scroll bar if required @cancelled(19-04-11 16:00)
     Map:
       ☐ Create a google map component whose center is user's location displaying nearby merchants
       ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
