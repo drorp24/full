@@ -14,7 +14,7 @@ const Merchants = ({ search }) => (
       variables={search}
       fetchPolicy="cache-and-network"
       errorPolicy="all"
-      notifyOnNetworkStatusChange={true}
+      notifyOnNetworkStatusChange={false}
     >
       {({ loading, error, data, fetchMore }) => (
         <QueryResponse

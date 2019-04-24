@@ -1,5 +1,4 @@
 import { createMuiTheme } from '@material-ui/core/styles'
-import purple from '@material-ui/core/colors/purple'
 import green from '@material-ui/core/colors/green'
 
 // Can't think of any other way to customize the theme based on its own values
