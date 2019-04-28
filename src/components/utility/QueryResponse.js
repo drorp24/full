@@ -1,6 +1,7 @@
-// A generic GraphQL response, yielding a Loader, a page with Messages or a List
-// Result handling (here) and list windowing (List) are entirely generic
-// What to render is passed in the 'component' render prop
+// A generic GraphQL response, yielding a Loader / a page with Messages / or a List
+// ApolloClient Query 'loading' is actually ignored and empty 'data' is used instead because of the inifinite loading mechanism used
+// Result handling (here) and list windowing and inifinite loading (handled by WiundowedList) are entirely generic
+// The only non-generic thing is what component to render for every item, which is passed in the 'component' render prop
 import React from 'react'
 import Messages from '../utility/Messages'
 import Loader from '../utility/Loader'
@@ -11,10 +12,11 @@ import List from '../list/WindowedList'
 // When InfiniteLoader is used as in this case, the server is called repeatedly instead of just once
 // making each such call return here, with 'loading' = true
 // that 'loading' should not render anything or else whatever it renders will flush the UI.
-// Instead, empty 'data' identifies the *initial* loading state and renders the appropriate <Loader />:
-// Unlike 'loading', data would never be empty again in its next returns here, so it won't flush the already displayed records.
-// As for 'loading', it is passed on to 'List' so that InfiniteLoader's loadMoreItems would prevent duplicate calls to the server
-// Pagination 'Loading...' indicators are displayed by adding an extra record to the UI and leaving it with 'Loading...' until that record is populated in 'records'
+// Instead, initial loading is identified by empty 'data' (rendering the animated <Loader /> in this case)
+// (unlike 'loading', data would never be empty again in its next returns here, so it won't flush the already displayed records)
+// whereas pagination 'Loading...' is identified on the record level (using InfiniteLoader's isItemLoaded) and displayed on the record level too
+// (by defining InfiniteLoader's itemCount to the already fetched records length + 1 I made 'Loading...' show on one single record only, but that's entirely UI)
+// Query's 'loading' itself is used to prevent InfiniteLoader's loadMoreItems from calling the same page more than once if that page is already loading
 const QueryResponse = ({
   loading,
   error,

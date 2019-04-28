@@ -1,3 +1,5 @@
+// An entirely generic windowed, and infinite loaded, list
+// See comment on QueryResponse.js
 import React from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { FixedSizeList } from 'react-window'
@@ -23,6 +25,7 @@ const List = ({
 }) => {
   //
   const Item = ({ index, style }) => {
+    // That trick again to pass a component rather than a render prop/function
     const Component = component
     const record = isItemLoaded(index) ? records[index] : null
     const render = isItemLoaded(index) ? null : <Loader />
@@ -41,7 +44,9 @@ const List = ({
   const isItemLoaded = index => !hasMore || index < records.length
 
   // InfiniteLoader may call loadMoreItems more than once with the same indexes if records aren't loaded yet
-  // Passing an empty callback while still loading prevents duplicate calls
+  // Worse yet, these duplicate records get appended to the list
+  // Passing an empty callback while still loading prevents duplicate calls / duplicate entries
+  // loadMoreItems simply invokes ApolloClient Query's 'fetchMore' to call for the next page and append the fetched new records
   const loadMoreItems = loading
     ? () => {}
     : (startIndex, stopIndex) =>
@@ -82,8 +87,9 @@ const List = ({
     >
       {({ onItemsRendered, ref }) => (
         <>
+          {/* No clue what onItemsRendered, ref are and no documentation  */}
           {/* FixedSizeList expects explicit numeric sizes. AutoSizer provides them, but comes with 'height: 0' and 'width: 0' */}
-          {/* 'display: contents' makes Page include 'FixedSizeList' in the flexbox rather than 'AutoSizer' */}
+          {/* To fix this 'display: contents' makes Page include its child 'FixedSizeList' in the flexbox rather than 'AutoSizer' itself */}
           <AutoSizer style={{ display: 'contents' }}>
             {({ height, width }) => {
               return (

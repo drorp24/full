@@ -63,7 +63,7 @@ class App extends Component {
               <Redirect exact from="/" to="/select" />
               <Route path="/select" component={Select} />
               <Route path="/delivery" component={Delivery} />
-              <Route path="/next" component={Next} />
+              {/* <Route path="/next" component={Next} /> */}
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/wizard" component={Wizard} />
               <Route path="/practice" component={Practice} />
