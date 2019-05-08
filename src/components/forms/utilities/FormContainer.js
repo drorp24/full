@@ -12,7 +12,7 @@ import LiveRates from '../../websocket/LiveRates'
 import { MyTypography } from '../../themed/Box'
 import { coinbaseProducts } from '../../forms/utilities/lists'
 
-const FormContainr = ({ structure, show }) => {
+const FormContainer = ({ structure, show }) => {
   const [state, setState] = useFormState(structure)
   const [schema, setSchema] = useState({})
 
@@ -73,4 +73,4 @@ const FormContainr = ({ structure, show }) => {
   )
 }
 
-export default FormContainr
+export default FormContainer

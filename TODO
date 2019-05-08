@@ -144,12 +144,21 @@ Todo:
         ☐ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?]
         ☐ https://github.com/mweststrate/immer#reducer-example 
         ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
-    List:
-      Merchants list:
+      Selection:
+        Backdrop:
+          ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
+      Communication:
+        Banner / Snackbar: 
+          ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
+      List:
+        Merchants list:
         ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
         ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
         ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
-      Endless Scrolling and lazy loading (not the same thing):
+        ☐ Enable 'swap to buy' if supported by MUI
+        ☐ Enable item reodering if supported by MUI
+        ☐ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior)
+        Endless Scrolling and lazy loading (not the same thing):
         ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
         https://addyosmani.com/blog/react-window/ 
         ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
@@ -168,7 +177,12 @@ Todo:
       ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
     Card:
       ☐ Create a merchant card
-      ☐ Make a list click link t   o mer chant's card
+      ☐ Make a list click link to mer chant's card
+    Ordering:
+      ☐ Use a FAB to order
+      ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
+    Payment: 
+      ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
     Information:
       ☐ Make a reviews page like the one I had in Cambiu
       ☐ Make a live ws-based crypto graph for 3 crypto currencies

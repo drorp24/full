@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/styles'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it
-import Loader from '../utility/Loader'
 
 const useItemStyles = makeStyles({
   odd: {
@@ -27,13 +26,14 @@ const List = ({
   const Item = ({ index, style }) => {
     // That trick again to pass a component rather than a render prop/function
     const Component = component
-    const record = isItemLoaded(index) ? records[index] : null
-    const render = isItemLoaded(index) ? null : <Loader />
+    const itemLoaded = isItemLoaded(index)
+    const loading = !itemLoaded
+    const record = itemLoaded ? records[index] : null
     const classes = useItemStyles()
     const { odd, even } = classes
     const className = index % 2 ? odd : even
 
-    return <Component {...{ record, render, className, style }} />
+    return <Component {...{ loading, record, className, style }} />
   }
 
   // If there are more items to be loaded then add an extra item to hold a loading indicator.
