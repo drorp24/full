@@ -1,6 +1,41 @@
 import { gql } from 'apollo-boost'
 
-const NearbyMerchantsQuery = gql`
+export const mapFormToMerchantQueryVariables = form => {
+  const {
+    base,
+    quote,
+    amount,
+    delivery,
+    location: { lat = 32.0853, lng = 34.781769 },
+    lookaround,
+  } = form.values
+
+  const search = {
+    product: {
+      base,
+      quote,
+    },
+    amount,
+    service: {
+      delivery,
+    },
+    area: {
+      lat,
+      lng,
+      distance: lookaround ? 5 : 50,
+    },
+    pagination: {
+      sortKey: '_id',
+      sortOrder: 'ascending',
+      after: '',
+      count: 8,
+    },
+  }
+
+  return search
+}
+
+const merchantsQuery = gql`
   query NearbyMerchants(
     $product: Product!
     $amount: Float!
@@ -36,4 +71,4 @@ const NearbyMerchantsQuery = gql`
   }
 `
 
-export default NearbyMerchantsQuery
+export default merchantsQuery

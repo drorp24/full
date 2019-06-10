@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { setMessage, setCount, setSearch } from './redux/actions'
+import { setMessage, setCount } from './redux/actions'
 
 import 'typeface-roboto'
 
@@ -20,8 +20,7 @@ import Trading from './components/graphql/Trading'
 import Merchants from './components/app/Merchants'
 import Try from './components/utility/Try'
 import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-import Wizard from './components/forms/homemade/Wizard'
-import Next from './components/utility/Next'
+// import Wizard from './components/forms/homemade/Wizard'
 
 import Select from './components/app/Select'
 import Delivery from './components/app/Delivery'
@@ -36,9 +35,6 @@ class App extends Component {
     if (!this.props.message) {
       this.props.setMessage('Client')
     }
-
-    window.search = this.props.search
-    window.setSearch = this.props.setSearch
 
     // This hack puts the hook stylesheet that has every custom styling last so it can really override
     // Not clear why MUI put it first; since i'm using an alpha version of hooks, this might be a bug
@@ -65,7 +61,7 @@ class App extends Component {
               <Route path="/delivery" component={Delivery} />
               {/* <Route path="/next" component={Next} /> */}
               <Route path="/dashboard" component={Dashboard} />
-              <Route path="/wizard" component={Wizard} />
+              {/* <Route path="/wizard" component={Wizard} /> */}
               <Route path="/practice" component={Practice} />
               {/* <Route path="/cryptochart" component={CryptoChart} /> */}
               {/* <Route
@@ -105,7 +101,6 @@ export default withRouter(
     {
       setMessage,
       setCount,
-      setSearch,
     }
   )(App)
 )

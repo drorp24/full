@@ -1,16 +1,14 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { Form, multiStepFormValidGeneric } from './formUtilities'
-import { connect } from 'react-redux'
-import { setSearch } from '../../../redux/actions'
-import mapStateToSearch from './mapStateToSearch'
 
-const OneStepper = ({ structure, state, show, search, setSearch, ...rest }) => {
-  const formValid = () => multiStepFormValidGeneric(structure, 0, state)
-
-  const updateSearch = () => mapStateToSearch(state, setSearch)
+const OneStepper = ({ structure, schema, show, ...rest }) => {
+  const form = useSelector(store => store.form)
+  const formValid = () => multiStepFormValidGeneric(structure, 0, form)
 
   const footer = () => (
     <Grid container justify="center">
@@ -21,17 +19,13 @@ const OneStepper = ({ structure, state, show, search, setSearch, ...rest }) => {
         to={`/${show.next}`}
         disabled={!formValid()}
         size="large"
-        onClick={updateSearch}
       >
         {show.submit || 'save'}
       </Button>
     </Grid>
   )
 
-  return <Form {...{ structure, state, show, footer, step: 0, ...rest }} />
+  return <Form {...{ structure, schema, show, step: 0, footer, ...rest }} />
 }
 
-export default connect(
-  ({ search }) => ({ search }),
-  { setSearch }
-)(OneStepper)
+export default OneStepper

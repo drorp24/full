@@ -1,4 +1,4 @@
-import { SET_MESSAGE, SET_COUNT, SET_SEARCH } from './types'
+import { SET_MESSAGE, SET_COUNT, SET_FORM, SET_LIST } from './types'
 
 export const setMessage = message => ({
   type: SET_MESSAGE,
@@ -24,7 +24,13 @@ export const setCount = () => (dispatch, getState) => {
   })
 }
 
-export const setSearch = search => ({
-  type: SET_SEARCH,
-  search,
+export const setForm = form => ({
+  type: SET_FORM,
+  form,
+})
+
+export const setList = ({ name, list }) => ({
+  type: SET_LIST,
+  name,
+  list,
 })

@@ -5,12 +5,11 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  switch (action.type) {
+  const { type, message } = action
+  switch (type) {
     case SET_MESSAGE:
-      return {
-        ...state,
-        message: action.message,
-      }
+      return message
+
     default:
       return state
   }

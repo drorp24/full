@@ -3,10 +3,12 @@
 import { combineReducers } from 'redux'
 import text from './text'
 import counter from './counter'
-import search from './search'
+import form from './form'
+import lists from './lists'
 
 export default combineReducers({
   text,
   counter,
-  search,
+  form,
+  lists,
 })

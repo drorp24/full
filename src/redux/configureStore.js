@@ -18,7 +18,9 @@ export default (initialState = {}) => {
   const store = createStore(
     persistedReducer,
     initialState,
-    composeWithDevTools(applyMiddleware(thunk /*, logger */))
+    composeWithDevTools({ trace: true, traceLimit: 25 })(
+      applyMiddleware(thunk /*, logger */)
+    )
   )
   const persistor = persistStore(store)
   return { store, persistor }

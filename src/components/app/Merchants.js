@@ -3,18 +3,21 @@ import Page from '../page/Page'
 import { useSelector } from 'react-redux'
 import { Query } from 'react-apollo'
 
-import merchants from '../../queries/nearbyMerchants'
+import merchantsQuery, {
+  mapFormToMerchantQueryVariables,
+} from '../../queries/merchantsQuery'
 import QueryResponse from '../utility/QueryResponse'
 import Merchant from './Merchant'
 
 const Merchants = () => {
   // Look ma, no connect!
-  const search = useSelector(state => state.search)
+  const form = useSelector(state => state.form)
+  const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
   return (
     <Page title="Merchants">
       <Query
-        query={merchants}
-        variables={search}
+        query={merchantsQuery}
+        variables={merchantsQueryVariables}
         fetchPolicy="cache-and-network"
         errorPolicy="all"
         notifyOnNetworkStatusChange={false}

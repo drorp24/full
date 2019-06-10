@@ -1,4 +1,6 @@
-import React, { Suspense, useState, useContext } from 'react'
+import React, { Suspense, useContext, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setForm } from '../../../redux/actions'
 import PropTypes from 'prop-types'
 import { produce } from 'immer'
 
@@ -24,18 +26,19 @@ import { Box, Row } from '../../themed/Box'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../utility/boundary'
 import Loader from '../../utility/Loader'
-import { getList, setList } from './lists'
-import { mark } from '../../utility/performance'
+import { setList } from './lists'
+// import { mark } from '../../utility/performance'
 import LocationSearchInput from './LocationSearchInput'
 import { geocode } from '../../utility/geolocation'
+
 import getSymbolFromCurrency from 'currency-symbol-map'
 
 //
 // A. Utility functions to create/modify state, lists and schema
 //
-export const useFormState = structure => {
-  const state = { values: {}, touched: {}, errors: {} }
-  const { values, touched, errors } = state
+export const createFormStateFromStructure = structure => {
+  const form = { values: {}, touched: {}, errors: {} }
+  const { values, touched, errors } = form
 
   getFields(structure).forEach(({ name, value = '', fieldSchema }) => {
     values[name] = value
@@ -48,23 +51,23 @@ export const useFormState = structure => {
     }
   })
 
-  return useState(state)
+  return form
 }
 
-export const setLists = (structure, setState) => {
+export const setLists = ({ structure, form, updateList }) => {
   getFields(structure)
     .filter(field => !!field.list)
     .forEach(({ list }) => {
-      setList({ list, setState })
+      setList({ list, form, updateList })
     })
 }
 
-export const createSchema = (structure, state, setSchema) => {
+export const createSchema = (structure, lists, setSchema) => {
   const shape = {}
 
   getFields(structure).forEach(({ name, fieldSchema, list }) => {
     shape[name] = fieldSchema
-    const fetchedList = getList({ list, state })
+    const fetchedList = lists[list]
     if (fetchedList) {
       const permittedValues = fetchedList.map(item => item.name)
       shape[name] = fieldSchema.oneOf(
@@ -112,24 +115,19 @@ const Fields = ({ structure, step }) =>
 // TODO: Form is called for every keystroke (regardless of field)
 // most probably because it gets state as a prop rather than creating its own
 // EveryField stopped doing that as soon as it was memoized, but that didn't help Form
-export const Form = ({
-  state,
-  setState,
-  schema,
-  structure,
-  step,
-  show,
-  header,
-  footer,
-}) => {
+export const Form = ({ structure, schema, show, step, header, footer }) => {
   const classes = useFormStyles()
+  const form = useSelector(store => store.form)
+  const dispatch = useDispatch()
+  const updateForm = useCallback(form => dispatch(setForm(form)), [dispatch])
+
   return (
     <ErrorBoundary>
       <FormContext.Provider
-        value={{ state, setState, schema, structure, step, show }}
+        value={{ schema, structure, step, show, form, updateForm }}
       >
         <form autoComplete="off" className={classes.root}>
-          <Box formVariant="header">{header && header()}</Box>
+          <Box formVariant="header">{header && header(form)}</Box>
           <Box formVariant="body" formColor="body.color">
             <Fields {...{ structure, step }} />
           </Box>
@@ -141,8 +139,6 @@ export const Form = ({
 }
 
 Form.propTypes = {
-  state: PropTypes.object,
-  setState: PropTypes.func,
   schema: PropTypes.object,
   structure: PropTypes.array,
   step: PropTypes.number,
@@ -161,24 +157,12 @@ Form.propTypes = {
 // Unless memoized, EveryField gets rendered 3 unnecessary times for each keystroke
 
 const EveryField = ({ name }) => (
-  // TODO: props passing
-  // 1. state and setState should be consumed by the interested components rather than getting passed by as props
-  // 2. Group unique field properties (e.g., list, update) i.e., any field that doesn't interest *all* types
-  //    into one uniqProps obj prop so it can be "gotten ridden of" (not passed onwards) as one property by the ubinterested components.
-  //    Currently, any such uninteresting prop should be *updated* in any type that passes all props downwards
-  //    so it can get rid of that and not pass it onwards (otherwise it leaks to the DOM, yielding an error).
-  // 3. Group the interest-all (e.g., name) props into one single obj too. That will enable using the JSX shorthand {...}
-  //    which like JS saves the need to write things like name={name}.
-
-  // I left this but next I'll use useContext hook as it's simpler
-  // The 6 s's are too contextual to be passed as displayFieldProps; instead they are available in context
   <FormContext.Consumer>
-    {({ state, setState, schema, structure, step, show }) => {
+    {({ structure, step, schema, show, form, updateForm }) => {
       //
       const field = structure[step].fields.filter(
         field => field.name === name
       )[0]
-
       const {
         type,
         fieldSchema,
@@ -191,41 +175,33 @@ const EveryField = ({ name }) => (
         update,
         clearable,
       } = field
-
       const {
         values: { [name]: fieldValue },
         touched: { [name]: fieldTouched },
         errors: { [name]: fieldError },
-      } = state
-
+      } = form
       const error = !show.noError && fieldTouched && !!fieldError
       const helperText = error ? fieldError : show.helper ? helper : ' '
       const fieldLabel = !show.label ? '' : label ? label : capitalize(name)
-
       const fieldOptions =
-        typeof options === 'function' ? options(state) : options
-
+        typeof options === 'function' ? options(form) : options
       const value =
-        typeof fieldValue === 'function' ? fieldValue(state) : fieldValue
-
+        typeof fieldValue === 'function' ? fieldValue(form) : fieldValue
       const onChange = onChangeFor({
         name,
         type,
         fieldSchema,
-        state,
-        setState,
+        form,
+        updateForm,
         schema,
       })
-
       const uniqProps = { update }
-
       const Options = () =>
         fieldOptions.map(option => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
         ))
-
       const displayFieldProps = {
         name,
         type,
@@ -242,7 +218,6 @@ const EveryField = ({ name }) => (
         uniqProps,
         clearable,
       }
-
       return (
         <DisplayField {...displayFieldProps} fullWidth>
           {fieldOptions && Options}
@@ -368,16 +343,16 @@ const NumberField = ({
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { state, setState } = context
+  const { form, updateForm } = context
   const {
     values: { base },
-  } = state
+  } = form
 
   return (
     <TextField
       InputProps={{
         startAdornment:
-          showAdornment(icon, value) && IconAdornment({ icon, state }),
+          showAdornment(icon, value) && IconAdornment({ icon, form }),
         className: classes.primary,
         inputComponent: MyNumberFormat,
         inputProps: {
@@ -392,7 +367,7 @@ const NumberField = ({
         // The onChange: () => {} in this case is since MyNumberFormat doesn't recognize 'onChange' but 'onValueChange' instead
         onChange: () => {},
         ...(clearable && {
-          endAdornment: <ClearIcon {...{ name, setState }} />,
+          endAdornment: <ClearIcon {...{ name, updateForm }} />,
         }),
       }}
       InputLabelProps={{
@@ -412,7 +387,7 @@ const MyNumberFormat = ({ inputRef, ...rest }) => <NumberFormat {...rest} />
 const TimeField = ({ value, onChange, icon, label, helperText }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { state } = context
+  const { form } = context
 
   return (
     // I'm sure I could use here TextField as well
@@ -426,7 +401,7 @@ const TimeField = ({ value, onChange, icon, label, helperText }) => {
           // not recognized by TimePicker , InputProps are passed onwards to DefaultField, which uses them to add the icon
           InputProps={{
             startAdornment:
-              showAdornment(icon, value) && IconAdornment({ icon, state }),
+              showAdornment(icon, value) && IconAdornment({ icon, form }),
             className: classes.primary,
           }}
           InputLabelProps={{
@@ -451,23 +426,24 @@ const AutosuggestField = ({
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { state, setState } = context
-  const entireList = getList({ list, state })
+  const { form } = context
+  const lists = useSelector(store => store.lists)
+  const entireList = lists[list]
 
-  const onBlur = (event, { highlightedSuggestion }) => {
-    if (!update) return
-    mark(name + ' blurred')
-    setList({ list: update, state, setState })
-  }
+  // const onBlur = (event, { highlightedSuggestion }) => {
+  //   if (!update) return
+  //   mark(name + ' blurred')
+  //   setList({ list: update, form, updateForm })
+  // }
 
   return (
     <TextField
       InputProps={{
         startAdornment:
-          showAdornment(icon, value) && IconAdornment({ icon, state }),
+          showAdornment(icon, value) && IconAdornment({ icon, form }),
         inputComponent: MuiAutosuggest,
         inputProps: {
-          onBlur,
+          // onBlur,
           entireList,
           quantity: 90,
         },
@@ -496,7 +472,17 @@ const LocationField = ({
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { setState } = context
+  const { form, updateForm } = context
+  const updateLocation = location =>
+    updateForm(
+      produce(form, draft => {
+        draft.values.location = location
+      })
+    )
+  const updateAddress = address =>
+    geocode({ address }).then(location => {
+      updateLocation(location)
+    })
 
   return (
     <TextField
@@ -504,8 +490,9 @@ const LocationField = ({
         inputComponent: LocationSearchInput,
         inputProps: {
           ...(clearable && {
-            endAdornment: () => <ClearIcon {...{ name, setState }} />,
+            endAdornment: () => <ClearIcon {...{ name, updateForm }} />,
           }),
+          updateAddress,
         },
         disableUnderline: true,
       }}
@@ -532,16 +519,16 @@ const DefaultField = ({
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { state, setState } = context
+  const { form, updateForm } = context
 
   return (
     <TextField
       InputProps={{
         startAdornment:
-          showAdornment(icon, value) && IconAdornment({ icon, state }),
+          showAdornment(icon, value) && IconAdornment({ icon, form }),
         className: classes.primary,
         ...(clearable && {
-          endAdornment: <ClearIcon {...{ name, setState }} />,
+          endAdornment: <ClearIcon {...{ name, updateForm }} />,
         }),
       }}
       value={value}
@@ -553,14 +540,14 @@ const DefaultField = ({
   )
 }
 
-const IconAdornment = ({ icon, state }) => {
+const IconAdornment = ({ icon, form }) => {
   // 'eager' comment forces webpack to include such imports in main chunk
   // rather than having to fetch each during runtime
   // There's no other way either, as omitting this comment will make webpack crash compiling.
   // In this case import() is used to enable using dynamic file names, not for code split (which is not happenning).
   // Remarkably, it doesnt affect the bundle sizes nor the elapsed load time but both are bloated anyway.
 
-  const iconFile = typeof icon === 'function' ? icon(state) : icon
+  const iconFile = typeof icon === 'function' ? icon(form) : icon
   const Icon =
     iconFile &&
     React.lazy(() =>
@@ -583,27 +570,24 @@ const handleEveryChange = ({
   type,
   fieldSchema,
   value,
-  setState,
+  form,
+  updateForm,
   schema,
 }) => {
   const error = checkByType({ name, type, fieldSchema, value, schema })
   if (type === 'number') value = Number(value)
 
-  setState(
-    produce(draft => {
+  updateForm(
+    produce(form, draft => {
       const { values, touched, errors } = draft
       values[name] = value
       touched[name] = true
       errors[name] = error
     })
   )
-
-  if (type === 'location') {
-    geocode({ value, setState })
-  }
 }
 
-export const checkByType = ({ name, type, fieldSchema, value, schema }) => {
+const checkByType = ({ name, type, fieldSchema, value, schema }) => {
   if (type === 'phone') return phoneCheck({ name, value })
   if (fieldSchema) return yupCheck({ name, value, schema })
   return false
@@ -628,15 +612,15 @@ const yupCheck = ({ name, value, schema }) => {
 
 // return an onChange function whose signature matches the one used by the component type
 // that returns a single funified unction to deal with any change regardless of type
-const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
+const onChangeFor = ({ name, type, fieldSchema, form, updateForm, schema }) => {
   const handleChange = ({ name, value }) =>
     handleEveryChange({
       name,
       type,
       fieldSchema,
       value,
-      state,
-      setState,
+      form,
+      updateForm,
       schema,
     })
 
@@ -661,9 +645,9 @@ const onChangeFor = ({ name, type, fieldSchema, state, setState, schema }) => {
   }
 }
 
-export const multiStepFormValidGeneric = (steps, step, state) => {
+export const multiStepFormValidGeneric = (steps, step, form) => {
   const result =
-    Object.entries(state.errors).filter(
+    Object.entries(form.errors).filter(
       entry => entry[1] && steps[step].fields.some(i => i.name === entry[0])
     ).length === 0
 
@@ -673,8 +657,8 @@ export const multiStepFormValidGeneric = (steps, step, state) => {
 // Not required if user is forced to populate all fields to have the next/submit button enabled
 // Destructuring at its best
 export const visitUntouched = ({
-  state,
-  setState,
+  form,
+  updateForm,
   structure,
   step,
   schema,
@@ -684,9 +668,9 @@ export const visitUntouched = ({
     const {
       touched: { [name]: isTouched },
       values: { [name]: value },
-    } = state
+    } = form
     if (isTouched) return
-    handleEveryChange({ name, type, value, state, setState, schema })
+    handleEveryChange({ name, type, value, form, updateForm, schema })
   })
 }
 
@@ -702,12 +686,13 @@ const getFields = structure =>
 const showAdornment = (icon, value) =>
   icon && typeof icon === 'function' ? !!value : !!icon
 
-const ClearIcon = ({ name, setState }) => {
+const ClearIcon = ({ name, updateForm }) => {
   const classes = useFormStyles()
+  const form = useSelector(store => store.form)
 
   const clearValue = name => () => {
-    setState(
-      produce(draft => {
+    updateForm(
+      produce(form, draft => {
         draft.values[name] = ''
       })
     )

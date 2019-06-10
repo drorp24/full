@@ -43,7 +43,7 @@ const structure = [
         // icon: baseSymbol,
       },
       {
-        name: 'center',
+        name: 'address',
         type: 'location',
         value: address,
         fieldSchema: string().required('Please specify'),

@@ -1,9 +1,8 @@
 import capitalize from '../../utility/capitalize'
 import axios from 'axios'
-import { produce } from 'immer'
 import { mark } from '../../utility/performance'
 
-export const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
+const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
   const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${currency}&api_key=${
     process.env.REACT_APP_CRYPTOCOMPARE_API_KEY
   }`
@@ -35,25 +34,22 @@ export const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
   }
 }
 
-export const setCoins = async ({ state, setState }) => {
+const setCoins = async ({ form, updateList }) => {
   mark('setCoins started')
   const fetchedList = await getCoins({
-    currency: state && state.values ? state.values.payCurrency : 'USD',
+    currency: form.values.quote || 'USD',
+    limit: 100,
   })
   if (fetchedList) {
     mark('setCoins fetched')
-    setState(
-      produce(draft => {
-        draft.coins = fetchedList
-      })
-    )
+    updateList({ name: 'coins', list: fetchedList })
   }
 }
 
 // Each set<x> function must be global for lists to be configured dynamically
 window.setCoins = setCoins
 
-export const getCurrencies = async () => {
+const getCurrencies = async () => {
   const url = `https://openexchangerates.org/api/currencies.json
 ?app_id=${process.env.REACT_APP_OXR_APP_ID}`
   try {
@@ -72,27 +68,20 @@ export const getCurrencies = async () => {
   }
 }
 
-export const setCurrencies = async ({ setState }) => {
+const setCurrencies = async ({ updateList }) => {
   mark('setCurrencies started')
   const fetchedList = await getCurrencies()
   mark('setCurrencies fetched')
   if (fetchedList) {
-    setState(
-      produce(draft => {
-        draft.currencies = fetchedList
-      })
-    )
+    updateList({ name: 'currencies', list: fetchedList })
   }
 }
 
 // Each set<x> function must be global for lists to be configured dynamically
 window.setCurrencies = setCurrencies
 
-export const getList = ({ list, state }) => (list && state[list]) || null
-
-export const setList = async ({ list, state, setState }) => {
-  return window[`set${capitalize(list)}`]({ state, setState })
-}
+export const setList = ({ list, form, updateList }) =>
+  window[`set${capitalize(list)}`]({ form, updateList })
 
 export const getCoinbaseProducts = async () => {
   const url = 'https://api.pro.coinbase.com/products'

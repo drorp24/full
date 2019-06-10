@@ -11,7 +11,7 @@ const LiveRates = ({ base, quote, quantity }) => {
   )
 
   // 'subscribed' isn't used as neither websocket.x nor request are able to access it (See comments)
-  const [subscribed, setSubscribed] = useState(null)
+  const [_, setSubscribed] = useState(null) // eslint-disable-line no-unused-vars
 
   const [ticker, setTicker] = useState({
     product_id: null,
@@ -22,6 +22,8 @@ const LiveRates = ({ base, quote, quantity }) => {
   // ? The unsubscribe paradox
   // ? TL;DR: unsubscribe requires calling useEffect with '[]', which prevents it from accessing state,
   // ? which forces you to call state update functional form only to access state, which is forbidden while unmounting
+  // ? Update: after upgrading to CRA 3.0, I'm actually being yelled for leaving no depdendencies in useEffect ('[]').
+  // ? Anyway seeing this '[]' thing being illegal all of a sudden stirs issue in the community, I just skipped this new eslint rule
   //
   // since useEffect can't provide 'pair's value to unsubscribe (see comment there), request has to come up with it
   // but simply accessing 'subscribed' will show empty value
@@ -108,7 +110,7 @@ const LiveRates = ({ base, quote, quantity }) => {
     return () => {
       request('unsubscribe')
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { price, direction } = ticker
   const value = Number(price)

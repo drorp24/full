@@ -34,7 +34,9 @@ class LocationSearchInput extends React.Component {
         <PlacesAutocomplete
           value={this.state.address}
           onChange={this.handleChange}
-          onSelect={this.handleSelect}
+          // PlacesAutocomplete triggers an onSelect only when browsing with arrows then hitting the enter key to select
+          // It does not trigger it when mouse is used (even in desktop). Hopefully it should be okay in mobile,
+          onSelect={this.props.updateAddress}
         >
           {({ getInputProps, suggestions }) => (
             <LocationAutoSuggest
@@ -62,13 +64,14 @@ const LocationAutoSuggestPure = ({ getInputProps, suggestions }) => {
 
   return (
     <LocationContext.Consumer>
-      {({ value, onChange, endAdornment }) => (
+      {({ value, onChange, onSelect, endAdornment }) => (
         <MuiAutosuggest
           {...{
             passedSuggestions,
             passedInputProps: getInputProps(),
             value,
             onChange,
+            onSelect,
             endAdornment,
           }}
         />
