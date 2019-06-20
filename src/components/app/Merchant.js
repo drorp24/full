@@ -1,109 +1,116 @@
 import React from 'react'
 
-import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import Divider from '@material-ui/core/Divider'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/styles'
+import Grid from '@material-ui/core/Grid'
+
 import Loader from '../utility/Loader'
-import { Column } from '../themed/Box'
+import { ellipsis, ellipsisContainer } from '../themed/Box'
 
 const listPadding = '16px'
 const avatarWidth = 12
 const avatarMargin = 3
+const dividerColor = '#ddd'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
 const useStyles = makeStyles(theme => ({
   root: {
-    width: '100%',
+    flexGrow: 1,
+    // Mui's Grid sets wrap by default, which forces items otherwised lined up to spread across multiple lines
+    flexWrap: 'nowrap',
+    height: '100%',
   },
-  inline: {
-    display: 'inline',
+  imgContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  listItemAvatar: {
-    alignSelf: 'center',
+  img: {
+    maxWidth: '100%',
+    maxHeight: '10vmax',
   },
-  listItem: {
-    alignItems: props => (props.loading ? 'center' : 'flex-start'),
+  price: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    textAlign: 'right',
+    borderBottom: '1px solid',
+    borderBottomColor: dividerColor,
   },
-  avatar: {
-    borderRadius: 'unset',
-    width: `${avatarWidth}vmax`,
-    height: `${avatarWidth}vmax`,
-    marginRight: `${avatarMargin}vmax`,
+  quote: {
+    marginRight: theme.spacing(2),
   },
-  dividerInset: {
-    marginLeft: `calc(${listPadding} + ${avatarWidth + avatarMargin}vmax)`,
+  detailsContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottom: '1px solid',
+    borderBottomColor: dividerColor,
+  },
+  details: {},
+  item: {},
+  paper: {
+    padding: theme.spacing(2),
+    margin: 'auto',
+    maxWidth: 500,
   },
 }))
 
-const Merchant = ({ loading, record, className, style }) => {
+const Content = ({ loading, record }) => {
   const classes = useStyles({ loading })
-
   return (
-    <List className={classes.root}>
-      <ListItem className={classes.listItem}>
-        <ListItemAvatar className={classes.listItemAvatar}>
-          <>
-            {loading && (
-              <Avatar className={classes.avatar}>
-                <Loader />
-              </Avatar>
-            )}
-            {!loading && (
-              <Avatar
-                className={classes.avatar}
-                alt="Remy Sharp"
-                src="https://material-ui.com/static/images/avatar/1.jpg"
-              />
-            )}
-          </>
-        </ListItemAvatar>
-        {loading && (
-          <Column>
-            <div>Loading...</div>
-          </Column>
-        )}
-        {!loading && (
-          <ListItemText
-            primary={<Typography>{record.name}</Typography>}
-            secondary={
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                color="textPrimary"
-              >
-                {record.address}
-              </Typography>
-            }
+    <Grid container className={classes.root} spacing={2}>
+      <Grid item xs={4} className={classes.imgContainer}>
+        <div className={classes.img}>
+          <img
+            className={classes.img}
+            alt="complex"
+            src="https://material-ui.com/static/images/grid/complex.jpg"
           />
-        )}
+        </div>
+      </Grid>
+      <Grid item xs={6} className={classes.detailsContainer}>
+        <div className={classes.details} style={{ ...ellipsisContainer }}>
+          <Typography style={{ ...ellipsis }}>{record.name}</Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            style={{ ...ellipsis }}
+          >
+            {record.address
+              ? record.address.replace(', Israel', '').replace(', israel', '')
+              : ''}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={2} className={classes.price}>
+        <Typography variant="body2" className={classes.quote}>
+          {Number(record.quote.price.toFixed(2)).toLocaleString(undefined, {
+            style: 'currency',
+            currency: record.quote.quote,
+          })}
+        </Typography>
+      </Grid>
+    </Grid>
+  )
+}
+
+const Merchant = ({ loading, record, style }) => {
+  const classes = useStyles({ loading })
+  return (
+    <>
+      <ListItem
+        className={classes.listItem}
+        style={style}
+        disableGutters={true}
+      >
+        {loading && <Loader />}
+        {!loading && <Content {...{ loading, record }} />}
       </ListItem>
-      <Divider
-        variant="inset"
-        component="li"
-        className={classes.dividerInset}
-      />
-    </List>
+    </>
   )
 }
 
 export default Merchant
-
-// const Merchant = ({ record, render, className, style }) => (
-//   <Row justify="center" {...{ className, style }}>
-//     {render || record.name}
-//   </Row>
-// )
-
-// Merchant.propTypes = {
-//   record: PropTypes.object,
-//   content: PropTypes.string,
-// }
-
-// export default Merchant

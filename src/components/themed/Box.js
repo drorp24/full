@@ -162,3 +162,15 @@ export const MyGrid = ({
     />
   )
 }
+
+export const ellipsis = {
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  width: '95%',
+}
+
+export const ellipsisContainer = {
+  width: '100%',
+  overflow: 'hidden',
+}

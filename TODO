@@ -141,53 +141,54 @@ Todo:
       State maintenance:
         ✘ Use Redux to store the received merchants @cancelled(19-03-22 01:17)
         ☐ Instead of the above: fetch selected merchant from the Apollo Cliet cache rather than from the server
-        ☐ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?]
-        ☐ https://github.com/mweststrate/immer#reducer-example 
+        ✔ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?] @done(19-06-10 19:33)
         ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
-      Selection:
-        Backdrop:
-          ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
-      Communication:
-        Banner / Snackbar: 
-          ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
-      List:
-        Merchants list:
-        ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
-        ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
-        ☐ Use grid to style the list items (https://material-ui.com/layout/grid/#complex-grid) 
-        ☐ Enable 'swap to buy' if supported by MUI
-        ☐ Enable item reodering if supported by MUI
-        ☐ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior)
-        Endless Scrolling and lazy loading (not the same thing):
-        ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
-        https://addyosmani.com/blog/react-window/ 
-        ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
-        ✘ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom @cancelled(19-04-08 16:56)
-        ✔ use react-window for windowing (= rendering only what's visible with every scroll) @done(19-04-11 15:59)
-        ✔ use react-virtualized-auto-sizer to capture all available space if required @done(19-04-11 16:00)
-        ✔ Use react-window-infinite-loader for lazy loading (using graphql's implemented pagination) @done(19-04-28 17:53)
-        ✘ use react-virtualized/WindowScroller for scroll bar if required @cancelled(19-04-11 16:00)
-    Map:
-      ☐ Create a google map component whose center is user's location displaying nearby merchants
-      ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
-    Header / Footer / Theme:
-      ☐ Create a branded header
-      ☐ Create a footer with action icons
-      ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
-      ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
+  List:
+    Query:
+      ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
+      ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
+    Display:
+      ☐ Use Mui 'List' to display the list, and 'Grid' to style each individual list item (https://material-ui.com/layout/grid/#complex-grid) 
+    Endless Scrolling and lazy loading (not the same thing):
+      ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
+      https://addyosmani.com/blog/react-window/ 
+      ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
+      ✘ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom @cancelled(19-04-08 16:56)
+      ✔ use react-window for windowing (= rendering only what's visible with every scroll) @done(19-04-11 15:59)
+      ✔ use react-virtualized-auto-sizer to capture all available space if required @done(19-04-11 16:00)
+      ✔ Use react-window-infinite-loader for lazy loading (using graphql's implemented pagination) @done(19-04-28 17:53)
+      ✘ use react-virtualized/WindowScroller for scroll bar if required @cancelled(19-04-11 16:00)
+    List-level operations, using Backdrop:
+      ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
+    Item-level operations:
+      ☐ Enable item reodering if supported by MUI (adding 3-dot 'handlers' that indicate draggability)
+      ☐ Enable 'swap to buy' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
     Card:
       ☐ Create a merchant card
-      ☐ Make a list click link to mer chant's card
-    Ordering:
-      ☐ Use a FAB to order
-      ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
-    Payment: 
-      ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
-    Information:
-      ☐ Make a reviews page like the one I had in Cambiu
-      ☐ Make a live ws-based crypto graph for 3 crypto currencies
-    Menu:
-      ☐ Consider creating a left-drawer menu
+    List-Card transition:
+      ☐ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior)
+      ☐ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 
+  Map:
+    ☐ Create a google map component whose center is user's location displaying nearby merchants
+    ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
+  Header / Footer / Theme:
+    ☐ Create a branded header
+    ☐ Create a footer with action icons
+    ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
+    ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
+  Communication:
+    Banner / Snackbar: 
+      ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
+ Ordering:
+    ☐ Use a FAB to order
+    ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
+  Payment: 
+    ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
+  Information:
+    ☐ Make a reviews page like the one I had in Cambiu
+    ☐ Make a live ws-based crypto graph for 3 crypto currencies
+  Menu:
+    ☐ Consider creating a left-drawer menu
   Delay:
     https:
       ☐ Support https

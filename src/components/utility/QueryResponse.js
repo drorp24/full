@@ -5,7 +5,7 @@
 import React from 'react'
 import Messages from '../utility/Messages'
 import Loader from '../utility/Loader'
-import List from '../list/WindowedList'
+import WindowedList from '../list/WindowedList'
 // import List from '../list/NonWindowedList' // The non react-window, .map solution, that eagerly renders and scrolls the entire page
 
 // ! InfiniteLoader implies different behavior of Apollo Client Query's render function:
@@ -43,7 +43,7 @@ const QueryResponse = ({
     return <Messages title="No records" array={['No merchants']} kiy={null} />
   } else {
     return (
-      <List
+      <WindowedList
         {...{ loading, fetchMore, entity, component, records, cursor, hasMore }}
       />
     )

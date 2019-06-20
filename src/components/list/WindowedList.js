@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it
+import Divider from '@material-ui/core/Divider'
 
 const useItemStyles = makeStyles({
   odd: {
@@ -13,7 +14,7 @@ const useItemStyles = makeStyles({
   even: {},
 })
 
-const List = ({
+const WindowedList = ({
   loading,
   fetchMore,
   entity,
@@ -31,9 +32,8 @@ const List = ({
     const record = itemLoaded ? records[index] : null
     const classes = useItemStyles()
     const { odd, even } = classes
-    const className = index % 2 ? odd : even
 
-    return <Component {...{ loading, record, className, style }} />
+    return <Component {...{ loading, record, style }} />
   }
 
   // If there are more items to be loaded then add an extra item to hold a loading indicator.
@@ -84,6 +84,7 @@ const List = ({
       itemCount={itemCount}
       isItemLoaded={isItemLoaded}
       loadMoreItems={loadMoreItems}
+      threshold={1} // value of s1 will make 'loading...' appear thus checking inifite loading works ok. Should be removed eventually.
     >
       {({ onItemsRendered, ref }) => (
         <>
@@ -99,7 +100,7 @@ const List = ({
                   ref={ref}
                   height={height}
                   width={width}
-                  itemSize={height / 5}
+                  itemSize={height / 6}
                 >
                   {Item}
                 </FixedSizeList>
@@ -112,4 +113,4 @@ const List = ({
   )
 }
 
-export default List
+export default WindowedList
