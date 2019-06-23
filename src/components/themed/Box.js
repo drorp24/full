@@ -167,7 +167,7 @@ export const ellipsis = {
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  width: '95%',
+  // width: '95%',
 }
 
 export const ellipsisContainer = {

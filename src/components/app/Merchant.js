@@ -2,98 +2,87 @@ import React from 'react'
 
 import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/styles'
-import Grid from '@material-ui/core/Grid'
+import { makeStyles, ThemeProvider } from '@material-ui/styles'
+import Card from '@material-ui/core/Card'
+import CardActionArea from '@material-ui/core/CardActionArea'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import CardMedia from '@material-ui/core/CardMedia'
+import Button from '@material-ui/core/Button'
 
 import Loader from '../utility/Loader'
 import { ellipsis, ellipsisContainer } from '../themed/Box'
 
-const listPadding = '16px'
-const avatarWidth = 12
-const avatarMargin = 3
-const dividerColor = '#ddd'
-
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    // Mui's Grid sets wrap by default, which forces items otherwised lined up to spread across multiple lines
-    flexWrap: 'nowrap',
-    height: '100%',
+  card: {
+    width: '100%',
   },
-  imgContainer: {
-    display: 'flex',
+  media: {
+    height: 140,
+  },
+  listItem: {
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  img: {
-    maxWidth: '100%',
-    maxHeight: '10vmax',
+    padding: theme.spacing(2),
   },
   price: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    textAlign: 'right',
-    borderBottom: '1px solid',
-    borderBottomColor: dividerColor,
-  },
-  quote: {
-    marginRight: theme.spacing(2),
-  },
-  detailsContainer: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    borderBottom: '1px solid',
-    borderBottomColor: dividerColor,
-  },
-  details: {},
-  item: {},
-  paper: {
-    padding: theme.spacing(2),
-    margin: 'auto',
-    maxWidth: 500,
+    fontWeight: '400',
   },
 }))
 
+// ! Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
+
 const Content = ({ loading, record }) => {
-  const classes = useStyles({ loading })
+  const classes = useStyles()
+
   return (
-    <Grid container className={classes.root} spacing={2}>
-      <Grid item xs={4} className={classes.imgContainer}>
-        <div className={classes.img}>
-          <img
-            className={classes.img}
-            alt="complex"
-            src="https://material-ui.com/static/images/grid/complex.jpg"
-          />
-        </div>
-      </Grid>
-      <Grid item xs={6} className={classes.detailsContainer}>
-        <div className={classes.details} style={{ ...ellipsisContainer }}>
-          <Typography style={{ ...ellipsis }}>{record.name}</Typography>
+    <Card className={classes.card}>
+      <CardActionArea>
+        <CardMedia
+          className={classes.media}
+          image="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          title="Contemplative Reptile"
+        />
+        <CardContent>
           <Typography
+            style={{ ...ellipsis }}
+            gutterBottom
+            variant="h5"
+            component="h2"
+          >
+            {record.name}
+          </Typography>
+          <Typography
+            style={{ ...ellipsis }}
             variant="body2"
             color="textSecondary"
-            style={{ ...ellipsis }}
+            component="p"
+            gutterBottom
           >
-            {record.address
-              ? record.address.replace(', Israel', '').replace(', israel', '')
-              : ''}
+            {record.address || 'No address recorded'}
           </Typography>
-        </div>
-      </Grid>
-      <Grid item xs={2} className={classes.price}>
-        <Typography variant="body2" className={classes.quote}>
-          {Number(record.quote.price.toFixed(2)).toLocaleString(undefined, {
-            style: 'currency',
-            currency: record.quote.quote,
-          })}
-        </Typography>
-      </Grid>
-    </Grid>
+          <Typography variant="h6" className={classes.price}>
+            {Number(
+              record && record.quote && record.quote.price
+                ? record.quote.price.toFixed(2)
+                : 0
+            ).toLocaleString(undefined, {
+              style: 'currency',
+              currency: record.quote.quote,
+            })}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      <CardActions>
+        <Button size="small" color="primary">
+          Order
+        </Button>
+        <Button size="small" color="primary">
+          Learn More
+        </Button>
+      </CardActions>
+    </Card>
   )
 }
 

@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/styles'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it
-import Divider from '@material-ui/core/Divider'
 
 const useItemStyles = makeStyles({
   odd: {
@@ -100,7 +99,7 @@ const WindowedList = ({
                   ref={ref}
                   height={height}
                   width={width}
-                  itemSize={height / 6}
+                  itemSize={height / 2}
                 >
                   {Item}
                 </FixedSizeList>
