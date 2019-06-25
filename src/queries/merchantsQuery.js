@@ -66,6 +66,9 @@ const merchantsQuery = gql`
           price
           created
         }
+        location {
+          coordinates
+        }
       }
     }
   }

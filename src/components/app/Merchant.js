@@ -33,15 +33,20 @@ const useStyles = makeStyles(theme => ({
 
 // ! Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
 
-const Content = ({ loading, record }) => {
+const Content = ({ record }) => {
   const classes = useStyles()
+  const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${
+    record.location.coordinates[1]
+  },${record.location.coordinates[0]}&fov=90&key=${
+    process.env.REACT_APP_GOOGLE_API_KEY
+  }`
 
   return (
     <Card className={classes.card}>
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          image={imgUri}
           title="Contemplative Reptile"
         />
         <CardContent>
@@ -96,7 +101,7 @@ const Merchant = ({ loading, record, style }) => {
         disableGutters={true}
       >
         {loading && <Loader />}
-        {!loading && <Content {...{ loading, record }} />}
+        {!loading && <Content {...{ record }} />}
       </ListItem>
     </>
   )
