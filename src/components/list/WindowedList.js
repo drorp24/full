@@ -1,17 +1,9 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React from 'react'
-import { makeStyles } from '@material-ui/styles'
+import React, { useRef } from 'react'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it
-
-const useItemStyles = makeStyles({
-  odd: {
-    background: '#e6e6e0',
-  },
-  even: {},
-})
 
 const WindowedList = ({
   loading,
@@ -23,16 +15,15 @@ const WindowedList = ({
   hasMore,
 }) => {
   //
-  const Item = ({ index, style }) => {
+  const Item = listRef => ({ index, style }) => {
     // That trick again to pass a component rather than a render prop/function
     const Component = component
     const itemLoaded = isItemLoaded(index)
     const loading = !itemLoaded
     const record = itemLoaded ? records[index] : null
-    const classes = useItemStyles()
-    const { odd, even } = classes
+    // const classes = useItemStyles()
 
-    return <Component {...{ loading, record, style }} />
+    return <Component {...{ loading, record, style, listRef, index }} />
   }
 
   // If there are more items to be loaded then add an extra item to hold a loading indicator.
@@ -78,6 +69,8 @@ const WindowedList = ({
           },
         })
 
+  const listRef = useRef()
+
   return (
     <InfiniteLoader
       itemCount={itemCount}
@@ -87,7 +80,7 @@ const WindowedList = ({
     >
       {({ onItemsRendered, ref }) => (
         <>
-          {/* No clue what onItemsRendered, ref are and no documentation  */}
+          {/* No clue what onItemsRendered, ref are and no documentation. FixedSizeList has similar props: https://react-window.now.sh/#/api/FixedSizeList  */}
           {/* FixedSizeList expects explicit numeric sizes. AutoSizer provides them, but comes with 'height: 0' and 'width: 0' */}
           {/* To fix this 'display: contents' makes Page include its child 'FixedSizeList' in the flexbox rather than 'AutoSizer' itself */}
           <AutoSizer style={{ display: 'contents' }}>
@@ -96,12 +89,12 @@ const WindowedList = ({
                 <FixedSizeList
                   itemCount={itemCount}
                   onItemsRendered={onItemsRendered}
-                  ref={ref}
+                  ref={listRef}
                   height={height}
                   width={width}
                   itemSize={height / 2}
                 >
-                  {Item}
+                  {Item(listRef)}
                 </FixedSizeList>
               )
             }}

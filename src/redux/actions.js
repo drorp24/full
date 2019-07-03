@@ -1,4 +1,4 @@
-import { SET_MESSAGE, SET_COUNT, SET_FORM, SET_LIST } from './types'
+import { SET_MESSAGE, SET_COUNT, SET_FORM, SET_LIST, SET_APP } from './types'
 
 export const setMessage = message => ({
   type: SET_MESSAGE,
@@ -33,4 +33,9 @@ export const setList = ({ name, list }) => ({
   type: SET_LIST,
   name,
   list,
+})
+
+export const setApp = app => ({
+  type: SET_APP,
+  app,
 })
