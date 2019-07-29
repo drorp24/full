@@ -131,18 +131,18 @@ Todo:
         ✔ Update the GraphQL resolver  / mongoose query to address the form's content @done(19-03-20 16:36)
         ✔ Persist redux so it survives page reloads @done(19-03-24 19:00)
         ✔ Support cursor-based pagination (define the page size  in 'results') @done(19-04-28 17:54)
-        ☐ Create the live, subscription-based rate server-side query 
-        ☐ Update the crypto subscription query (server)
-        ☐ Use the apollo feature that * gradually / lazily * fetches more details (even if not required performance wise)
+        ✘ Create the live, subscription-based rate server-side query @cancelled(19-07-10 17:28)
+        ✘ Update the crypto subscription query (server) @cancelled(19-07-10 17:28)
+        ✘ Use the apollo feature that * gradually / lazily * fetches more details (even if not required performance wise) @cancelled(19-07-10 17:28)
       GraphQL Client:
         ✔ Update the GraphQL client gql query to address the form's content @done(19-03-22 01:15)
-        ☐ Create the live, subscription-based rate client-side query 
-        ☐ Update the crypto subscription query (client)
+        ✘ Create the live, subscription-based rate client-side query @cancelled(19-07-10 17:28)
+        ✘ Update the crypto subscription query (client) @cancelled(19-07-10 17:28)
       State maintenance:
         ✘ Use Redux to store the received merchants @cancelled(19-03-22 01:17)
-        ☐ Instead of the above: fetch selected merchant from the Apollo Cliet cache rather than from the server
+        ✘ Instead of the above: fetch selected merchant from the Apollo Cliet cache rather than from the server @cancelled(19-07-10 17:29)
         ✔ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?] @done(19-06-10 19:33)
-        ☐ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays.
+        ✘ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays. @cancelled(19-07-10 17:28)
   List:
     Query:
       ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
@@ -163,15 +163,24 @@ Todo:
     Item-level operations:
       ☐ Enable item reodering if supported by MUI (adding 3-dot 'handlers' that indicate draggability)
       ☐ Enable 'swap to buy' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
-    Card:
-      ☐ Create a merchant card
     List-Card transition:
-      ☐ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior)
-      ☐ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 
+      ✔ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior) @done(19-07-10 17:34)
+      ✔ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 @done(19-07-10 17:34)
+  Card:
+    ✔ Create a merchant card @done(19-07-10 17:34)
+    ☐ Switch to StreetView mode once open 
+    ☐ Deploy and check mobile tracking is enabled
   Map:
-    ☐ Create a google map component whose center is user's location displaying nearby merchants
-    ☐ Add walking / driving instructionswhether to use header or footer (read a bit?)
-  Header / Footer / Theme:
+    ☐ Clicking a map icon will switch to a 'map mode', where merchants show as markers on a map rather than list items 
+    ☐ Clicking a pin on that map opens a merchant card (that's identical to the card you get by expanding a list item) 
+    ☐ Clicking an icon will direct to a page/component with walking / driving instructions from user's current position to the merchant's shop
+    ☐ Check that markers are shown on the StreetView as well
+  Orders:
+    ☐ Use a FAB to order
+    ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
+  Payment: 
+    ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
+   Header / Footer / Theme:
     ☐ Create a branded header
     ☐ Create a footer with action icons
     ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
@@ -179,12 +188,7 @@ Todo:
   Communication:
     Banner / Snackbar: 
       ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
- Ordering:
-    ☐ Use a FAB to order
-    ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
-  Payment: 
-    ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
-  Information:
+    Information:
     ☐ Make a reviews page like the one I had in Cambiu
     ☐ Make a live ws-based crypto graph for 3 crypto currencies
   Menu:

@@ -1,4 +1,12 @@
-import { SET_MESSAGE, SET_COUNT, SET_FORM, SET_LIST, SET_APP } from './types'
+import {
+  SET_MESSAGE,
+  SET_COUNT,
+  SET_FORM,
+  SET_LIST,
+  SET_APP,
+  SET_CONTEXTUAL,
+  SHOULD_CLOSE,
+} from './types'
 
 export const setMessage = message => ({
   type: SET_MESSAGE,
@@ -38,4 +46,15 @@ export const setList = ({ name, list }) => ({
 export const setApp = app => ({
   type: SET_APP,
   app,
+})
+
+export const setContextual = ({ contextual, name }) => ({
+  type: SET_CONTEXTUAL,
+  contextual,
+  name,
+})
+
+export const setShouldClose = shouldClose => ({
+  type: SHOULD_CLOSE,
+  shouldClose,
 })

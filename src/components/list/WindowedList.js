@@ -2,6 +2,8 @@
 // See comment on QueryResponse.js
 import React, { useRef } from 'react'
 import { FixedSizeList } from 'react-window'
+import { useSelector } from 'react-redux'
+
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it
 
@@ -15,7 +17,7 @@ const WindowedList = ({
   hasMore,
 }) => {
   //
-  const Item = listRef => ({ index, style }) => {
+  const Item = ({ index, style }) => {
     // That trick again to pass a component rather than a render prop/function
     const Component = component
     const itemLoaded = isItemLoaded(index)
@@ -23,7 +25,7 @@ const WindowedList = ({
     const record = itemLoaded ? records[index] : null
     // const classes = useItemStyles()
 
-    return <Component {...{ loading, record, style, listRef, index }} />
+    return <Component {...{ loading, record, index, style }} />
   }
 
   // If there are more items to be loaded then add an extra item to hold a loading indicator.
@@ -94,7 +96,7 @@ const WindowedList = ({
                   width={width}
                   itemSize={height / 2}
                 >
-                  {Item(listRef)}
+                  {Item}
                 </FixedSizeList>
               )
             }}

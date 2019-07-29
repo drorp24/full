@@ -14,15 +14,30 @@
 //    Though not mandatory, MD most elegant way of expanding a card is by pushing other items away, not only capturing the entire screen.
 //    (as demonstrated in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5)
 //    This means that
-//    - AppBar needs to contract away, signalling a 'fullscreen' mode
+//    - AppBar needs to switch into contextual menu
 //    - both card's siblings need to be pushed away to make toom for the expanding card
 //    'toggleCardState' achieves the first by updating an application-wide (redux) state of 'fullscreen'
 //    and the second by manipulating their 'height's and 'top's back and forth.
-//    Note: react-window's own .scroll api will not animate. Instead, I'm modifying the list-item's top properties and height if needed.
-
-import React, { useState, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
-import { setApp } from '../../redux/actions'
+//    Note: react-window's own .scroll api will not animate. Instead, I'm modifying the list-item's 'top' and 'height' as needed.
+//
+// !  Challenges of communicating b/w two components
+//
+// *  Informing AppBar
+//    When a card expands, AppBar needs to know about that and respond by changing the menu into a contextual menu (change hamburger into 'X' etc)
+//    That's the easy part, since AppBar needs only display either the hamburger or the 'X' according to redux' 'contextual' value
+//
+// *  Informing Merchant
+//    When the 'X' in the contextual menu is clicked, merchant card needs to know about that and repsond by contracting.
+//    Unlike AppBar however, Merchant card can not settle for displaying this or the other according to some redux value;
+//    Instead, it is required to re-render and change its internal state (to 'close') in response for the 'X' click.
+//    There's no listener in react nor a way to emit events from one components that the other can listen to;
+//    Instead, Merchants gets updated by the redux status change by 'useSelector' (formerly 'connect')
+//    Now for the odd part: I assumed it is the redux state change ('shouldClose') *only* that, thru 'useSelector' triggers the re-rendering of the Merchant component
+//    Oddly though, when I commented all references to useSelector, the Merchant component still got re-rendered inspite of no change in either of its props)
+//
+import React, { useState, useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setContextual, setShouldClose } from '../../redux/actions'
 
 import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
@@ -34,13 +49,13 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
-import ListAlt from '@material-ui/icons/ListAlt'
+import ThreeSixty from '@material-ui/icons/ThreeSixty'
+import ShoppingCart from '@material-ui/icons/ShoppingCart'
 import Zoom from '@material-ui/core/Zoom'
 
 import Loader from '../utility/Loader'
 import { ellipsis } from '../themed/Box'
 
-const appBarHeight = window.innerHeight / 10
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
 const useStyles = makeStyles(theme => ({
@@ -53,11 +68,11 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   media: {
-    height: ({ open }) => (open ? '50vh' : '20vh'),
+    height: ({ open }) => (open ? '45vh' : '20vh'),
     transition: 'height 1s',
   },
   listItem: {
-    height: ({ open }) => (open ? '100vh' : '100%'),
+    height: ({ open }) => (open ? '90vh' : '100%'),
     padding: ({ open }) => (open ? 0 : theme.spacing(2)),
     zIndex: ({ open }) => (open ? 1 : 0),
     transition: 'padding 1s, height 1s, top 1s',
@@ -66,32 +81,129 @@ const useStyles = makeStyles(theme => ({
   price: {
     fontWeight: '400',
   },
-  viewOfferButton: {
+  cardActions: {
     display: ({ open }) => (open ? 'none' : 'block'),
   },
-
   fab: {
     visibility: ({ open }) => (open ? 'visible' : 'hidden'),
+    margin: theme.spacing(3),
+    alignSelf: 'flex-end',
+  },
+  threeSixty: {
+    visibility: ({ open }) => (open ? 'visible' : 'hidden'),
     position: 'absolute',
-    margin: theme.spacing(2),
-    marginTop: 0,
-    top: 'calc(50vh - 28px)',
+    top: '35vh',
     right: 0,
+    margin: theme.spacing(3),
+    marginTop: 0,
+  },
+  arrowBack: {
+    visibility: ({ open }) => (open ? 'visible' : 'hidden'),
+    position: 'absolute',
+    top: '10vh',
+    left: 0,
+    margin: theme.spacing(3),
+    marginTop: 0,
   },
 }))
 
-// ! Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
+const appBarHeight = window.innerHeight / 10
 
-const Merchant = ({ loading, record, style, listRef, index }) => {
-  //
+const measureTopHeight = element => {
+  if (!element) return { element: null }
+  const top = Number(element.style.top.replace('px', ''))
+  const height = Number(element.style.height.replace('px', ''))
+  const y = element.getBoundingClientRect().y
+  return { element, top, height, y }
+}
+
+const restoreTopHeight = element => {
+  if (!element) return
+  const originalTop = element.getAttribute('data-top')
+  if (originalTop) element.style.top = originalTop
+  const originalHeight = element.getAttribute('data-height')
+  if (originalHeight) element.style.height = originalHeight
+}
+
+const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
+  const setTopHeight = ({ element, top, newTop, height, newHeight }) => {
+    if (!element) return
+
+    const defined = property =>
+      typeof property !== 'undefined' && property !== null // we don't want to update DOM unnecessarily, but '0' is a value
+
+    if (defined(newTop)) {
+      element.setAttribute('data-top', `${top}px`)
+      element.style.top = `${newTop}px` // ! Never x.setAttribute('style', '...') as it would override other style properties
+    }
+    if (defined(newHeight)) {
+      element.setAttribute('data-height', `${height}px`)
+      element.style.height = `${newHeight}px`
+    }
+  }
+
+  // I'm assuming maximum 3 items in a viewport, otherwise this should be done in a loop
+  const [previous, current, next] = [
+    previousSibling,
+    currentSibling,
+    nextSibling,
+  ].map(measureTopHeight)
+
+  previous.newTop = Math.max(previous.top - current.y, 0)
+  if (previous.newTop === 0)
+    previous.newHeight = Math.max(previous.height - current.y, 0) // if there's no room to retreat, contract
+  current.newTop = current.top - current.y + appBarHeight
+  next.newTop = next.top + (window.innerHeight - next.y) + appBarHeight
+
+  for (let item of [previous, current, next]) {
+    setTopHeight(item)
+  }
+}
+
+const returnSiblingsToPlace = (
+  previousSibling,
+  currentSibling,
+  nextSibling
+) => {
+  for (let element of [previousSibling, currentSibling, nextSibling]) {
+    restoreTopHeight(element)
+  }
+}
+
+const toggleSiblings = (open, listItemRef) => {
+  const { previousSibling, nextSibling } = listItemRef.current
+  const currentSibling = listItemRef.current
+  !open
+    ? pushSiblingsAway(previousSibling, currentSibling, nextSibling)
+    : returnSiblingsToPlace(previousSibling, currentSibling, nextSibling)
+}
+
+//
+// * Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
+const Merchant = ({ loading, record, style }) => {
   const [state, setState] = useState({ open: false })
   const { open } = state
 
-  const dispatch = useDispatch()
-  const updateApp = useCallback(app => dispatch(setApp(app)), [dispatch])
+  const toggleState = () => {
+    setState({ open: !open })
+  }
 
   const classes = useStyles(state)
   const listItemRef = React.useRef()
+
+  const dispatch = useDispatch()
+  const setContextualMenu = useCallback(
+    contextual => dispatch(setContextual(contextual)),
+    [dispatch]
+  )
+  const shouldClose = useSelector(store => store.app.shouldClose)
+  const resetShouldClose = useCallback(() => dispatch(setShouldClose(false)), [
+    dispatch,
+  ])
+  const resetContextual = useCallback(
+    () => dispatch(setContextual({ contextual: false, name: null })),
+    [dispatch]
+  )
 
   const MerchantCard = ({ record, listItemRef }) => {
     const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${
@@ -100,89 +212,26 @@ const Merchant = ({ loading, record, style, listRef, index }) => {
       process.env.REACT_APP_GOOGLE_API_KEY
     }`
 
-    // toggleCardState implements MD recommended card expansion: https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5
-    const toggleCardState = () => {
-      // Pushing siblings away (and returning them) has to be done imperatively as it entails modifying their respective DOM elements
-      const pushSiblingsAway = (
-        previousSibling,
-        currentSibling,
-        nextSibling
-      ) => {
-        //
-        const measureTopHeight = element => {
-          if (!element) return { element: null }
-          const top = Number(element.style.top.replace('px', ''))
-          const height = Number(element.style.height.replace('px', ''))
-          const y = element.getBoundingClientRect().y
-          return { element, top, height, y }
-        }
+    const toggleCardState = useCallback(() => {
+      if (open && !shouldClose) return
 
-        const setTopHeight = ({ element, top, newTop, height, newHeight }) => {
-          if (!element) return
+      toggleState()
 
-          const defined = property =>
-            typeof property !== 'undefined' && property !== null // we don't want to update DOM unnecessarily, but '0' is a value
+      toggleSiblings(open, listItemRef)
 
-          if (defined(newTop)) {
-            element.setAttribute('data-top', `${top}px`)
-            element.style.top = `${newTop}px` // Never x.setAttribute('style', '...') as it would override other style properties
-          }
-          if (defined(newHeight)) {
-            element.setAttribute('data-height', `${height}px`)
-            element.style.height = `${newHeight}px`
-          }
-        }
-
-        //! Transition
-        // I'm assuming maximum 3 items in a viewport, otherwise this should be done in a loop
-        const [previous, current, next] = [
-          previousSibling,
-          currentSibling,
-          nextSibling,
-        ].map(measureTopHeight)
-
-        previous.newTop = Math.max(previous.top - current.y, 0)
-        if (previous.newTop === 0)
-          previous.newHeight = Math.max(previous.height - current.y, 0) // if there's no room to retreat, contract
-        current.newTop = Math.max(current.top - current.y + appBarHeight, 0)
-        next.newTop = next.top + (window.innerHeight - next.y + appBarHeight)
-
-        for (let item of [previous, current, next]) {
-          setTopHeight(item)
-        }
+      if (shouldClose) {
+        resetShouldClose()
+        resetContextual()
+      } else {
+        setContextualMenu({ contextual: true, name: record.name })
       }
+    }, [listItemRef, record.name])
 
-      const restoreTopHeight = element => {
-        if (!element) return
-        const originalTop = element.getAttribute('data-top')
-        if (originalTop) element.style.top = originalTop
-        const originalHeight = element.getAttribute('data-height')
-        if (originalHeight) element.style.height = originalHeight
+    useEffect(() => {
+      if (open && shouldClose) {
+        toggleCardState()
       }
-
-      const returnSiblingsToPlace = (
-        previousSibling,
-        currentSibling,
-        nextSibling
-      ) => {
-        for (let element of [previousSibling, currentSibling, nextSibling]) {
-          restoreTopHeight(element)
-        }
-      }
-
-      //  Tried setTimeout'ing a 'transition' state to have the FAB pop up only once transition finishes
-      //  It sat in the same state object with 'state' since MUI's makeStyle accepts only one prop argumement.
-      //  I ended up abandoning it since it made the component re-render and the animation to flicker.
-      updateApp({ fullscreen: !open })
-      setState({ open: !open })
-
-      const { previousSibling, nextSibling } = listItemRef.current
-      const currentSibling = listItemRef.current
-
-      !open
-        ? pushSiblingsAway(previousSibling, currentSibling, nextSibling)
-        : returnSiblingsToPlace(previousSibling, currentSibling, nextSibling)
-    }
+    }, [toggleCardState])
 
     return (
       <Card className={classes.card} onClick={toggleCardState}>
@@ -222,22 +271,22 @@ const Merchant = ({ loading, record, style, listRef, index }) => {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions>
-          <Button size="small" color="primary" className={classes.orderButton}>
+        <CardActions className={classes.cardActions}>
+          <Button size="small" color="primary">
             Order
           </Button>
-          <Button
-            size="small"
-            color="primary"
-            onClick={toggleCardState}
-            className={classes.viewOfferButton}
-          >
+          <Button size="small" color="primary" onClick={toggleCardState}>
             View
           </Button>
         </CardActions>
         <Zoom in timeout={{ enter: 1000 }}>
           <Fab color="primary" aria-label="Add" className={classes.fab}>
-            <ListAlt />
+            <ShoppingCart />
+          </Fab>
+        </Zoom>
+        <Zoom in timeout={{ enter: 1000 }}>
+          <Fab size="small" className={classes.threeSixty}>
+            <ThreeSixty color="primary" />
           </Fab>
         </Zoom>
       </Card>
@@ -246,7 +295,7 @@ const Merchant = ({ loading, record, style, listRef, index }) => {
 
   // FixedSizeList/itemSize dictates the hard-coded height of every item (see above) in the 'height' property of the passed-on 'style' prop.
   // Overriding the height in the event of opening a card could have been simply defined here by '100vh!important'
-  // For some reason, useStyles will not pass '<anything>!important' so I'm doing this hack to force the height into 100vh once card is open
+  // Unfortunately for some reason, useStyles will not pass '<anything>!important' so I'm doing this hack to force the height into 100vh once card is open
   const { height, ...styleExceptHeight } = style
   const styleToUse = state && state.open ? styleExceptHeight : style
 
