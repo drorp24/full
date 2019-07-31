@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/NEW_UNSUCCESSFUL_node_modules
 
 # testing
 /coverage
