@@ -96,6 +96,7 @@ const useStyles = makeStyles(theme => ({
     right: 0,
     margin: theme.spacing(3),
     marginTop: 0,
+    zIndex: 1,
   },
   arrowBack: {
     visibility: ({ open }) => (open ? 'visible' : 'hidden'),
@@ -206,11 +207,22 @@ const Merchant = ({ loading, record, style }) => {
   )
 
   const MerchantCard = ({ record, listItemRef }) => {
+    const [streetView, setStreetView] = useState(false)
     const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${
       record.location.coordinates[1]
     },${record.location.coordinates[0]}&fov=90&key=${
       process.env.REACT_APP_GOOGLE_API_KEY
     }`
+
+    const price = record =>
+      Number(
+        record && record.quote && record.quote.price
+          ? record.quote.price.toFixed(2)
+          : 0
+      ).toLocaleString(undefined, {
+        style: 'currency',
+        currency: record.quote.quote,
+      })
 
     const toggleCardState = useCallback(() => {
       if (open && !shouldClose) return
@@ -227,6 +239,39 @@ const Merchant = ({ loading, record, style }) => {
       }
     }, [listItemRef, record.name])
 
+    const toggleStreetView = useCallback(
+      (ref, record) => () => {
+        if (
+          !ref ||
+          !ref.current ||
+          !record ||
+          !record.location ||
+          !record.location.coordinates
+        )
+          return
+
+        const { coordinates } = record.location
+        const [lat, lng] = [coordinates[1], coordinates[0]]
+        const element = ref.current
+
+        if (!streetView) {
+          new window.google.maps.StreetViewPanorama(element, {
+            position: { lat, lng },
+            zoomControl: false,
+            addressControl: false,
+            linksControl: false,
+          })
+        } else {
+          element.innerHTML = ''
+        }
+
+        setStreetView(!streetView)
+      },
+      [streetView]
+    )
+
+    const cardMediaRef = React.useRef()
+
     useEffect(() => {
       if (open && shouldClose) {
         toggleCardState()
@@ -240,6 +285,7 @@ const Merchant = ({ loading, record, style }) => {
             className={classes.media}
             image={imgUri}
             title="Contemplative Reptile"
+            ref={cardMediaRef}
           />
           <CardContent>
             <Typography
@@ -260,14 +306,7 @@ const Merchant = ({ loading, record, style }) => {
               {record.address || 'No address recorded'}
             </Typography>
             <Typography variant="h6" className={classes.price}>
-              {Number(
-                record && record.quote && record.quote.price
-                  ? record.quote.price.toFixed(2)
-                  : 0
-              ).toLocaleString(undefined, {
-                style: 'currency',
-                currency: record.quote.quote,
-              })}
+              {price(record)}
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -285,7 +324,11 @@ const Merchant = ({ loading, record, style }) => {
           </Fab>
         </Zoom>
         <Zoom in timeout={{ enter: 1000 }}>
-          <Fab size="small" className={classes.threeSixty}>
+          <Fab
+            size="small"
+            className={classes.threeSixty}
+            onClick={toggleStreetView(cardMediaRef, record)}
+          >
             <ThreeSixty color="primary" />
           </Fab>
         </Zoom>
