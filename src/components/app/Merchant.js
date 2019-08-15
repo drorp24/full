@@ -108,7 +108,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const appBarHeight = window.innerHeight / 10
+const myWindow = typeof window !== 'undefined' ? window : { innerHeight: 736 }
+
+const appBarHeight = myWindow / 10
 
 const measureTopHeight = element => {
   if (!element) return { element: null }
@@ -154,7 +156,7 @@ const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
   if (previous.newTop === 0)
     previous.newHeight = Math.max(previous.height - current.y, 0) // if there's no room to retreat, contract
   current.newTop = current.top - current.y + appBarHeight
-  next.newTop = next.top + (window.innerHeight - next.y) + appBarHeight
+  next.newTop = next.top + (myWindow.innerHeight - next.y) + appBarHeight
 
   for (let item of [previous, current, next]) {
     setTopHeight(item)
@@ -254,7 +256,7 @@ const Merchant = ({ loading, record, style }) => {
         const [lat, lng] = [coordinates[1], coordinates[0]]
         const element = ref.current
 
-        if (!streetView) {
+        if (!streetView && window) {
           new window.google.maps.StreetViewPanorama(element, {
             position: { lat, lng },
             zoomControl: false,

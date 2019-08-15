@@ -1,8 +1,8 @@
 import express from 'express'
-import { setMessage } from '../../src/store/actions'
+import { setMessage } from '../../src/redux/actions'
 
 import serverRenderer from '../middleware/renderer'
-import configureStore from '../../src/store/configureStore'
+import configureStore from '../../src/redux/configureStore'
 
 const router = express.Router()
 const path = require('path')

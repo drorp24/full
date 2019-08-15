@@ -1,11 +1,9 @@
 import capitalize from '../../utility/capitalize'
 import axios from 'axios'
-import { mark } from '../../utility/performance'
+// import { mark } from '../../utility/performance'
 
 const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
-  const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${currency}&api_key=${
-    process.env.REACT_APP_CRYPTOCOMPARE_API_KEY
-  }`
+  const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${currency}&api_key=${process.env.REACT_APP_CRYPTOCOMPARE_API_KEY}`
   try {
     const response = await axios.get(url)
     if (response && response.data) {
@@ -35,13 +33,13 @@ const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
 }
 
 const setCoins = async ({ form, updateList }) => {
-  mark('setCoins started')
+  // mark('setCoins started')
   const fetchedList = await getCoins({
     currency: form.values.quote || 'USD',
     limit: 100,
   })
   if (fetchedList) {
-    mark('setCoins fetched')
+    // mark('setCoins fetched')
     updateList({ name: 'coins', list: fetchedList })
   }
 }
@@ -69,9 +67,9 @@ const getCurrencies = async () => {
 }
 
 const setCurrencies = async ({ updateList }) => {
-  mark('setCurrencies started')
+  // mark('setCurrencies started')
   const fetchedList = await getCurrencies()
-  mark('setCurrencies fetched')
+  // mark('setCurrencies fetched')
   if (fetchedList) {
     updateList({ name: 'currencies', list: fetchedList })
   }
