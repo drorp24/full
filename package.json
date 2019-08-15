@@ -84,7 +84,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow",
-    "server": "yarn build && NODE_ENV=development node server/bootstrap.js"
+    "server": "yarn build && NODE_ENV=development node server/bootstrap.js",
+    "serverProd": "yarn build &&  node server/bootstrap.js"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
