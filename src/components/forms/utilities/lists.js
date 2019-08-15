@@ -1,6 +1,5 @@
 import capitalize from '../../utility/capitalize'
 import axios from 'axios'
-// import { mark } from '../../utility/performance'
 
 const getCoins = async ({ currency = 'USD', limit = 100 } = {}) => {
   const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${currency}&api_key=${process.env.REACT_APP_CRYPTOCOMPARE_API_KEY}`
