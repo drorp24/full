@@ -1,16 +1,19 @@
 import React, { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
-import { setContextual, setShouldClose } from '../../redux/actions'
+import { useDispatch, useSelector } from 'react-redux'
+import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
 
 import { makeStyles } from '@material-ui/styles'
 
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
+
 import MenuIcon from '@material-ui/icons/Menu'
 import Close from '@material-ui/icons/Close'
+import Map from '@material-ui/icons/Map'
+import ViewList from '@material-ui/icons/ViewList'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,11 +37,14 @@ const useStyles = makeStyles(theme => ({
     transform: contextualMenu => (contextualMenu ? 'rotate(90deg)' : 'initial'),
     transition: 'transform 0.3s',
   },
+  view: {},
 }))
 
 const ButtonAppBar = ({ title }) => {
   const contextualMenu = useSelector(state => state.app.contextual)
   const name = useSelector(state => state.app.name)
+  const view = useSelector(state => state.app.view)
+
   const classes = useStyles(contextualMenu)
 
   const dispatch = useDispatch()
@@ -53,12 +59,17 @@ const ButtonAppBar = ({ title }) => {
     [dispatch]
   )
 
+  const setViewToggle = useCallback(() => dispatch(toggleView()), [dispatch])
   const iconButtonClicked = () => {
     // Place here the menu logic
     if (contextualMenu) {
       setContextualMenu(false)
       setItemShouldClose(true)
     }
+  }
+
+  const viewClicked = () => {
+    setViewToggle()
   }
 
   return (
@@ -76,6 +87,15 @@ const ButtonAppBar = ({ title }) => {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             {name || title}
           </Typography>
+          <Link to={view === 'list' ? '/map' : '/merchants'} color="inherit">
+            <IconButton
+              className={classes.view}
+              color="inherit"
+              onClick={viewClicked}
+            >
+              {view === 'map' ? <ViewList /> : <Map />}
+            </IconButton>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>

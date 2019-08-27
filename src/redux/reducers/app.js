@@ -1,9 +1,10 @@
-import { SET_APP, SET_CONTEXTUAL, SHOULD_CLOSE } from '../types'
+import { SET_APP, SET_CONTEXTUAL, SHOULD_CLOSE, TOGGLE_VIEW } from '../types'
 
 const initialState = {
   contextual: false,
   name: null,
   shouldClose: false,
+  view: 'list',
 }
 
 export default (state = initialState, action) => {
@@ -15,6 +16,8 @@ export default (state = initialState, action) => {
       return { ...state, contextual, name }
     case SHOULD_CLOSE:
       return { ...state, shouldClose }
+    case TOGGLE_VIEW:
+      return { ...state, view: state.view === 'list' ? 'map' : 'list' }
     default:
       return state
   }

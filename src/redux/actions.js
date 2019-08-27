@@ -6,6 +6,7 @@ import {
   SET_APP,
   SET_CONTEXTUAL,
   SHOULD_CLOSE,
+  TOGGLE_VIEW,
 } from './types'
 
 export const setMessage = message => ({
@@ -57,4 +58,8 @@ export const setContextual = ({ contextual, name }) => ({
 export const setShouldClose = shouldClose => ({
   type: SHOULD_CLOSE,
   shouldClose,
+})
+
+export const toggleView = () => ({
+  type: TOGGLE_VIEW,
 })

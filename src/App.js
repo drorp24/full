@@ -29,6 +29,7 @@ import { measure } from './components/utility/performance'
 import moize from 'moize'
 import Dashboard from './components/utility/Dashboard'
 import ErrorBoundary from './components/utility/boundary'
+import Map from './components/app/Map'
 
 class App extends Component {
   componentDidMount() {
@@ -71,6 +72,7 @@ class App extends Component {
               <Route path="/realtimetrading/" component={TradingUpdated} />
               <Route path="/trading" component={Trading} />
               <Route path="/merchants" component={Merchants} />
+              <Route path="/map" component={Map} />
               <Route
                 path="/asyncNotInitialRender"
                 component={AsyncNotInitialRender}

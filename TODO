@@ -168,13 +168,16 @@ Todo:
       ✔ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 @done(19-07-10 17:34)
   Card:
     ✔ Create a merchant card @done(19-07-10 17:34)
-    ☐ Switch to StreetView mode once open 
+    ✔ Include an icon that enables to switch from static to StreetView mode @done(19-08-13 16:21)
     ☐ Deploy and check mobile tracking is enabled
+    ☐ Include an icon that directs to a directions page / sliding window (like google maps app does it when it opens a sliding window in map)
   Map:
-    ☐ Clicking a map icon will switch to a 'map mode', where merchants show as markers on a map rather than list items 
-    ☐ Clicking a pin on that map opens a merchant card (that's identical to the card you get by expanding a list item) 
-    ☐ Clicking an icon will direct to a page/component with walking / driving instructions from user's current position to the merchant's shop
-    ☐ Check that markers are shown on the StreetView as well
+    ☐ AppBar - an icon will enable to toggle b/w the default list view to map view
+    ☐ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants
+    ☐ Map - Clicking a marker opens the merchant card page (Merchant component, the very one you get by clicking a list item) 
+    ☐ Merchant - Back arrow directs back to either List or Map according to (react router's?) history 
+    ☐ Merchant - icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
+    ☐ Directions - when available: enable Live View directions (AR)
   Orders:
     ☐ Use a FAB to order
     ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
@@ -193,6 +196,8 @@ Todo:
     ☐ Make a live ws-based crypto graph for 3 crypto currencies
   Menu:
     ☐ Consider creating a left-drawer menu
+  Progressive Web App (PWA): 
+    ☐ Opt-in to use service worker (https://create-react-app.dev/docs/making-a-progressive-web-app)
   Delay:
     https:
       ☐ Support https
