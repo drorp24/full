@@ -1,3 +1,4 @@
+require('dotenv/config')
 require('ignore-styles')
 
 require('@babel/register')({
@@ -6,7 +7,8 @@ require('@babel/register')({
     '@babel/plugin-syntax-dynamic-import',
     'dynamic-import-node',
     'react-loadable/babel',
+    '@babel/plugin-proposal-class-properties',
   ],
 })
 
-require('./index')
+require(`./${process.env.req}`)

@@ -1,11 +1,7 @@
-import express from 'express'
-import Loadable from 'react-loadable'
-import indexController from './controllers/index'
+const express = require('express')
+const path = require('path')
 
-// initialize the application and create the routes
 const app = express()
-
-app.use(indexController)
 
 // SERVER & SSR come from package.json; they serve as command modifiers/arguments (irrespective of environment).
 // The others come from multiple .env files; they are environment-specific configuration.
@@ -21,7 +17,7 @@ const {
   REACT_APP_SERVER_NOSSR_WEB_PORT,
 } = process.env
 
-console.log('index.js (ssr):')
+console.log('indexNoSsr.js:')
 console.log(
   'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_NOSERVER_NOSSR_WEB_PORT, REACT_APP_SERVER_SSR_WEB_PORT, REACT_APP_SERVER_NOSSR_WEB_PORT: ',
   REACT_APP_SERVER,
@@ -39,15 +35,18 @@ const port = JSON.parse(REACT_APP_SERVER)
     : REACT_APP_SERVER_NOSSR_WEB_PORT
   : REACT_APP_NOSERVER_NOSSR_WEB_PORT
 
-console.log('web server ssr port: ', port)
+console.log('web server non-ssr port: ', port)
 
-// start the app
-Loadable.preloadAll().then(() => {
-  app.listen(port, error => {
-    if (error) {
-      return console.log('something bad happened', error)
-    }
+app.use(express.static(path.join(__dirname, '..', 'build')))
 
-    console.log('listening on ' + port + '...')
-  })
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'))
+})
+
+app.listen(port, error => {
+  if (error) {
+    return console.log('something bad happened', error)
+  }
+
+  console.log('listening on ' + port + '...')
 })

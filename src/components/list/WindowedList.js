@@ -2,7 +2,6 @@
 // See comment on QueryResponse.js
 import React, { useRef } from 'react'
 import { FixedSizeList } from 'react-window'
-import { useSelector } from 'react-redux'
 
 import InfiniteLoader from 'react-window-infinite-loader'
 import AutoSizer from 'react-virtualized-auto-sizer' //FixedSizeList needs explicit px measure, no '100%'/'100vh', so AutoSizer calculates it

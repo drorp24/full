@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import HookCounter from '../stateful/HookCounter'
-import ClassCounter from '../stateful/ClassCounter'
+// import ClassCounter from '../stateful/ClassCounter'
 import ReduxCounter from '../stateful/ReduxCounter'
 import AsyncInitialRender from '../async/initialRender/AsyncInitialRender'
 
@@ -37,7 +37,7 @@ const Home = ({ staticContext }) => {
       </p>
       <h2>Stateful Components</h2>
       <HookCounter />
-      <ClassCounter />
+      {/* <ClassCounter /> */}
       <ReduxCounter />
       <h2>Async Components</h2>
       <h3>Included in initial render</h3>

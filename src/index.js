@@ -14,10 +14,9 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ApolloProvider } from 'react-apollo'
 import client from '../src/apollo/client'
 
-// in dev-only mode (here identified by module.hot), window.REDUX_STATE will still be populated by whatever initial string public/index.html comes with
-// as there's no server to replace it with anything
-// it's only when server is involved (localhost:3001 or production) that window.REDUX_STATE has an actual state value
-const storeConfig = configureStore(module.hot ? {} : window.REDUX_STATE || {})
+const ssr = process.env.REACT_APP_SSR
+
+const storeConfig = configureStore(ssr ? window.REDUX_STATE || {} : {})
 const { store, persistor } = storeConfig
 
 // Wrap <App /> here with browser-specific components only
@@ -40,10 +39,10 @@ const AppBundle = (
 const root = document.getElementById('root')
 
 window.onload = () => {
-  // in dev-only mode (no server, e.g.: localhost:3000), there's nothing to hydrate
-  // calling ReactDOM.hydrate in this case will result with a 'maching <div>' warning message
-  // calling ReactDOM.render in this case prevents the warning from appearing
-  const renderMethod = module.hot ? ReactDOM.render : ReactDOM.hydrate
+  // if ssr is not on there's nothing to hydrate
+  // calling ReactDOM.hydrate in this case will result with a 'matching <div>' warning message (why?)
+  // calling ReactDOM.render in such case prevents the warning from appearing
+  const renderMethod = ssr ? ReactDOM.render : ReactDOM.hydrate
   Loadable.preloadReady().then(() => {
     renderMethod(AppBundle, root)
   })
