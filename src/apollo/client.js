@@ -46,7 +46,7 @@ console.log(
 // if GRAPHQL_DEFAULT_PORT has value, that means we're in a heroku environment and need only assign that value to the port.
 // (heroku also doesn't let you assign port numbers to web servers - see comment in index.js and indexNoSsr.js)
 
-sconsole.log(
+console.log(
   'process.env.GRAPHQL_DEFAULT_PORT: ',
   process.env.GRAPHQL_DEFAULT_PORT
 )
