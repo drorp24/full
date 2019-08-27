@@ -110,7 +110,7 @@ const useStyles = makeStyles(theme => ({
 
 const myWindow = typeof window !== 'undefined' ? window : { innerHeight: 736 }
 
-const appBarHeight = myWindow / 10
+const appBarHeight = myWindow.innerHeight / 10
 
 const measureTopHeight = element => {
   if (!element) return { element: null }
