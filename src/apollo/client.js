@@ -16,6 +16,7 @@ const {
   REACT_APP_SSR,
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
+  REACT_APP_DEFAULT_GRAPHQL_PORT,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT,
@@ -23,11 +24,12 @@ const {
 
 console.log('graphql client.js:')
 console.log(
-  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
+  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_DEFAULT_GRAPHQL_PORT, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_SERVER,
   REACT_APP_SSR,
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
+  REACT_APP_DEFAULT_GRAPHQL_PORT,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT
@@ -43,16 +45,11 @@ console.log(
 // In a heroku environment, there's only one build command. It is prefixed by no variable assignment.
 // While I could define separate scripts for heroku's build as well, it's of no use: heroku will have one server at any given time.
 // Furthermore, I would in such case have to pass the value of these variables to the client on a script tag
-// if GRAPHQL_DEFAULT_PORT has value, that means we're in a heroku environment and need only assign that value to the port.
+// if REACT_APP_DEFAULT_GRAPHQL_PORT has value, it means we're in a heroku environment and need only assign that value to the port.
 // (heroku also doesn't let you assign port numbers to web servers - see comment in index.js and indexNoSsr.js)
 
-console.log(
-  'process.env.GRAPHQL_DEFAULT_PORT: ',
-  process.env.GRAPHQL_DEFAULT_PORT
-)
-
 const port =
-  process.env.GRAPHQL_DEFAULT_PORT ||
+  REACT_APP_DEFAULT_GRAPHQL_PORT ||
   (JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
       ? REACT_APP_SERVER_SSR_GRAPHQL_PORT
