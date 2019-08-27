@@ -37,6 +37,7 @@
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.1",
     "husky": "^1.1.3",
+    "ignore-styles": "^5.0.1",
     "immer": "^2.0.0",
     "lint-staged": "^8.0.4",
     "lodash.deburr": "^4.1.0",
@@ -72,8 +73,15 @@
     "redux-thunk": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
-    "yup": "^0.26.6"
+    "yup": "^0.26.6",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/register": "^7",
+    "eslint-plugin-react-hooks": "^1.5.0"
   },
+  "devDependencies": {},
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [
       "prettier --single-quote --write",
@@ -96,16 +104,7 @@
     "noServerAndGraphqlDev": "concurrently \"yarn noServer\" \"yarn noServerGraphqlDev\"",
     "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
     "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn build && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
-    "start": "yarn serverNoSsr",
-    "ignore-styles": "^5.0.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
-    "@babel/preset-env": "^7.1.6",
-    "@babel/register": "^7",
-    "eslint-plugin-react-hooks": "^1.5.0"
+    "start": "yarn serverNoSsr"
   },
   "browserslist": [
     ">0.2%",
