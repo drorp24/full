@@ -45,6 +45,12 @@ console.log(
 // Furthermore, I would in such case have to pass the value of these variables to the client on a script tag
 // if GRAPHQL_DEFAULT_PORT has value, that means we're in a heroku environment and need only assign that value to the port.
 // (heroku also doesn't let you assign port numbers to web servers - see comment in index.js and indexNoSsr.js)
+
+sconsole.log(
+  'process.env.GRAPHQL_DEFAULT_PORT: ',
+  process.env.GRAPHQL_DEFAULT_PORT
+)
+
 const port =
   process.env.GRAPHQL_DEFAULT_PORT ||
   (JSON.parse(REACT_APP_SERVER)
