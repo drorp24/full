@@ -95,7 +95,8 @@
     "noServerAndGraphqlDev": "concurrently \"yarn noServer\" \"yarn noServerGraphqlDev\"",
     "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
     "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn build && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
-    "start": "yarn serverNoSsr"
+    "start": "yarn serverNoSsr",
+    "ignore-styles": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
@@ -103,8 +104,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
     "@babel/register": "^7",
-    "eslint-plugin-react-hooks": "^1.5.0",
-    "ignore-styles": "^5.0.1"
+    "eslint-plugin-react-hooks": "^1.5.0"
   },
   "browserslist": [
     ">0.2%",
