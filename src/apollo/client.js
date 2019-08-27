@@ -33,9 +33,20 @@ console.log(
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT
 )
 
-// heroku doesnt allow port number to be assigned, providing a dynamic environment variable instead ($PORT)
+// in a local environment (only), each of the 3 web servers (CRA's HMR, server with ssr, server with no ssr) is assigned its own different port number.
+// That enables running locally a CRA server alongside a production-like server w/o having to kill processes with identical ports.
+// Graphql endpoints have to be assigned accordingly as well, to have each web client talk with its own separate graphql server.
+// Each of the 3 servers has its own script line in package.json that prefixes the 'build' command with the proper variables/arguments
+// The value of these variables are thus embedded by the build and are available thru process.env.
+// All this is not possiblenor required in heroku.
+//
+// In a heroku environment, there's only one build command. It is prefixed by no variable assignment.
+// While I could define separate scripts for heroku's build as well, it's of no use: heroku will have one server at any given time.
+// Furthermore, I would in such case have to pass the value of these variables to the client on a script tag
+// if GRAPHQL_DEFAULT_PORT has value, that means we're in a heroku environment and need only assign that value to the port.
+// (heroku also doesn't let you assign port numbers to web servers - see comment in index.js and indexNoSsr.js)
 const port =
-  process.env.PORT ||
+  process.env.GRAPHQL_DEFAULT_PORT ||
   (JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
       ? REACT_APP_SERVER_SSR_GRAPHQL_PORT
