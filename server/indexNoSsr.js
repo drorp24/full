@@ -29,6 +29,8 @@ console.log(
   REACT_APP_SERVER_NOSSR_WEB_PORT
 )
 
+console.log('process.env.PORT: ', process.env.PORT)
+
 // heroku doesnt allow port number to be assigned, providing a dynamic environment variable instead ($PORT)
 const port =
   process.env.PORT || JSON.parse(REACT_APP_SERVER)
