@@ -58,9 +58,9 @@ const port =
       : REACT_APP_SERVER_NOSSR_GRAPHQL_PORT
     : REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT)
 
-console.log('graphql client port: ', port)
+console.log('NOT CURRENTLY USED: graphql client port: ', port)
 
-const graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}:${port}/graphql`
+const graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}/graphql`
 const httpEndpoint = `http://${graphqlEndpoint}`
 const wsEndpoint = `ws://${graphqlEndpoint}`
 
