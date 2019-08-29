@@ -16,6 +16,7 @@ const {
   REACT_APP_SSR,
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
+  REACT_APP_GRAPHQL_DOMAIN,
   REACT_APP_DEFAULT_GRAPHQL_PORT,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
@@ -24,11 +25,12 @@ const {
 
 console.log('graphql client.js:')
 console.log(
-  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_DEFAULT_GRAPHQL_PORT, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
+  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_DEFAULT_GRAPHQL_PORT, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_SERVER,
   REACT_APP_SSR,
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
+  REACT_APP_GRAPHQL_DOMAIN,
   REACT_APP_DEFAULT_GRAPHQL_PORT,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
@@ -58,7 +60,7 @@ const port =
 
 console.log('graphql client port: ', port)
 
-const graphqlEndpoint = `${REACT_APP_DOMAIN}:${port}/graphql`
+const graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}:${port}/graphql`
 const httpEndpoint = `http://${graphqlEndpoint}`
 const wsEndpoint = `ws://${graphqlEndpoint}`
 
@@ -81,6 +83,14 @@ const errorLink = onError(
     console.log('graphQLErrors: ', graphQLErrors)
   }
 )
+
+console.log('wsEndpoint: ', wsEndpoint)
+
+// const wsClient = new SubscriptionClient(wsEndpoint, {
+//   reconnect: true,
+// })
+
+// const wsLink = WebSocketLink(wsClient)
 
 const wsLink = new WebSocketLink({
   uri: wsEndpoint,
