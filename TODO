@@ -143,61 +143,68 @@ Todo:
         ✘ Instead of the above: fetch selected merchant from the Apollo Cliet cache rather than from the server @cancelled(19-07-10 17:29)
         ✔ Use Immer in the Redux Reducers  [but redux doesn't need Immer as it auto merges others..?] @done(19-06-10 19:33)
         ✘ Update the experience note with Immer, lodash/fp and Immutable. Immer is a must-brag nowadays. @cancelled(19-07-10 17:28)
-  List:
-    Query:
-      ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
-      ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
-    Display:
-      ☐ Use Mui 'List' to display the list, and 'Grid' to style each individual list item (https://material-ui.com/layout/grid/#complex-grid) 
-    Endless Scrolling and lazy loading (not the same thing):
-      ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
-      https://addyosmani.com/blog/react-window/ 
-      ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
-      ✘ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom @cancelled(19-04-08 16:56)
-      ✔ use react-window for windowing (= rendering only what's visible with every scroll) @done(19-04-11 15:59)
-      ✔ use react-virtualized-auto-sizer to capture all available space if required @done(19-04-11 16:00)
-      ✔ Use react-window-infinite-loader for lazy loading (using graphql's implemented pagination) @done(19-04-28 17:53)
-      ✘ use react-virtualized/WindowScroller for scroll bar if required @cancelled(19-04-11 16:00)
-    List-level operations, using Backdrop:
-      ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
-    Item-level operations:
-      ☐ Enable item reodering if supported by MUI (adding 3-dot 'handlers' that indicate draggability)
-      ☐ Enable 'swap to buy' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
-    List-Card transition:
-      ✔ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior) @done(19-07-10 17:34)
-      ✔ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 @done(19-07-10 17:34)
-  Card:
-    ✔ Create a merchant card @done(19-07-10 17:34)
-    ✔ Include an icon that enables to switch from static to StreetView mode @done(19-08-13 16:21)
-    ☐ Deploy and check mobile tracking is enabled
-    ☐ Include an icon that directs to a directions page / sliding window (like google maps app does it when it opens a sliding window in map)
-  Map:
-    ☐ AppBar - an icon will enable to toggle b/w the default list view to map view
-    ☐ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants
-    ☐ Map - Clicking a marker opens the merchant card page (Merchant component, the very one you get by clicking a list item) 
-    ☐ Merchant - Back arrow directs back to either List or Map according to (react router's?) history 
-    ☐ Merchant - icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
-    ☐ Directions - when available: enable Live View directions (AR)
-  Orders:
-    ☐ Use a FAB to order
-    ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
-  Payment: 
-    ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
-   Header / Footer / Theme:
-    ☐ Create a branded header
-    ☐ Create a footer with action icons
-    ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
-    ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
-  Communication:
-    Banner / Snackbar: 
-      ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
-    Information:
-    ☐ Make a reviews page like the one I had in Cambiu
-    ☐ Make a live ws-based crypto graph for 3 crypto currencies
-  Menu:
-    ☐ Consider creating a left-drawer menu
-  Progressive Web App (PWA): 
-    ☐ Opt-in to use service worker (https://create-react-app.dev/docs/making-a-progressive-web-app)
+    List:
+      Query:
+        ✔ Either place the gql query in the component file (think CC-in-JS) or make the query accept parameters @done(19-04-02 18:04)
+        ✔ Respond to query result by displaying a (unedited yet) list of merchants @done(19-04-02 18:04)
+      Display:
+        ☐ Use Mui 'List' to display the list, and 'Grid' to style each individual list item (https://material-ui.com/layout/grid/#complex-grid) 
+      Endless Scrolling and lazy loading (not the same thing):
+        ✔ Read about endless scrolling / lazy loading best practices in react: @done(19-04-08 16:56)
+        https://addyosmani.com/blog/react-window/ 
+        ✔ Try to find an npm package for that, look at 'react-window' and others (npms) @done(19-04-08 16:56)
+        ✘ Use <ErrorBoundary>, <Suspense> and React.lazy to lazy-load new merchants when scroll reaches page bottom @cancelled(19-04-08 16:56)
+        ✔ use react-window for windowing (= rendering only what's visible with every scroll) @done(19-04-11 15:59)
+        ✔ use react-virtualized-auto-sizer to capture all available space if required @done(19-04-11 16:00)
+        ✔ Use react-window-infinite-loader for lazy loading (using graphql's implemented pagination) @done(19-04-28 17:53)
+        ✘ use react-virtualized/WindowScroller for scroll bar if required @cancelled(19-04-11 16:00)
+      List-level operations, using Backdrop:
+        ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
+      Item-level operations:
+        ☐ Enable item reodering if supported by MUI (adding 3-dot 'handlers' that indicate draggability)
+        ☐ Enable 'swap to buy' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
+      List-Card transition:
+        ✔ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior) @done(19-07-10 17:34)
+        ✔ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 @done(19-07-10 17:34)
+    Card:
+      ✔ Create a merchant card @done(19-07-10 17:34)
+      ✔ Include an icon that enables to switch from static to StreetView mode @done(19-08-13 16:21)
+      ☐ Deploy and check mobile tracking is enabled
+      ☐ Include an icon that directs to a directions page / sliding window (like google maps app does it when it opens a sliding window in map)
+    Map:
+      ☐ AppBar - an icon will enable to toggle b/w the default list view to map view
+      ☐ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants
+      ☐ Map - Clicking a marker opens the merchant card page (Merchant component, the very one you get by clicking a list item) 
+      ☐ Merchant - Back arrow directs back to either List or Map according to (react router's?) history 
+      ☐ Merchant - icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
+      ☐ Directions - when available: enable Live View directions (AR)
+    Orders:
+      ☐ Use a FAB to order
+      ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
+    Payment: 
+      ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
+    Header / Footer / Theme:
+      ☐ Create a branded header
+      ☐ Create a footer with action icons
+      ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
+      ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
+    Communication:
+      Banner / Snackbar: 
+        ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
+      Information:
+      ☐ Make a reviews page like the one I had in Cambiu
+      ☐ Make a live ws-based crypto graph for 3 crypto currencies
+    Menu:
+      ☐ Consider creating a left-drawer menu
+    Progressive Web App (PWA): 
+      ☐ Opt-in to use service worker (https://create-react-app.dev/docs/making-a-progressive-web-app)
+    Deployment:
+    ☐ try ssr at localhost
+    ☐ if succesful, try it at heroku
+    ☐ return lists.js and check lists are loaded at heroku
+    ☐ add ssl to heroku
+    ☐ check panorama is working in heroku
+    ☐ Go over Deployment TODO note
   Delay:
     https:
       ☐ Support https

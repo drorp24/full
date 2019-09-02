@@ -17,7 +17,7 @@ const {
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
   REACT_APP_GRAPHQL_DOMAIN,
-  REACT_APP_DEFAULT_GRAPHQL_PORT,
+  REACT_APP_GRAPHQL_PORT_REQUIRED,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT,
@@ -25,13 +25,13 @@ const {
 
 console.log('graphql client.js:')
 console.log(
-  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_DEFAULT_GRAPHQL_PORT, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
+  'REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_DOMAIN, REACT_APP_ENV_FILE, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_GRAPHQL_PORT_REQUIRED, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_SERVER,
   REACT_APP_SSR,
   REACT_APP_DOMAIN,
   REACT_APP_ENV_FILE,
   REACT_APP_GRAPHQL_DOMAIN,
-  REACT_APP_DEFAULT_GRAPHQL_PORT,
+  REACT_APP_GRAPHQL_PORT_REQUIRED,
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT
@@ -44,23 +44,24 @@ console.log(
 // The value of these variables are thus embedded by the build and are available thru process.env.
 // All this is not possiblenor required in heroku.
 //
-// In a heroku environment, there's only one build command. It is prefixed by no variable assignment.
-// While I could define separate scripts for heroku's build as well, it's of no use: heroku will have one server at any given time.
-// Furthermore, I would in such case have to pass the value of these variables to the client on a script tag
-// if REACT_APP_DEFAULT_GRAPHQL_PORT has value, it means we're in a heroku environment and need only assign that value to the port.
-// (heroku also doesn't let you assign port numbers to web servers - see comment in index.js and indexNoSsr.js)
+// Heroku doesn't like the graphql port number to be specified as much as it doesn't with web servers
+// port number assignment is therefore restricted to dev mode
 
-const port =
-  REACT_APP_DEFAULT_GRAPHQL_PORT ||
-  (JSON.parse(REACT_APP_SERVER)
+let graphqlEndpoint
+if (REACT_APP_GRAPHQL_PORT_REQUIRED) {
+  const port = JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
       ? REACT_APP_SERVER_SSR_GRAPHQL_PORT
       : REACT_APP_SERVER_NOSSR_GRAPHQL_PORT
-    : REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT)
+    : REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT
 
-console.log('NOT CURRENTLY USED: graphql client port: ', port)
+  graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}:${port}/graphql`
+} else {
+  graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}/graphql`
+}
 
-const graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}/graphql`
+console.log('graphqlEndpoint: ', graphqlEndpoint)
+
 const httpEndpoint = `http://${graphqlEndpoint}`
 const wsEndpoint = `ws://${graphqlEndpoint}`
 
