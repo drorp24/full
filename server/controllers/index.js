@@ -8,7 +8,7 @@ const router = express.Router()
 const path = require('path')
 
 const actionIndex = (req, res, next) => {
-  const store = configureStore()
+  const { store } = configureStore()
   store.dispatch(setMessage('Server'))
 
   serverRenderer(store)(req, res, next)

@@ -23,6 +23,8 @@ const FormContainer = ({ structure, show }) => {
   // From that moment on, schema is not needed anymore, and it can safely be cleared upon unmounting the form component.
   const [schema, setSchema] = useState({})
 
+  const [showChild, setShowChild] = useState(false)
+
   // ! Lists and form on the other hand are global, hence in redux
   const dispatch = useDispatch()
   const updateList = useCallback(
@@ -38,18 +40,27 @@ const FormContainer = ({ structure, show }) => {
       values: { ...form.values, location, address },
     })
 
+  const updateLocationAndAddressCallback = useCallback(updateLocationAndAddress)
+
   const form = useSelector(store => store.form)
 
   useEffect(() => {
+    console.log('FormContainer useEffect. form: ', form)
+
+    setShowChild(true)
+
     if (!form.values) {
+      console.log(
+        'form.values is empty. updating redux form selector according to structure'
+      )
       const formState = createFormStateFromStructure(structure)
       updateForm(formState)
     }
 
     // the upper if resinstates previsouly persisted values should they exist
     // this if is for the case persisted values do not include the address
-    if (!form.values.address)
-      getLocationAndAddress().then(updateLocationAndAddress(form))
+    if (!form.values || !form.values.address)
+      getLocationAndAddress().then(updateLocationAndAddressCallback(form))
 
     setLists({ structure, form, updateList })
 
@@ -72,7 +83,14 @@ const FormContainer = ({ structure, show }) => {
     // TODO: Use the '[]' mechanism to declaratively define when lists should get updated
     // TODO: Use a separate useEffect per each list, depending on the value that matters
     // TODO: Then remove the setLists that's being called upon field blurring, which served as a workaround for that.
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    form,
+    lists,
+    structure,
+    updateForm,
+    updateList,
+    updateLocationAndAddressCallback,
+  ])
 
   const header = form => {
     if (!form.values) return <div />
@@ -102,6 +120,11 @@ const FormContainer = ({ structure, show }) => {
     schema,
     show,
     header,
+  }
+
+  if (!showChild) {
+    // You can show some kind of placeholder UI here
+    return null
   }
 
   return structure.length > 1 ? (

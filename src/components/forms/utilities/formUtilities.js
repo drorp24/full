@@ -160,6 +160,9 @@ const EveryField = ({ name }) => (
   <FormContext.Consumer>
     {({ structure, step, schema, show, form, updateForm }) => {
       //
+
+      console.log('EveryField. form: ', form)
+
       const field = structure[step].fields.filter(
         field => field.name === name
       )[0]
