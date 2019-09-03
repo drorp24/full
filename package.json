@@ -7,11 +7,6 @@
     "yarn": "1.17.3"
   },
   "dependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
-    "@babel/preset-env": "^7.1.6",
-    "@babel/register": "^7",
     "@date-io/date-fns": "^1.0.2",
     "@google/maps": "^0.5.5",
     "@material-ui/core": "^4.0.0-beta.0",
@@ -33,7 +28,6 @@
     "currency-flags": "https://github.com/transferwise/currency-flags.git",
     "currency-symbol-map": "^4.0.4",
     "date-fns": "2.0.0-alpha.25",
-    "eslint-plugin-react-hooks": "^1.5.0",
     "express": "^4.16.4",
     "express-favicon": "^2.0.1",
     "flow-bin": "^0.85.0",
@@ -67,7 +61,7 @@
     "react-phone-number-input": "^2.3.3",
     "react-places-autocomplete": "^7.2.0",
     "react-redux": "^7.1.0-alpha.3",
-    "react-router-dom": "^5",
+    "react-router-dom": "^4.3.1",
     "react-scripts": "3.1.1",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.7.1",
@@ -79,7 +73,13 @@
     "redux-thunk": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
-    "yup": "^0.26.6"
+    "yup": "^0.26.6",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/register": "^7",
+    "eslint-plugin-react-hooks": "^1.5.0"
   },
   "devDependencies": {},
   "lint-staged": {
