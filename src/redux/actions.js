@@ -2,6 +2,7 @@ import {
   SET_MESSAGE,
   SET_COUNT,
   SET_FORM,
+  SET_FORM_VALUES,
   SET_LIST,
   SET_APP,
   SET_CONTEXTUAL,
@@ -36,6 +37,11 @@ export const setCount = () => (dispatch, getState) => {
 export const setForm = form => ({
   type: SET_FORM,
   form,
+})
+
+export const setFormValues = values => ({
+  type: SET_FORM_VALUES,
+  values,
 })
 
 export const setList = ({ name, list }) => ({
