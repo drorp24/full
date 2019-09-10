@@ -38,8 +38,8 @@ export const getLocationAndAddress = async () => {
     position = await getCurrentPosition()
     const { latitude, longitude } = position.coords
     result.location = { lat: latitude, lng: longitude, error: false }
-  } catch (error) {
-    result.location = { ...result.location, error: error.toString() }
+  } catch ({ message }) {
+    result.location = { ...result.location, error: message }
   }
 
   if (position) {

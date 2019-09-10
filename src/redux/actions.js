@@ -3,11 +3,13 @@ import {
   SET_COUNT,
   SET_FORM,
   SET_FORM_VALUES,
+  SET_FORM_SCHEMA,
   SET_LIST,
   SET_APP,
   SET_CONTEXTUAL,
   SHOULD_CLOSE,
   TOGGLE_VIEW,
+  SET_POPULATED,
 } from './types'
 
 export const setMessage = message => ({
@@ -44,10 +46,16 @@ export const setFormValues = values => ({
   values,
 })
 
-export const setList = ({ name, list }) => ({
+export const setFormSchema = schema => ({
+  type: SET_FORM_SCHEMA,
+  schema,
+})
+
+export const setList = ({ name, list, quote }) => ({
   type: SET_LIST,
   name,
   list,
+  quote,
 })
 
 export const setApp = app => ({
@@ -68,4 +76,9 @@ export const setShouldClose = shouldClose => ({
 
 export const toggleView = () => ({
   type: TOGGLE_VIEW,
+})
+
+export const setPopulated = field => ({
+  type: SET_POPULATED,
+  field,
 })

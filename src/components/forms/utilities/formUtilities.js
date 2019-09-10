@@ -54,15 +54,15 @@ export const createFormStateFromStructure = structure => {
   return form
 }
 
-export const setLists = ({ structure, form, updateList }) => {
+export const setLists = ({ structure, quote, updateList }) => {
   getFields(structure)
     .filter(field => !!field.list)
     .forEach(({ list }) => {
-      setList({ list, form, updateList })
+      setList({ list, quote, updateList })
     })
 }
 
-export const createSchema = (structure, lists, setSchema) => {
+export const createSchema = (structure, lists) => {
   const shape = {}
 
   getFields(structure).forEach(({ name, fieldSchema, list }) => {
@@ -75,8 +75,9 @@ export const createSchema = (structure, lists, setSchema) => {
         'Start typing and select from the list'
       )
     }
-    setSchema(object(shape))
   })
+  console.log('schema created: ', object(shape))
+  return object(shape)
 }
 
 //
