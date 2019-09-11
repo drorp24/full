@@ -104,7 +104,7 @@
     "noServerAndGraphqlDev": "concurrently \"yarn noServer\" \"yarn noServerGraphqlDev\"",
     "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
     "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn build && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
-    "start": "yarn serverSsr"
+    "start": "yarn serverNoSsr"
   },
   "browserslist": [
     ">0.2%",
