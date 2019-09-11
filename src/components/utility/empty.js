@@ -1,1 +1,1 @@
-export const empty = obj => Object.getOwnPropertyNames(obj).length === 0
+export const empty = obj => !obj || Object.getOwnPropertyNames(obj).length === 0

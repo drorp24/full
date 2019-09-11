@@ -45,6 +45,7 @@ export const setCoins = async ({ quote = 'USD', updateList }) => {
 }
 
 // Each set<x> function must be global for lists to be configured dynamically
+window.getCoins = getCoins
 window.setCoins = setCoins
 
 export const getCurrencies = async () => {

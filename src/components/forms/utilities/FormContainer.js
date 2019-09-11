@@ -18,15 +18,14 @@ import { getLocationAndAddress } from '../../utility/geolocation'
 import LiveRates from '../../websocket/LiveRates'
 import { MyTypography } from '../../themed/Box'
 import { coinbaseProducts, getCoins, getCurrencies } from './lists'
+import { empty } from '../../utility/empty'
 
 const FormContainer = ({ structure, show }) => {
-  console.log('FormContainer entered')
-
   const [showChild, setShowChild] = useState(false)
 
   const dispatch = useDispatch()
 
-  // ! useSelector variables are essentially props: whenever each of them change, the entire component gets re-rendered
+  // ! Components' useSelector variables are essentially props: whenever each of them change, the entire component gets re-rendered
   // (indeed that's how old 'connect' communicates them to a component)
   // that means that:
   // - each useSelector var should be assigned to the lowest (most granular) key in the redux store object
@@ -38,11 +37,16 @@ const FormContainer = ({ structure, show }) => {
   //   but another useEffect (quote) asks about the value of quote useSelector (i.e., store.form.values.quote) when store.form is still null
   //   in such cases the (... || {}) notation can save if statements.
   //
-  // Essentially, the useSelector variables are exactly like the useEffect's dependency array variables:
-  // dependencies that determine re-renders (in the case of components) or re-invocation (in the case of useEffects).
+  // ! useEffects' dependency variables are exactly the same: props that trigger re-invocation whenever their values change
+  // The fact useEffects are re-invoked whenever any of their dependencies change enables using them as event handlers,
+  // but such that depend on data rather than on a user gesture and such that don't need to be linked to any component.
+  // I'm doing this here in the 'quote useEffect', that updates the coins list whenever quote currency changes.
+  // if 'quote' is not impressive enough example to the power of the dependency array (since I could have used 'onChange' in this case),
+  // there are dependencies that don't sit on any component (e.g., schema) and would therefore not be possible with any useEffect
+  // and then there is the fact that any useEffect can depend on a multitude of data, which isn't possible with onChange either.
   //
   // ! every useEffect invocation will have a component re-render preceeding it
-  // ! or: why is FormContainer being re-rendered every keystroke in the 'quote' field
+  // ! or: why is FormContainer being re-rendered upon every keystroke in the 'quote' field
   // The above rule holds even if the useSelector vars doesn't seem to require any re-render of the component, just a side calculation
   // For instance: 'quote' changes trigger re-generation of the coins list.
   // Aparently, this doesn't require any re-rendering of FormContainer (maybe not a good example but never mind)
@@ -59,7 +63,8 @@ const FormContainer = ({ structure, show }) => {
 
   const lists = useSelector(store => store.lists)
   const populated = useSelector(store => store.app.populated)
-  const schema = useSelector(store => store.form.schema)
+  // const schema = useSelector(store => store.form.schema)
+  const [schema, setSchema] = useState({})
   // Unlike lists and app selectors, whose properties are hard-coded hence initialized,
   // form.values' properties are unknown initially as they're dynamically built
   const quote = useSelector(store => (store.form.values || {}).quote)
@@ -146,26 +151,28 @@ const FormContainer = ({ structure, show }) => {
     // ! Sets cannot be hydrated
     // yup schema contains Sets.
     // The Sets in the yup object is where yup holds the list of valid values to check validity against.
-    // It works well as long as the yup object is in the redux store.
-    // However, as soon as a redux store is hydrated back from localStorage, its Sets lose their values and become empty arrays.
-    // That makes yup work well from redux, but after page refresh start saying something like 'schema.validateSyncAt is not a function'
-    // Therefore I can't hydrate the schema (= check & update populated.schema) and need to generate schema eveery entry to the useEffect.
-    //
-    if (/* !populated.schema && */ populated.coins) {
-      updateFormSchema(createSchema(structure, lists))
-      // updatePopulated('schema')
+    // It works well as long as the yup object is in the redux store, which supports Sets.
+    // But as soon as a redux store is hydrated back from localStorage, its Sets lose their values and become empty arrays.
+    // That makes yup, which has worked well from the redux storage, stop working after page refresh saying something like 'schema.validateSyncAt is not a function'
+    // That's why I'm placing schema in the component's state rather than in redux
+    // Miraculously, even though it's in the component's state, schema does maintain its values after page refresh.
+    console.log('empty(schema): ', empty(schema))
+    console.log('populated.coins: ', populated.coins)
+    if (empty(schema) && populated.coins) {
+      // updateFormSchema(createSchema(structure, lists))
+      setSchema(createSchema(structure, lists))
     }
   }, [
     lists,
     populated.state,
     populated.currencies,
-    populated.schema,
     populated.coins,
     structure,
     updateForm,
     updateFormSchema,
     updateList,
     updatePopulated,
+    schema,
   ])
 
   // quote useEffect
@@ -174,21 +181,17 @@ const FormContainer = ({ structure, show }) => {
     // this enables viewing all coin quotes when browsing the dropdown coins list.
     // Since it entains invoking a heavy api, attempt is made to prevent calling that api unnecessarily.
 
+    console.log('** quote useEffect for quote: ', quote)
+
     // No use to call the api upon initial render of FormContainer, when the user hasn't yet populated anything into quote
-    console.log(
-      'FormContainer quote (setLists) useEffect entered. quote: ',
-      quote
-    )
     if (!quote) {
-      console.log('quote is null - leaving the quote useEffect')
+      console.log('no quote - leaving')
       return
     }
 
     // No use to call it before list.currencies had a chance to be built
     if (!lists.currencies) {
-      console.log(
-        'list.currencies isnt built yet - leaving the quote useEffect'
-      )
+      console.log('list.currencies isnt built yet - leaving')
       return
     }
 
@@ -199,27 +202,24 @@ const FormContainer = ({ structure, show }) => {
       lists.currencies.find(currency => currency.name === quote)
 
     if (!found) {
-      console.log(
-        'quote currency isnt found in currencies list - leaving the quote useEffect'
-      )
+      console.log('no such currency - leaving')
       return
     }
 
     // No need to call it if the coins list is built already and matches the given quote currency
     if (lists.quote === quote) {
-      console.log(
-        `coins list for quote curreny ${quote} has been built already - leaving quote useEffect`
-      )
+      console.log(`coins list matches ${quote} - leaving`)
       return
     }
 
     const updateCoins = async quote => {
       const name = 'coins'
-      const list = await getCoins()
+      const list = await getCoins({ quote })
       updateList({ name, list, quote })
       updatePopulated('coins')
     }
 
+    console.log(`Calling updateCoins with ${quote}`)
     updateCoins(quote)
     //
   }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
