@@ -13,8 +13,8 @@ const initialState = {
   view: 'list',
   populated: {
     state: false,
-    address: false,
-    lists: false,
+    currencies: false,
+    coins: false,
     schema: false,
   },
 }

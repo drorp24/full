@@ -13,12 +13,11 @@ import OneStepper from './OneStepper'
 import {
   createFormStateFromStructure,
   createSchema,
-  setLists,
 } from '../../forms/utilities/formUtilities'
 import { getLocationAndAddress } from '../../utility/geolocation'
 import LiveRates from '../../websocket/LiveRates'
 import { MyTypography } from '../../themed/Box'
-import { coinbaseProducts, setCoins } from './lists'
+import { coinbaseProducts, getCoins, getCurrencies } from './lists'
 
 const FormContainer = ({ structure, show }) => {
   console.log('FormContainer entered')
@@ -128,28 +127,40 @@ const FormContainer = ({ structure, show }) => {
 
     setShowChild(true)
 
+    const updateCurrencies = async () => {
+      const name = 'currencies'
+      const list = await getCurrencies()
+      updateList({ name, list })
+      updatePopulated('currencies')
+    }
+
     if (!populated.state) {
       updateForm(createFormStateFromStructure(structure))
       updatePopulated('state')
     }
 
-    if (!populated.schema) {
-      updateFormSchema(createSchema(structure, lists))
-      updatePopulated('schema')
+    if (!populated.currencies) {
+      updateCurrencies()
     }
 
-    // For demos only: generate an initial coins list with USD quotes if none exists already
-    // coins list is re-generated whenever user selects/changes the quote currency (by the 'quote' useEffect below)
-    if (!populated.lists) {
-      const quote = 'USD'
-      setLists({ structure, quote, updateList })
-      updatePopulated('lists')
+    // ! Sets cannot be hydrated
+    // yup schema contains Sets.
+    // The Sets in the yup object is where yup holds the list of valid values to check validity against.
+    // It works well as long as the yup object is in the redux store.
+    // However, as soon as a redux store is hydrated back from localStorage, its Sets lose their values and become empty arrays.
+    // That makes yup work well from redux, but after page refresh start saying something like 'schema.validateSyncAt is not a function'
+    // Therefore I can't hydrate the schema (= check & update populated.schema) and need to generate schema eveery entry to the useEffect.
+    //
+    if (/* !populated.schema && */ populated.coins) {
+      updateFormSchema(createSchema(structure, lists))
+      // updatePopulated('schema')
     }
   }, [
     lists,
     populated.state,
+    populated.currencies,
     populated.schema,
-    populated.lists,
+    populated.coins,
     structure,
     updateForm,
     updateFormSchema,
@@ -202,8 +213,16 @@ const FormContainer = ({ structure, show }) => {
       return
     }
 
-    setCoins({ quote, updateList })
-  }, [quote, lists.quote, lists.currencies, updateList])
+    const updateCoins = async quote => {
+      const name = 'coins'
+      const list = await getCoins()
+      updateList({ name, list, quote })
+      updatePopulated('coins')
+    }
+
+    updateCoins(quote)
+    //
+  }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
 
   // address useEffect
   useEffect(() => {

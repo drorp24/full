@@ -2,7 +2,7 @@ import capitalize from '../../utility/capitalize'
 import axios from 'axios'
 import { mark } from '../../../components/utility/performance'
 
-const getCoins = async ({ quote = 'USD', limit = 100 } = {}) => {
+export const getCoins = async ({ quote = 'USD', limit = 100 } = {}) => {
   const url = `https://min-api.cryptocompare.com/data/top/totalvolfull?limit=${limit}&tsym=${quote}&api_key=${process.env.REACT_APP_CRYPTOCOMPARE_API_KEY}`
   try {
     const response = await axios.get(url)
@@ -47,7 +47,7 @@ export const setCoins = async ({ quote = 'USD', updateList }) => {
 // Each set<x> function must be global for lists to be configured dynamically
 window.setCoins = setCoins
 
-const getCurrencies = async () => {
+export const getCurrencies = async () => {
   const url = `https://openexchangerates.org/api/currencies.json
 ?app_id=${process.env.REACT_APP_OXR_APP_ID}`
   try {
@@ -66,7 +66,7 @@ const getCurrencies = async () => {
   }
 }
 
-const setCurrencies = async ({ updateList }) => {
+export const setCurrencies = async ({ updateList }) => {
   mark('setCurrencies started')
   const fetchedList = await getCurrencies()
   mark('setCurrencies fetched')

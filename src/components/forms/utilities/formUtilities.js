@@ -32,6 +32,7 @@ import LocationSearchInput from './LocationSearchInput'
 import { geocode } from '../../utility/geolocation'
 
 import getSymbolFromCurrency from 'currency-symbol-map'
+import { empty } from '../../utility/empty'
 
 //
 // A. Utility functions to create/modify state, lists and schema
@@ -54,9 +55,14 @@ export const createFormStateFromStructure = structure => {
   return form
 }
 
-export const setLists = ({ structure, quote, updateList }) => {
+// Original idea to scan the configuration for any field defined as list
+// and extract the list was neglected. setLists is in no use currently.
+// Instead, 'currency' list is extracted by FormContainer's initialization useEffect
+// and 'coins' list is extracted whenever 'quote' field changes value.
+export const setLists = ({ structure, quote, updateList, listName }) => {
   getFields(structure)
     .filter(field => !!field.list)
+    .filter(field => field.list === listName)
     .forEach(({ list }) => {
       setList({ list, quote, updateList })
     })
@@ -72,11 +78,10 @@ export const createSchema = (structure, lists) => {
       const permittedValues = fetchedList.map(item => item.name)
       shape[name] = fieldSchema.oneOf(
         permittedValues,
-        'Start typing and select from the list'
+        'Please select from the list'
       )
     }
   })
-  console.log('schema created: ', object(shape))
   return object(shape)
 }
 
@@ -599,12 +604,14 @@ const phoneCheck = ({ name, value }) =>
     ? false
     : `Please enter a valid ${name} number`
 
-// Yup's async check created problems, and wasn't required anyway
 const yupCheck = ({ name, value, schema }) => {
+  if (!schema || empty(schema)) return false
+
   try {
     schema.validateSyncAt(name, {
       [name]: value,
     })
+
     return false
   } catch (error) {
     return capitalize(error.message)
