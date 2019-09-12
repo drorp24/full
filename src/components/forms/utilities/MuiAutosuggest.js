@@ -15,6 +15,7 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import { arrayToObject } from '../../utility/shortcuts'
 import moize from 'moize'
 import { MyGrid } from '../../themed/Box'
+import IsolatedScroll from 'react-isolated-scroll'
 
 moize.collectStats()
 
@@ -300,6 +301,21 @@ const MuiAutosuggest = ({
       ...other,
     })
 
+  const renderSuggestionsContainer = ({ containerProps, children }) => {
+    const { ref, ...restContainerProps } = containerProps
+    const callRef = isolatedScroll => {
+      if (isolatedScroll !== null) {
+        ref(isolatedScroll.component)
+      }
+    }
+
+    return (
+      <IsolatedScroll ref={callRef} {...restContainerProps}>
+        {children}
+      </IsolatedScroll>
+    )
+  }
+
   const autosuggestProps = {
     renderInputComponent: renderInputComponentWithTrueValue(value),
     suggestions: state.suggestions,
@@ -309,6 +325,7 @@ const MuiAutosuggest = ({
     renderSuggestion,
     onSuggestionHighlighted,
     focusInputOnSuggestionClick: false,
+    renderSuggestionsContainer,
   }
 
   const entireListObj =
