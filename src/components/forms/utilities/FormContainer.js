@@ -69,19 +69,23 @@ const FormContainer = ({ structure, show }) => {
   // form.values' properties are unknown initially as they're dynamically built
   const quote = useSelector(store => (store.form.values || {}).quote)
 
+  // ! useCallback only when needed
+  // The recommendation is to hoist functions that don’t need props or state outside of your component,
+  // and pull the ones that are used only by an effect inside of that effect.
+  //
+  // Any function that is used by one single useEffect only should be defined in it
+  // In which case it doesn't need to be wrapped in useCallback (nor will it be able to)
+  //
+  // Doing so will
+  // - save the need to wrap every such function with useCallback
+  //   (otherwise required to prevent that function from changing with each component rerender, which would also trigger the useEffect)
+  // - will enable seeing which variable that function depends upon
+  //   (e.g., it could be w/o arguments but depend on a closure var which, if not included as dependency, would create a bug)
+  // - will enable using variables local to the useEffect (closures again)
+  //
+  // Below: updateList and updatePopulated are required by multiple effects, hence defined here and wrapped with useCallback.
   const updateList = useCallback(
     ({ name, list, quote }) => dispatch(setList({ name, list, quote })),
-    [dispatch]
-  )
-  const updateForm = useCallback(form => dispatch(setForm(form)), [dispatch])
-
-  const updateFormValues = useCallback(
-    values => dispatch(setFormValues(values)),
-    [dispatch]
-  )
-
-  const updateFormSchema = useCallback(
-    schema => dispatch(setFormSchema(schema)),
     [dispatch]
   )
 
@@ -130,6 +134,8 @@ const FormContainer = ({ structure, show }) => {
   useEffect(() => {
     console.log('FormContainer initialization useEffect entered')
 
+    const updateForm = form => dispatch(setForm(form))
+
     setShowChild(true)
 
     const updateCurrencies = async () => {
@@ -154,12 +160,12 @@ const FormContainer = ({ structure, show }) => {
     // It works well as long as the yup object is in the redux store, which supports Sets.
     // But as soon as a redux store is hydrated back from localStorage, its Sets lose their values and become empty arrays.
     // That makes yup, which has worked well from the redux storage, stop working after page refresh saying something like 'schema.validateSyncAt is not a function'
-    // That's why I'm placing schema in the component's state rather than in redux
+    //
+    // Solution: keep yup schema in local state instead of redux
     // Miraculously, even though it's in the component's state, schema does maintain its values after page refresh.
     console.log('empty(schema): ', empty(schema))
     console.log('populated.coins: ', populated.coins)
     if (empty(schema) && populated.coins) {
-      // updateFormSchema(createSchema(structure, lists))
       setSchema(createSchema(structure, lists))
     }
   }, [
@@ -168,8 +174,7 @@ const FormContainer = ({ structure, show }) => {
     populated.currencies,
     populated.coins,
     structure,
-    updateForm,
-    updateFormSchema,
+    dispatch,
     updateList,
     updatePopulated,
     schema,
@@ -228,6 +233,8 @@ const FormContainer = ({ structure, show }) => {
   useEffect(() => {
     console.log('address useEffect entered')
 
+    const updateFormValues = values => dispatch(setFormValues(values))
+
     const locateUser = async attempts => {
       // ! loop of asynchroneous attempts
       // The following code attempts to locate the user.
@@ -269,7 +276,7 @@ const FormContainer = ({ structure, show }) => {
     }
 
     locateUser(5)
-  }, [updateFormValues])
+  }, [dispatch])
 
   const header = form => {
     if (!form.values) return <div />
