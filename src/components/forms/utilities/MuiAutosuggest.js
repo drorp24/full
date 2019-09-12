@@ -191,7 +191,7 @@ const useStyles = makeStyles(theme => ({
   suggestionsContainerOpen: {
     position: 'absolute',
     zIndex: 1,
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
     left: 0,
     right: 0,
   },
@@ -308,24 +308,19 @@ const MuiAutosuggest = ({
         ref(isolatedScroll.component)
       }
     }
+    const suggestionsContainerStyle = {
+      maxWidth: '100%',
+      maxHeight: '40vh',
+      overflow: 'auto',
+    }
 
     return (
       <IsolatedScroll ref={callRef} {...restContainerProps}>
-        {children}
+        <Paper square {...containerProps} style={suggestionsContainerStyle}>
+          {children}
+        </Paper>
       </IsolatedScroll>
     )
-  }
-
-  const autosuggestProps = {
-    renderInputComponent: renderInputComponentWithTrueValue(value),
-    suggestions: state.suggestions,
-    onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
-    onSuggestionsClearRequested: handleSuggestionsClearRequested,
-    getSuggestionValue,
-    renderSuggestion,
-    onSuggestionHighlighted,
-    focusInputOnSuggestionClick: false,
-    renderSuggestionsContainer,
   }
 
   const entireListObj =
@@ -341,27 +336,35 @@ const MuiAutosuggest = ({
     ...passedInputProps,
   }
 
-  return (
-    <Autosuggest
-      {...autosuggestProps}
-      inputProps={inputProps}
-      theme={{
-        container: classes.container,
-        suggestionsContainerOpen: classes.suggestionsContainerOpen,
-        suggestionsList: classes.suggestionsList,
-        suggestion: classes.suggestion,
-      }}
-      renderSuggestionsContainer={options => (
-        <Paper
-          {...options.containerProps}
-          square
-          style={{ maxWidth: '100%', maxHeight: '40vh', overflow: 'auto' }}
-        >
-          {options.children}
-        </Paper>
-      )}
-    />
-  )
+  const {
+    container,
+    suggestionsContainerOpen,
+    suggestionsList,
+    suggestion,
+  } = classes
+
+  const theme = {
+    container,
+    suggestionsContainerOpen,
+    suggestionsList,
+    suggestion,
+  }
+
+  const autosuggestProps = {
+    renderInputComponent: renderInputComponentWithTrueValue(value),
+    suggestions: state.suggestions,
+    onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
+    onSuggestionsClearRequested: handleSuggestionsClearRequested,
+    getSuggestionValue,
+    renderSuggestion,
+    onSuggestionHighlighted,
+    focusInputOnSuggestionClick: false,
+    renderSuggestionsContainer,
+    inputProps,
+    theme,
+  }
+
+  return <Autosuggest {...autosuggestProps} />
 }
 
 MuiAutosuggest.propTypes = {}
