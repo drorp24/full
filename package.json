@@ -81,11 +81,10 @@
     "redux-thunk": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
-    "yup": "^0.26.6"
-  },
-  "devDependencies": {
+    "yup": "^0.26.6",
     "@babel/plugin-transform-runtime": "^7.6.0"
   },
+  "devDependencies": {},
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [
       "prettier --single-quote --write",
