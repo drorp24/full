@@ -128,6 +128,7 @@ export const MyGrid = ({
   ml,
   mr,
   fs,
+  overflow,
   ...other
 }) => {
   const dir = container ? { direction: direction || 'row' } : {}
@@ -138,7 +139,7 @@ export const MyGrid = ({
     ...(item &&
       width && {
         flexBasis: width,
-        overflow: 'hidden',
+        overflow: overflow || 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
       }),

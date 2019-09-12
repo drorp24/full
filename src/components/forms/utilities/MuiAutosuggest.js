@@ -165,7 +165,11 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
           {detail}
         </MyGrid>
 
-        <MyGrid item width={imageUrl || inlineImg ? '10%' : '0%'}>
+        <MyGrid
+          item
+          width={imageUrl || inlineImg ? '10%' : '0%'}
+          overflow={imageUrl || inlineImg ? 'visible' : 'hidden'}
+        >
           <Flag {...{ imageUrl, inlineImg, display }} />
         </MyGrid>
       </MyGrid>
