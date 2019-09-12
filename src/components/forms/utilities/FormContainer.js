@@ -264,6 +264,7 @@ const FormContainer = ({ structure, show }) => {
           console.log('User successfully located')
           break
         } else {
+          updateFormValues({ location })
           console.warn('location.error: ', location.error)
           await delay(5000)
         }
