@@ -44,10 +44,6 @@ export const setCoins = async ({ quote = 'USD', updateList }) => {
   }
 }
 
-// Each set<x> function must be global for lists to be configured dynamically
-window.getCoins = getCoins
-window.setCoins = setCoins
-
 export const getCurrencies = async () => {
   const url = `https://openexchangerates.org/api/currencies.json
 ?app_id=${process.env.REACT_APP_OXR_APP_ID}`
@@ -75,12 +71,6 @@ export const setCurrencies = async ({ updateList }) => {
     updateList({ name: 'currencies', list: fetchedList })
   }
 }
-
-// Each set<x> function must be global for lists to be configured dynamically
-window.setCurrencies = setCurrencies
-
-export const setList = ({ list, quote, updateList }) =>
-  window[`set${capitalize(list)}`]({ quote, updateList })
 
 export const getCoinbaseProducts = async () => {
   const url = 'https://api.pro.coinbase.com/products'
@@ -132,4 +122,3 @@ export const coinbaseProducts = [
   'ETH-GBP',
   'LTC-GBP',
 ]
-window.getCoinbaseProducts = getCoinbaseProducts

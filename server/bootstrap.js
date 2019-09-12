@@ -5,6 +5,7 @@ require('@babel/register')({
   presets: ['@babel/preset-env', '@babel/preset-react'],
   plugins: [
     '@babel/plugin-syntax-dynamic-import',
+    '@babel/transform-runtime',
     'dynamic-import-node',
     'react-loadable/babel',
     '@babel/plugin-proposal-class-properties',

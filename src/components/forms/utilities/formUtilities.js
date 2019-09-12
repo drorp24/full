@@ -26,7 +26,6 @@ import { Box, Row } from '../../themed/Box'
 import capitalize from '../../utility/capitalize'
 import ErrorBoundary from '../../utility/boundary'
 import Loader from '../../utility/Loader'
-import { setList } from './lists'
 // import { mark } from '../../utility/performance'
 import LocationSearchInput from './LocationSearchInput'
 import { geocode } from '../../utility/geolocation'
@@ -59,14 +58,14 @@ export const createFormStateFromStructure = structure => {
 // and extract the list was neglected. setLists is in no use currently.
 // Instead, 'currency' list is extracted by FormContainer's initialization useEffect
 // and 'coins' list is extracted whenever 'quote' field changes value.
-export const setLists = ({ structure, quote, updateList, listName }) => {
-  getFields(structure)
-    .filter(field => !!field.list)
-    .filter(field => field.list === listName)
-    .forEach(({ list }) => {
-      setList({ list, quote, updateList })
-    })
-}
+// export const setLists = ({ structure, quote, updateList, listName }) => {
+//   getFields(structure)
+//     .filter(field => !!field.list)
+//     .filter(field => field.list === listName)
+//     .forEach(({ list }) => {
+//       setList({ list, quote, updateList })
+//     })
+// }
 
 export const createSchema = (structure, lists) => {
   const shape = {}
@@ -435,12 +434,6 @@ const AutosuggestField = ({
   const { form } = context
   const lists = useSelector(store => store.lists)
   const entireList = lists[list]
-
-  // const onBlur = (event, { highlightedSuggestion }) => {
-  //   if (!update) return
-  //   mark(name + ' blurred')
-  //   setList({ list: update, form, updateForm })
-  // }
 
   return (
     <TextField
