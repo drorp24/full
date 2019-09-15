@@ -93,7 +93,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "build": "react-scripts build",
+    "build": "REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow",
