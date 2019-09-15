@@ -214,13 +214,22 @@ Todo:
       ☐ Go over Deployment TODO note and remove obsolete parts
       ☐ revert the commit with the window and other solutions
      Delay:
-      Code Splitting (migrating from react-loadable):
+      Sort by quote (Plan A):
+        ☐ Construct the recturned records of 'edges', each with its separate cursor and node
+        ☐ In other words, return a cursor for *each* record like in https://graphql.org/learn/pagination/#pagination-and-edges 
+        ☐ Each record's cursor will include that record's _id and quote values
+        ☐ ! Find a way to call the quote instance method from the search static method so it can be used for sorting
+        ☐ search.find() should be sorted so that quote < last record/cursor's quote *or* _id > last record/cursor's _id
+      Sort by quote (Plan B):
+        ☐ Make a process to insert some random margin to each merchant record
+        ☐ Use that fixed store margin instead of randomizing it during run time
+        ☐ Have .search sort by it (the quotes added later will be ordered to match)
+        ☐ Either leave cursor, sorting like Plan A, or give cursors up and just use offsets
+      Code Splitting - migrate from react-loadable to React.lazy once the latter supports CS in ssr:
         ☐ Remove all 'react-loadable' legacy code
         ☐ Replace it with React.lazy when ssr-ready
         ☐ Include in initial render only the first page (which by then should be the new page)
         ☐ Check only first page code is sent initially.
-      https:
-        ☐ Support https
       Server-side rendering:
           Styles:
             ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)
