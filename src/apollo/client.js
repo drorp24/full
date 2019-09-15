@@ -7,10 +7,26 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'node-fetch'
 
-// SERVER & SSR come from package.json; they serve as command modifiers/arguments (irrespective of environment).
-// The others come from multiple .env files; they are environment-specific configuration.
-// CRA build enables using multiple files to enable local overrides (not supported by dotenv):
-// When run locally, DOMAIN for instance comes from .env.production.local while the others come from .env.production.
+// ! Environment Variables' source madness
+// SERVER & SSR come from package.json; they are *not* environment-specific
+// They are run modes: static server vs HMR, ssr vs noSsr etc
+//
+// The others are environment dependenant. They and from:
+//
+// - CRA HMR server -
+//   .env.development file
+// - Express server serving CRA-built ("react-scripts build") static files/chunks in LOCAL ENVIRONMENT -
+//   .env.production.local overriding .env.production (a CRA feature, not a .dotenv one)
+//   CRA will use '.production' files even if the value of NODE_ENV is development and regardless if the mode is ssr or noSsr
+// - Express server serving CRA-built ("react-scripts build") static files/chunks in HEROKU -
+//   Heroku environment variables
+// - Express server serving babel-built ("babel src -d dist") static files/chunks in LOCAL ENVIRONMENT -
+//   .env files, but .dotenv allows configuring any other file for it (e.g., "dotenv_config_path=.env.production")
+// - Express server serving babel-built ("babel src -d dist") static files/chunks in HEROKU -
+//   Heroku environment variables
+//
+//   Note: variables representing boolean values must be JSON.parsed or else "false" would be considered "true"
+//
 const {
   REACT_APP_ENV_FILE,
   REACT_APP_SERVER,
@@ -32,12 +48,12 @@ console.log(
 console.log(
   'REACT_APP_ENV_FILE, REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_GRAPHQL_WEB_SCHEME, REACT_APP_GRAPHQL_WEBSOCKET_SCHEME, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_GRAPHQL_PORT_REQUIRED, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_ENV_FILE,
-  REACT_APP_SERVER,
-  REACT_APP_SSR,
+  JSON.parse(REACT_APP_SERVER),
+  JSON.parse(REACT_APP_SSR),
   REACT_APP_GRAPHQL_WEB_SCHEME,
   REACT_APP_GRAPHQL_WEBSOCKET_SCHEME,
   REACT_APP_GRAPHQL_DOMAIN,
-  REACT_APP_GRAPHQL_PORT_REQUIRED,
+  JSON.parse(REACT_APP_GRAPHQL_PORT_REQUIRED),
   REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT,
   REACT_APP_SERVER_SSR_GRAPHQL_PORT,
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT

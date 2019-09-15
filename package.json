@@ -93,7 +93,8 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "build": "REACT_APP_SERVER=true REACT_APP_SSR=true REACT_APP_GRAPHQL_PORT_REQUIRED=false react-scripts build",
+    "build": "REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build",
+    "buildNoSsr": "REACT_APP_SERVER=true REACT_APP_SSR=false react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow",
@@ -106,7 +107,7 @@
     "serverGraphqlDev": "REACT_APP_SERVER=true yarn graphqlDev",
     "noServerAndGraphqlDev": "concurrently \"yarn noServer\" \"yarn noServerGraphqlDev\"",
     "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
-    "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn build && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
+    "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn buildNoSsr && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
     "start": "yarn serverSsr"
   },
   "browserslist": [
