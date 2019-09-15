@@ -54,7 +54,7 @@ console.log(
 // port number assignment is therefore restricted to dev mode
 
 let graphqlEndpoint
-if (REACT_APP_GRAPHQL_PORT_REQUIRED) {
+if (JSON.parse(REACT_APP_GRAPHQL_PORT_REQUIRED)) {
   console.log('inside the if!!!')
   const port = JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
