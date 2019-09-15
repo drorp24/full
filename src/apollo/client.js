@@ -26,6 +26,10 @@ const {
 
 console.log('graphql client.js:')
 console.log(
+  'REACT_APP_GRAPHQL_PORT_REQUIRED: ',
+  REACT_APP_GRAPHQL_PORT_REQUIRED
+)
+console.log(
   'REACT_APP_ENV_FILE, REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_GRAPHQL_WEB_SCHEME, REACT_APP_GRAPHQL_WEBSOCKET_SCHEME, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_GRAPHQL_PORT_REQUIRED, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_ENV_FILE,
   REACT_APP_SERVER,
@@ -51,6 +55,7 @@ console.log(
 
 let graphqlEndpoint
 if (REACT_APP_GRAPHQL_PORT_REQUIRED) {
+  console.log('inside the if!!!')
   const port = JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
       ? REACT_APP_SERVER_SSR_GRAPHQL_PORT
@@ -59,6 +64,7 @@ if (REACT_APP_GRAPHQL_PORT_REQUIRED) {
 
   graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}:${port}/graphql`
 } else {
+  console.log('skipped the if')
   graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}/graphql`
 }
 
@@ -88,6 +94,7 @@ const errorLink = onError(
 )
 
 console.log('wsEndpoint: ', wsEndpoint)
+console.log('httpEndpoint: ', httpEndpoint)
 
 // const wsClient = new SubscriptionClient(wsEndpoint, {
 //   reconnect: true,
