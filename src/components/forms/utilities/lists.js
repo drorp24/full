@@ -1,4 +1,3 @@
-import capitalize from '../../utility/capitalize'
 import axios from 'axios'
 import { mark } from '../../../components/utility/performance'
 
@@ -18,7 +17,7 @@ export const getCoins = async ({ quote = 'USD', limit = 100 } = {}) => {
           name: coin.CoinInfo.Name,
           value: coin.CoinInfo.Name,
           display: coin.CoinInfo.FullName,
-          imageUrl: `http://www.cryptocompare.com${coin.CoinInfo.ImageUrl}`,
+          imageUrl: `https://www.cryptocompare.com${coin.CoinInfo.ImageUrl}`,
           detail: coin.DISPLAY ? coin.DISPLAY[quote].PRICE : '',
         }))
       } else {

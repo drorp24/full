@@ -8,7 +8,7 @@ import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'node-fetch'
 
 // ! Environment Variables' source madness
-// SERVER & SSR come from package.json; they are *not* environment-specific
+// SERVER & SSR come from package.json; they are environment-agnostic
 // They are run modes: static server vs HMR, ssr vs noSsr etc
 //
 // The others are environment dependenant. They and from:
@@ -25,8 +25,6 @@ import fetch from 'node-fetch'
 // - Express server serving babel-built ("babel src -d dist") static files/chunks in HEROKU -
 //   Heroku environment variables
 //
-//   Note: variables representing boolean values must be JSON.parsed or else "false" would be considered "true"
-//
 const {
   REACT_APP_ENV_FILE,
   REACT_APP_SERVER,
@@ -40,11 +38,6 @@ const {
   REACT_APP_SERVER_NOSSR_GRAPHQL_PORT,
 } = process.env
 
-console.log('graphql client.js:')
-console.log(
-  'REACT_APP_GRAPHQL_PORT_REQUIRED: ',
-  REACT_APP_GRAPHQL_PORT_REQUIRED
-)
 console.log(
   'REACT_APP_ENV_FILE, REACT_APP_SERVER, REACT_APP_SSR, REACT_APP_GRAPHQL_WEB_SCHEME, REACT_APP_GRAPHQL_WEBSOCKET_SCHEME, REACT_APP_GRAPHQL_DOMAIN, REACT_APP_GRAPHQL_PORT_REQUIRED, REACT_APP_NOSERVER_NOSSR_GRAPHQL_PORT, REACT_APP_SERVER_SSR_GRAPHQL_PORT, REACT_APP_SERVER_NOSSR_GRAPHQL_PORT: ',
   REACT_APP_ENV_FILE,
@@ -69,9 +62,10 @@ console.log(
 // Heroku doesn't like the graphql port number to be specified as much as it doesn't with web servers
 // port number assignment is therefore restricted to dev mode
 
+// ! Variables representing boolean values must be JSON.parsed or else "false" would be considered "true"
+
 let graphqlEndpoint
 if (JSON.parse(REACT_APP_GRAPHQL_PORT_REQUIRED)) {
-  console.log('inside the if!!!')
   const port = JSON.parse(REACT_APP_SERVER)
     ? JSON.parse(REACT_APP_SSR)
       ? REACT_APP_SERVER_SSR_GRAPHQL_PORT
@@ -80,7 +74,6 @@ if (JSON.parse(REACT_APP_GRAPHQL_PORT_REQUIRED)) {
 
   graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}:${port}/graphql`
 } else {
-  console.log('skipped the if')
   graphqlEndpoint = `${REACT_APP_GRAPHQL_DOMAIN}/graphql`
 }
 
