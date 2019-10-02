@@ -13,6 +13,7 @@ import Merchant from './Merchant'
 // Query isn't needed anymore  https://www.apollographql.com/docs/react/features/pagination/#cursor-based
 const Merchants = () => {
   // Look ma, no connect!
+  console.log('>>>>>>>>>>> in Merchants.js <<<<<<<<<<<<')
   const form = useSelector(state => state.form)
   const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
   return (
