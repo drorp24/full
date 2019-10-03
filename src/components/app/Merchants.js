@@ -14,6 +14,7 @@ import Merchant from './Merchant'
 const Merchants = () => {
   // Look ma, no connect!
   console.log('>>>>>>>>>>> in Merchants.js <<<<<<<<<<<<')
+
   const form = useSelector(state => state.form)
   const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
   return (
