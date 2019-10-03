@@ -82,7 +82,7 @@ const FormContainer = ({ structure, show }) => {
   //
   // Below: updateList and updatePopulated are required by multiple effects, hence defined here and wrapped with useCallback.
   const updateList = useCallback(
-    ({ name, list, quote }) => dispatch(setList({ name, list, quote })),
+    ({ name, list, quote = 'USD' }) => dispatch(setList({ name, list, quote })),
     [dispatch]
   )
 
