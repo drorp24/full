@@ -211,6 +211,8 @@ const Merchant = ({ loading, record, style }) => {
 
   const MerchantCard = ({ record, listItemRef }) => {
     const [streetView, setStreetView] = useState(false)
+    const [permissionGranted, setPermissionGranted] = useState(false)
+
     const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${
       record.location.coordinates[1]
     },${record.location.coordinates[0]}&fov=90&key=${
@@ -242,6 +244,38 @@ const Merchant = ({ loading, record, style }) => {
       }
     }, [listItemRef, record.name])
 
+    const grantPermission = () => {
+      if (
+        DeviceMotionEvent &&
+        typeof DeviceMotionEvent.requestPermission === 'function'
+      ) {
+        DeviceMotionEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') {
+              window.addEventListener('devicemotion', () => {})
+              setPermissionGranted(true)
+            }
+          })
+          .catch(console.error)
+      } else if (
+        DeviceOrientationEvent &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
+      ) {
+        DeviceOrientationEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') {
+              window.addEventListener('deviceorientation', () => {})
+              setPermissionGranted(true)
+            }
+          })
+          .catch(console.error)
+      } else {
+        console.log(
+          'Neither DeviceMotionEvent nor DeviceOrientationEvent are supported'
+        )
+      }
+    }
+
     const toggleStreetView = useCallback(
       (ref, record) => () => {
         if (
@@ -256,6 +290,8 @@ const Merchant = ({ loading, record, style }) => {
         const { coordinates } = record.location
         const [lat, lng] = [coordinates[1], coordinates[0]]
         const element = ref.current
+
+        if (!permissionGranted) grantPermission()
 
         if (!streetView && window) {
           new window.google.maps.StreetViewPanorama(element, {
