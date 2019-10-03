@@ -66,6 +66,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    borderRadius: ({ open }) => (open ? '0px' : '4px'),
   },
   media: {
     height: ({ open }) => (open ? '45vh' : '20vh'),

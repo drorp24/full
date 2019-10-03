@@ -4,6 +4,12 @@ Todo:
     ☐ Demonstrate proficiency with live, sophisticated product
     ☐ Do it in as few as possible screens. One, two would be ideal
   Demonstrate:
+    PWA:
+      ☐ Fullscreen / Standalone
+      ☐ Shortcut icon
+      ☐ Add to home screen
+      ☐ Offline
+      ☐ Push notifications
     Serverless:
       ☐ AWS API Gateway 
       ☐ AWS Lambda
@@ -62,8 +68,6 @@ Todo:
         ☐ Typescript
       Testing:
       ☐ ???
-    Deployment:
-      ✔ Heroku @done(19-02-12 15:58)
   Prove:
     Scores:
     ☐ Lighthouse score
@@ -167,14 +171,25 @@ Todo:
       ✔ Create a merchant card @done(19-07-10 17:34)
       ✔ Include an icon that enables to switch from static to StreetView mode @done(19-08-13 16:21)
       ✔ Fix then check mobile tracking is enabled by just swinging the phone @done(19-10-02 14:53)
+      ☐ Ask for permission and check it works on mobile safari (“No device motion or orientation events will be fired until permission has been requested and granted.”)
       ☐ Include an icon that directs to a directions page / sliding window (like google maps app does it when it opens a sliding window in map)
     Map:
       ☐ AppBar - an icon will enable to toggle b/w the default list view to map view
       ☐ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants
-      ☐ Map - Clicking a marker opens the merchant card page (Merchant component, the very one you get by clicking a list item) 
-      ☐ Merchant - Back arrow directs back to either List or Map according to (react router's?) history 
-      ☐ Merchant - icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
+      ☐ Map - Clicking a marker opens the merchant card page (Merchant component, identically-looking to the one you get by clicking a list item 
+      ☐ Merchant - like the identically-looking card, an 'X' returns to Map  
+      ☐ Merchant - both cards have icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
       ☐ Directions - when available: enable Live View directions (AR)
+    PWA:
+      ☐ Check what each mobile browser supports re PWA (caniuse)
+      ☐ Complete iOS still missing parts (A Few Tips That Will Make Your PWA on iOS...)
+      ☐ Decide which mobile browser to use for demos
+      ☐ Complete the Demo note: decide how to best demo the following:
+      ☐ Fullscreen / Standalone
+      ☐ Shortcut icon
+      ☐ Add to home screen
+      ☐ Offline
+      ☐ Push notifications (e.g., occasional price offers popping as snackbars, while the proper list item is highlighted)
     Orders:
       ☐ Use a FAB to order
       ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)

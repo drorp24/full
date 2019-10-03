@@ -71,7 +71,15 @@ class App extends Component {
         	  /> */}
               <Route path="/realtimetrading/" component={TradingUpdated} />
               <Route path="/trading" component={Trading} />
-              <Route path="/merchants" component={Merchants} />
+              {/* forcing user to populate values if /merchants was manually requested or redux values didn't survive page refresh */}
+              <Route path="/merchants">
+                {this.props.values && this.props.values.quote ? (
+                  <Merchants />
+                ) : (
+                  <Redirect to="/select" />
+                )}
+              </Route>
+
               <Route path="/map" component={Map} />
               <Route
                 path="/asyncNotInitialRender"
@@ -95,10 +103,10 @@ class App extends Component {
 // most use the long version for no reason, having to use a different prop name
 export default withRouter(
   connect(
-    ({ text: { message }, counter: { count }, search }) => ({
+    ({ text: { message }, counter: { count }, form: { values } }) => ({
       message,
       count,
-      search,
+      values,
     }),
     {
       setMessage,
