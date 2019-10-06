@@ -207,10 +207,10 @@ const FormContainer = ({ structure, show }) => {
     }
 
     // No need to call it if the coins list is built already and matches the given quote currency
-    if (lists.quote === quote) {
-      console.log(`coins list matches ${quote} - leaving`)
-      return
-    }
+    // if (lists.quote === quote) {
+    //   console.log(`coins list matches ${quote} - leaving`)
+    //   return
+    // }
 
     const updateCoins = async quote => {
       const name = 'coins'
