@@ -10,6 +10,7 @@
     "@babel/core": "^7.1.6",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-syntax-dynamic-import": "^7.1.6",
+    "@babel/plugin-transform-runtime": "^7.6.0",
     "@babel/preset-env": "^7.1.6",
     "@babel/register": "^7",
     "@babel/runtime": "^7.6.0",
@@ -59,6 +60,7 @@
     "react-apollo": "^2.3.1",
     "react-autosuggest": "^9.4.3",
     "react-chartjs-2": "^2.7.4",
+    "react-div-100vh": "^0.3.4",
     "react-dom": "^16.9.0",
     "react-fns": "^1.4.0",
     "react-geocode": "^0.1.2",
@@ -81,8 +83,7 @@
     "redux-thunk": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
-    "yup": "^0.26.6",
-    "@babel/plugin-transform-runtime": "^7.6.0"
+    "yup": "^0.26.6"
   },
   "devDependencies": {},
   "lint-staged": {
