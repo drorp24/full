@@ -109,8 +109,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const appBarHeight = window.innerHeight / 10
-
 const measureTopHeight = element => {
   if (!element) return { element: null }
   const top = Number(element.style.top.replace('px', ''))
@@ -150,6 +148,9 @@ const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
     currentSibling,
     nextSibling,
   ].map(measureTopHeight)
+
+  // ! using 'window' is okay as long as any reference to it is made within a function or component that is performed only while on the client
+  const appBarHeight = window.innerHeight / 10
 
   previous.newTop = Math.max(previous.top - current.y, 0)
   if (previous.newTop === 0)
