@@ -109,9 +109,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const myWindow = typeof window !== 'undefined' ? window : { innerHeight: 736 }
-
-const appBarHeight = myWindow.innerHeight / 10
+const appBarHeight = window.innerHeight / 10
 
 const measureTopHeight = element => {
   if (!element) return { element: null }
@@ -157,7 +155,7 @@ const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
   if (previous.newTop === 0)
     previous.newHeight = Math.max(previous.height - current.y, 0) // if there's no room to retreat, contract
   current.newTop = current.top - current.y + appBarHeight
-  next.newTop = next.top + (myWindow.innerHeight - next.y) + appBarHeight
+  next.newTop = next.top + (window.innerHeight - next.y) + appBarHeight
 
   for (let item of [previous, current, next]) {
     setTopHeight(item)
@@ -180,6 +178,15 @@ const toggleSiblings = (open, listItemRef) => {
   !open
     ? pushSiblingsAway(previousSibling, currentSibling, nextSibling)
     : returnSiblingsToPlace(previousSibling, currentSibling, nextSibling)
+}
+
+// couldnt for the life of me get the list's ref so am traversing to find it
+const toggleScrolling = (open, listItemRef) => {
+  const listElement = listItemRef
+    ? listItemRef.current.parentNode.parentNode
+    : document.getElementById('list')
+  listElement.style.overflow = open ? 'auto' : 'hidden'
+  listElement.id = 'list'
 }
 
 //
@@ -234,11 +241,14 @@ const Merchant = ({ loading, record, style }) => {
 
       toggleState()
 
+      toggleScrolling(open, listItemRef)
+
       toggleSiblings(open, listItemRef)
 
       if (shouldClose) {
         resetShouldClose()
         resetContextual()
+        toggleScrolling(open, listItemRef)
       } else {
         setContextualMenu({ contextual: true, name: record.name })
       }
@@ -306,7 +316,7 @@ const Merchant = ({ loading, record, style }) => {
 
         setStreetView(!streetView)
       },
-      [streetView]
+      [streetView, permissionGranted]
     )
 
     const cardMediaRef = React.useRef()
@@ -382,16 +392,14 @@ const Merchant = ({ loading, record, style }) => {
   const styleToUse = state && state.open ? styleExceptHeight : style
 
   return (
-    <>
-      <ListItem
-        style={styleToUse}
-        className={classes.listItem}
-        disableGutters={true}
-        ref={listItemRef}
-      >
-        {loading ? <Loader /> : <MerchantCard {...{ record, listItemRef }} />}
-      </ListItem>
-    </>
+    <ListItem
+      style={styleToUse}
+      className={classes.listItem}
+      disableGutters={true}
+      ref={listItemRef}
+    >
+      {loading ? <Loader /> : <MerchantCard {...{ record, listItemRef }} />}
+    </ListItem>
   )
 }
 

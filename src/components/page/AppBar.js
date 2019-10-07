@@ -22,7 +22,9 @@ const useStyles = makeStyles(theme => ({
   },
   appBar: {
     backgroundColor: contextualMenu =>
-      contextualMenu ? 'black' : theme.palette.primary.main,
+      contextualMenu
+        ? theme.palette.primary.contextual
+        : theme.palette.primary.main,
     height: '10vh',
   },
   toolbar: {

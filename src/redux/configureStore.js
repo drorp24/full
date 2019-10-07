@@ -7,10 +7,17 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 
 // import logger from 'redux-logger'
 
+// ! Conditionally adding keys to an object
+// in plain English: persist everything (only) when in local env / dev mode
+// (incl. 'contextual', which will leave AppBar contextual when page is refreshed, until separated and excluded)
+// note the JSON.parse (turning the string "false" into false) and the "!" on the JSON.parse rather than the variable itself!
+const local = !JSON.parse(process.env.REACT_APP_SERVER)
+
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['lists'],
+  ...(local && { blacklist: ['app'] }),
+  ...(!local && { whitelist: ['lists'] }),
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
