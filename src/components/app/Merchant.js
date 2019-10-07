@@ -183,9 +183,14 @@ const toggleSiblings = (open, listItemRef) => {
 
 // couldnt for the life of me get the list's ref so am traversing to find it
 const toggleScrolling = (open, listItemRef) => {
+  console.log('toggleScrolling')
+  console.log('listItemRef.current: ', listItemRef.current)
+  console.log('open: ', open)
   const listElement = listItemRef
     ? listItemRef.current.parentNode.parentNode
     : document.getElementById('list')
+  console.log('listElement: ', listElement)
+  window.listElement = listElement
   listElement.style.overflow = open ? 'auto' : 'hidden'
   listElement.id = 'list'
 }
