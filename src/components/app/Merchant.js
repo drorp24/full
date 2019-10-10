@@ -58,56 +58,6 @@ import { ellipsis } from '../themed/Box'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
-const useStyles = makeStyles(theme => ({
-  card: {
-    height: '100%',
-    width: '100%',
-    transition: 'height 1s',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    borderRadius: ({ open }) => (open ? '0px' : '4px'),
-  },
-  media: {
-    height: ({ open }) => (open ? '45vh' : '20vh'),
-    transition: 'height 1s',
-  },
-  listItem: {
-    height: ({ open }) => (open ? '90vh' : '100%'),
-    padding: ({ open }) => (open ? 0 : theme.spacing(2)),
-    zIndex: ({ open }) => (open ? 1 : 0),
-    transition: 'padding 1s, height 1s, top 1s',
-    justifyContent: 'center',
-  },
-  price: {
-    fontWeight: '400',
-  },
-  cardActions: {
-    display: ({ open }) => (open ? 'none' : 'block'),
-  },
-  fab: {
-    visibility: ({ open }) => (open ? 'visible' : 'hidden'),
-    margin: theme.spacing(3),
-    alignSelf: 'flex-end',
-  },
-  threeSixty: {
-    visibility: ({ open }) => (open ? 'visible' : 'hidden'),
-    position: 'absolute',
-    top: '35vh',
-    right: 0,
-    margin: theme.spacing(3),
-    marginTop: 0,
-    zIndex: 1,
-  },
-  arrowBack: {
-    visibility: ({ open }) => (open ? 'visible' : 'hidden'),
-    position: 'absolute',
-    top: '10vh',
-    left: 0,
-    margin: theme.spacing(3),
-    marginTop: 0,
-  },
-}))
 
 const measureTopHeight = element => {
   if (!element) return { element: null }
@@ -183,9 +133,6 @@ const toggleSiblings = (open, listItemRef) => {
 
 // couldnt for the life of me get the list's ref so am traversing to find it
 const toggleScrolling = (open, listItemRef) => {
-  console.log('toggleScrolling')
-  console.log('listItemRef.current: ', listItemRef.current)
-  console.log('open: ', open)
   const listElement = listItemRef
     ? listItemRef.current.parentNode.parentNode
     : document.getElementById('list')
@@ -204,6 +151,62 @@ const Merchant = ({ loading, record, style }) => {
   const toggleState = () => {
     setState({ open: !open })
   }
+
+  // ! Using window.innerHeight instead of css vh units
+  //   window.innerHeight is used instead of 90vh for the same reason <Div100vh /> was used in Page:
+  //   100vh includes the height of the mobile browsers' chromes.
+  //   So if I need an element to be on a fixed margin from (viewable) viewport bottom I'd need to use innerHeight rather than vh.
+  //   again, using the 'window' variable here below will not break the build since it is included inside of a function that would only run on the client.
+  const useStyles = makeStyles(theme => ({
+    card: {
+      height: '100%',
+      width: '100%',
+      transition: 'height 1s',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      borderRadius: ({ open }) => (open ? '0px' : '4px'),
+    },
+    media: {
+      height: ({ open }) => (open ? '45vh' : '20vh'),
+      transition: 'height 1s',
+    },
+    listItem: {
+      height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
+      padding: ({ open }) => (open ? 0 : theme.spacing(2)),
+      zIndex: ({ open }) => (open ? 1 : 0),
+      transition: 'padding 1s, height 1s, top 1s',
+      justifyContent: 'center',
+    },
+    price: {
+      fontWeight: '400',
+    },
+    cardActions: {
+      display: ({ open }) => (open ? 'none' : 'block'),
+    },
+    fab: {
+      visibility: ({ open }) => (open ? 'visible' : 'hidden'),
+      margin: theme.spacing(3),
+      alignSelf: 'flex-end',
+    },
+    threeSixty: {
+      visibility: ({ open }) => (open ? 'visible' : 'hidden'),
+      position: 'absolute',
+      top: '35vh',
+      right: 0,
+      margin: theme.spacing(3),
+      marginTop: 0,
+      zIndex: 1,
+    },
+    arrowBack: {
+      visibility: ({ open }) => (open ? 'visible' : 'hidden'),
+      position: 'absolute',
+      top: '10vh',
+      left: 0,
+      margin: theme.spacing(3),
+      marginTop: 0,
+    },
+  }))
 
   const classes = useStyles(state)
   const listItemRef = React.useRef()
@@ -243,9 +246,6 @@ const Merchant = ({ loading, record, style }) => {
       })
 
     const toggleCardState = useCallback(() => {
-      console.log('>>>>>>  toggleCardState  <<<<<')
-      console.log('shouldClose: ', shouldClose)
-      console.log('open: ', open)
       // if (open && !shouldClose) return
 
       toggleState()

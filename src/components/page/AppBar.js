@@ -15,34 +15,35 @@ import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
 import ViewList from '@material-ui/icons/ViewList'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 0,
-    width: '100%',
-  },
-  appBar: {
-    backgroundColor: contextualMenu =>
-      contextualMenu
-        ? theme.palette.primary.contextual
-        : theme.palette.primary.main,
-    height: '10vh',
-  },
-  toolbar: {
-    height: '100%',
-  },
-  grow: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-    transform: contextualMenu => (contextualMenu ? 'rotate(90deg)' : 'initial'),
-    transition: 'transform 0.3s',
-  },
-  view: {},
-}))
-
 const ButtonAppBar = ({ title }) => {
+  const useStyles = makeStyles(theme => ({
+    root: {
+      flexGrow: 0,
+      width: '100%',
+    },
+    appBar: {
+      backgroundColor: contextualMenu =>
+        contextualMenu
+          ? theme.palette.primary.contextual
+          : theme.palette.primary.main,
+      height: window.innerHeight * 0.1, // see 'using innerHeight instead of vh units in Merchant.js
+    },
+    toolbar: {
+      height: '100%',
+    },
+    grow: {
+      flexGrow: 1,
+    },
+    menuButton: {
+      marginLeft: -12,
+      marginRight: 20,
+      transform: contextualMenu =>
+        contextualMenu ? 'rotate(90deg)' : 'initial',
+      transition: 'transform 0.3s',
+    },
+    view: {},
+  }))
+
   const contextualMenu = useSelector(state => state.app.contextual)
   const name = useSelector(state => state.app.name)
   const view = useSelector(state => state.app.view)
