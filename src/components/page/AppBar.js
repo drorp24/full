@@ -26,7 +26,7 @@ const ButtonAppBar = ({ title }) => {
         contextualMenu
           ? theme.palette.primary.contextual
           : theme.palette.primary.main,
-      height: window.innerHeight * 0.1, // see 'using innerHeight instead of vh units in Merchant.js
+      height: typeof window === 'object' ? window.innerHeight * 0.1 : '10vh', // see 'using innerHeight instead of vh units in Merchant.js
     },
     toolbar: {
       height: '100%',
