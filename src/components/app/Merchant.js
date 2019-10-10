@@ -243,7 +243,10 @@ const Merchant = ({ loading, record, style }) => {
       })
 
     const toggleCardState = useCallback(() => {
-      if (open && !shouldClose) return
+      console.log('>>>>>>  toggleCardState  <<<<<')
+      console.log('shouldClose: ', shouldClose)
+      console.log('open: ', open)
+      // if (open && !shouldClose) return
 
       toggleState()
 
