@@ -6,19 +6,33 @@
 //    - back-arrow should simply contract the card back rather than replace route
 // *  Windowing
 //    react-window creates a very long element whose items are each relatively positioned within in.
-//    When user then picks an item to expand, the item needs to capture the entire screen, top to bottom.
+//    The fact the react-window places the list items as fixed positions elements, each with its hard-coded 'top' (rather than 'div's or 'li's)
+//    means that it's not easy to scroll the list nor to expand a card - without overriding siblings.
+//    But this is exactly what's needed when user selects an item by clicking it:
+//    The list needs to be scrolled so that the item is positioned at page's top, and the item needs to expand to capture the entire screen.
 //    This can't be achieved by either 'position: static' nor by 'top: 0'.
 //    Instead, the entire list needs to be scrolled to position the selected item exactly at the viewport's tops.
-//    Luckily, react-window provides an API that scrolls to a given card (swiper.js also provided such an API)
+//    react-window provides an API that scrolls to a given card (swiper.js also provided such an API) but I'm not using it.
+//    Instead, when a card is clicked, I'm doing a transition that takes care of both the "scrolling" and the expansion.
+//    It also pushes the nearest siblings away and triggers a change in the AppBar's state, ex described in the next section:
 // *  Transition
 //    Though not mandatory, MD most elegant way of expanding a card is by pushing other items away, not only capturing the entire screen.
 //    (as demonstrated in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5)
 //    This means that
-//    - AppBar needs to switch into contextual menu
-//    - both card's siblings need to be pushed away to make toom for the expanding card
-//    'toggleCardState' achieves the first by updating an application-wide (redux) state of 'fullscreen'
-//    and the second by manipulating their 'height's and 'top's back and forth.
-//    Note: react-window's own .scroll api will not animate. Instead, I'm modifying the list-item's 'top' and 'height' as needed.
+//    - Selected merchant card needs to be scrolled to page's top and expanded
+//    - AppBar needs to switch into contextual menu - which means that *another* component needs to be aware of the state of this component and react
+//    - both card's siblings need to be pushed away to make room for the expanding card - again, two *other* components need to be aware and react
+//    Scrolling the selected merchant card and expanding it is done by manipulating its 'top' and 'height' css properties
+//      react-window's has its own .scroll api but it will not animate. So I'm doing it myself.
+//    The AppBar effect is achieved by informing redux of the contextual state:
+//      since it is in redux, AppBar 'see's the change in the card's state and changes its own state accordingly
+//      This is the React way of doing it: declaratively.
+//    For the siblings, I did it imperatively:
+//      there's a function that finds the previous & next DOM siblings and manipulates their 'height's and 'top's (also recording their original values).
+//      That function is triggered whenever the card changes state, pushing siblings away and returning them to their original places.
+//      This is not the React way of doing things. If not fot react-window then I'd probably pass the 'top' and 'height' as props, but
+//      react-window doesn't let you control the rendering of the list items;
+//      it will only let you define a list item and pass its render definition as an argument.
 //
 // !  Challenges of communicating b/w two components
 //
@@ -34,6 +48,13 @@
 //    Instead, Merchants gets updated by the redux status change by 'useSelector' (formerly 'connect')
 //    Now for the odd part: I assumed it is the redux state change ('shouldClose') *only* that, thru 'useSelector' triggers the re-rendering of the Merchant component
 //    Oddly though, when I commented all references to useSelector, the Merchant component still got re-rendered inspite of no change in either of its props)
+//
+// *  Clicking the back arrow on the mobile browser
+//    Clicking back automatically resets the card's state by the sheer fact we've moved to another page that contains no cards
+//    But while React automatically [...], it does not automatically change the redux' 'contextual' state.
+//    As soon as I've noticed the bug, I've intercepted the 'back' click and reset the 'contextual' indication
+//    But if there's another 'external' way to switch pages or close cards I'm not thinking about, the AppBar will remain contextual
+//    I wonder if tehre's a *declaratve* way of saying that, unless a card is [...], there's no 'contextual'. Probably not.
 //
 import React, { useState, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -246,7 +267,8 @@ const Merchant = ({ loading, record, style }) => {
       })
 
     const toggleCardState = useCallback(() => {
-      // if (open && !shouldClose) return
+      // Clicking an open card should not close it
+      if (open && !shouldClose) return
 
       toggleState()
 
@@ -335,6 +357,12 @@ const Merchant = ({ loading, record, style }) => {
         toggleCardState()
       }
     }, [toggleCardState])
+
+    useEffect(() => {
+      window.onpopstate = function() {
+        resetContextual()
+      }
+    })
 
     return (
       <Card className={classes.card} onClick={toggleCardState}>
