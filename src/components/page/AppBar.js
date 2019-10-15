@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
 
@@ -74,6 +74,12 @@ const ButtonAppBar = ({ title }) => {
   const viewClicked = () => {
     setViewToggle()
   }
+
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      alert(`resize. window.innerHeight: ${window.innerHeight}`)
+    })
+  })
 
   return (
     <div className={classes.root}>
