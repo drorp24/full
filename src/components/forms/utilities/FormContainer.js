@@ -320,9 +320,9 @@ const FormContainer = ({ structure, show }) => {
   // which would prevent rendering that child on the server (Dan Abramov's trick).
   //
   console.log('Before ssr road block. populated: ', populated)
-  console.log('window.innerHeight: ', window.innerHeight)
   if (!populated.state) return null
   console.log('After ssr road block')
+  console.log('window.innerHeight: ', window.innerHeight)
 
   return structure.length > 1 ? (
     <DotsMobileStepper {...properties} />
