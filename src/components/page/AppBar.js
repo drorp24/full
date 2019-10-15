@@ -14,6 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
 import ViewList from '@material-ui/icons/ViewList'
+import Div100vh from 'react-div-100vh'
 
 const ButtonAppBar = ({ title }) => {
   const useStyles = makeStyles(theme => ({
@@ -26,7 +27,8 @@ const ButtonAppBar = ({ title }) => {
         contextualMenu
           ? theme.palette.primary.contextual
           : theme.palette.primary.main,
-      height: typeof window === 'object' ? window.innerHeight * 0.1 : '10vh', // see 'using innerHeight instead of vh units in Merchant.js
+      // height: typeof window === 'object' ? window.innerHeight * 0.1 : '10vh', // see 'using innerHeight instead of vh units in Merchant.js
+      height: '100%',
     },
     toolbar: {
       height: '100%',
@@ -75,14 +77,8 @@ const ButtonAppBar = ({ title }) => {
     setViewToggle()
   }
 
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      alert(`resize. window.innerHeight: ${window.innerHeight}`)
-    })
-  })
-
   return (
-    <div className={classes.root}>
+    <Div100vh style={{ height: '10rvh' }} className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -107,7 +103,7 @@ const ButtonAppBar = ({ title }) => {
           </Link>
         </Toolbar>
       </AppBar>
-    </div>
+    </Div100vh>
   )
 }
 
