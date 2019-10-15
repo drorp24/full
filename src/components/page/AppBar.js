@@ -27,6 +27,14 @@ const ButtonAppBar = ({ title }) => {
         contextualMenu
           ? theme.palette.primary.contextual
           : theme.palette.primary.main,
+      // ! The problem with 'vh' unit in mobile browsers
+      // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
+      // hence isn't good for the first (and only in my case) page: it makes 100vh longer than the viewport actual height
+      // (which is the page's entire height minus the height of the browser chrome)
+      // attempting to use innerHeight home-made as in the following commented line did *not* solve the problem:
+      // aparently, innerHeight changes each time another form line is populated (found nothing about it)
+      // (some times not symetrically!)
+      // only when replaced the home-made line below to using <Div100vh style={{ height: '10rvh' }} /> did it maintain an exact 10% height AppBar!
       // height: typeof window === 'object' ? window.innerHeight * 0.1 : '10vh', // see 'using innerHeight instead of vh units in Merchant.js
       height: '100%',
     },
@@ -89,7 +97,12 @@ const ButtonAppBar = ({ title }) => {
           >
             {contextualMenu ? <Close /> : <MenuIcon />}
           </IconButton>
-          <Typography variant="h6" color="inherit" className={classes.grow}>
+          <Typography
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.grow}
+          >
             {name || title}
           </Typography>
           <Link to={view === 'list' ? '/map' : '/merchants'} color="inherit">

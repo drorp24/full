@@ -47,6 +47,22 @@ class App extends Component {
     window.measure = measure
     moize.collectStats()
     window.moize = moize
+
+    window.addEventListener('beforeinstallprompt', e => {
+      // Stash the event so it can be triggered later.
+      let deferredPrompt = e
+      // Update UI notify the user they can add to home screen
+      deferredPrompt.prompt()
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt')
+        } else {
+          console.log('User dismissed the A2HS prompt')
+        }
+        deferredPrompt = null
+      })
+    })
   }
 
   render() {

@@ -178,6 +178,7 @@ const Merchant = ({ loading, record, style }) => {
   //   100vh includes the height of the mobile browsers' chromes.
   //   So if I need an element to be on a fixed margin from (viewable) viewport bottom I'd need to use innerHeight rather than vh.
   //   again, using the 'window' variable here below will not break the build since it is included inside of a function that would only run on the client.
+  // ! note: it's actually better to use the <Div100vh /> component rather than home-made calculating innerHeight * something - see note in AppBar.js
   const useStyles = makeStyles(theme => ({
     card: {
       height: '100%',
