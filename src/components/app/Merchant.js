@@ -211,6 +211,12 @@ const Merchant = ({ loading, record, style }) => {
       margin: theme.spacing(3),
       alignSelf: 'flex-end',
     },
+    cardContent: {
+      visibility: 'visible',
+      display: 'block',
+      color: 'red',
+      border: '3px solid green',
+    },
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
@@ -374,9 +380,7 @@ const Merchant = ({ loading, record, style }) => {
             title="Contemplative Reptile"
             ref={cardMediaRef}
           />
-          <CardContent
-            style={{ display: 'block', color: 'red', height: '15vh' }}
-          >
+          <CardContent className={classes.cardContent}>
             <Typography
               style={{ ...ellipsis }}
               gutterBottom
