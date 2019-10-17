@@ -76,6 +76,7 @@ import Zoom from '@material-ui/core/Zoom'
 
 import Loader from '../utility/Loader'
 import { ellipsis } from '../themed/Box'
+import { isInStandaloneMode } from '../utility/detect'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
@@ -163,6 +164,7 @@ const toggleScrolling = (open, listItemRef) => {
   listElement.id = 'list'
 }
 
+const standaloneMode = isInStandaloneMode()
 //
 // * Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
 const Merchant = ({ loading, record, style }) => {
@@ -205,23 +207,21 @@ const Merchant = ({ loading, record, style }) => {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      visibility: 'visible',
-      border: '3px solid green',
     },
     contentText: {},
-    contentActions: {},
+    closeActions: {
+      display: ({ open }) => (open ? 'none' : 'block'),
+      paddingLeft: '0',
+    },
+    openActions: {
+      display: ({ open }) => (open ? 'flex' : 'none'),
+      paddingLeft: '0',
+      justifyContent: 'flex-end',
+    },
     price: {
       fontWeight: '400',
     },
-    closeActions: {
-      paddingLeft: '0',
-      display: ({ open }) => (open ? 'none' : 'block'),
-    },
-    openActions: {
-      paddingLeft: '0',
-      display: ({ open }) => (open ? 'flex' : 'none'),
-      justifyContent: 'flex-end',
-    },
+
     btn: {
       paddingLeft: '0',
     },
@@ -234,7 +234,7 @@ const Merchant = ({ loading, record, style }) => {
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
-      top: '35vh',
+      top: standaloneMode ? '35vh' : '30vh',
       right: 0,
       margin: theme.spacing(3),
       marginTop: 0,
@@ -387,72 +387,68 @@ const Merchant = ({ loading, record, style }) => {
 
     return (
       <Card className={classes.card} onClick={toggleCardState}>
-        <CardActionArea style={{ height: '100%' }}>
-          <CardMedia
-            className={classes.media}
-            image={imgUri}
-            title="Contemplative Reptile"
-            ref={cardMediaRef}
-          />
-          <CardContent className={classes.content}>
-            <div className={classes.contentText}>
-              <Typography
-                style={{ ...ellipsis }}
-                gutterBottom
-                variant="h5"
-                component="h2"
-              >
-                {record.name}
-              </Typography>
-              <Typography
-                style={{ ...ellipsis }}
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                gutterBottom
-              >
-                {record.address || 'No address recorded'}
-              </Typography>
-              <Typography variant="h6" className={classes.price}>
-                {price(record)}
-              </Typography>
-            </div>
+        {/* <CardActionArea style={{ height: '100%' }}> */}
+        <CardMedia
+          className={classes.media}
+          image={imgUri}
+          title="Contemplative Reptile"
+          ref={cardMediaRef}
+        />
+        <CardContent className={classes.content}>
+          <div className={classes.contentText}>
+            <Typography
+              style={{ ...ellipsis }}
+              gutterBottom
+              variant="h5"
+              component="h2"
+            >
+              {record.name}
+            </Typography>
+            <Typography
+              style={{ ...ellipsis }}
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              gutterBottom
+            >
+              {record.address || 'No address recorded'}
+            </Typography>
+            <Typography variant="h6" className={classes.price}>
+              {price(record)}
+            </Typography>
+          </div>
 
-            <div className={classes.contentActions}>
-              <CardActions className={classes.closeActions}>
-                <Button size="large" color="primary" className={classes.btn}>
-                  Order
-                </Button>
-                <Button
-                  size="large"
-                  color="primary"
-                  onClick={toggleCardState}
-                  className={classes.btn}
-                >
-                  View
-                </Button>
-              </CardActions>
-            </div>
-            <div className={classes.contentActions}>
-              <CardActions className={classes.openActions}>
-                <Zoom in timeout={{ enter: 1000 }}>
-                  <Fab color="primary" aria-label="Add" className={classes.fab}>
-                    <ShoppingCart />
-                  </Fab>
-                </Zoom>{' '}
-              </CardActions>
-              <Zoom in timeout={{ enter: 1000 }}>
-                <Fab
-                  size="small"
-                  className={classes.threeSixty}
-                  onClick={toggleStreetView(cardMediaRef, record)}
-                >
-                  <ThreeSixty color="primary" />
-                </Fab>
-              </Zoom>
-            </div>
-          </CardContent>
-        </CardActionArea>
+          <CardActions className={classes.closeActions}>
+            <Button size="large" color="primary" className={classes.btn}>
+              Order
+            </Button>
+            <Button
+              size="large"
+              color="primary"
+              onClick={toggleCardState}
+              className={classes.btn}
+            >
+              View
+            </Button>
+          </CardActions>
+          <CardActions className={classes.openActions}>
+            <Zoom in timeout={{ enter: 1000 }}>
+              <Fab color="primary" aria-label="Add" className={classes.fab}>
+                <ShoppingCart />
+              </Fab>
+            </Zoom>
+          </CardActions>
+          <Zoom in timeout={{ enter: 1000 }}>
+            <Fab
+              size="small"
+              className={classes.threeSixty}
+              onClick={toggleStreetView(cardMediaRef, record)}
+            >
+              <ThreeSixty color="primary" />
+            </Fab>
+          </Zoom>
+        </CardContent>
+        {/* </CardActionArea> */}
       </Card>
     )
   }
