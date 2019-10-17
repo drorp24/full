@@ -180,6 +180,13 @@ const Merchant = ({ loading, record, style }) => {
   //   again, using the 'window' variable here below will not break the build since it is included inside of a function that would only run on the client.
   // ! note: it's actually better to use the <Div100vh /> component rather than home-made calculating innerHeight * something - see note in AppBar.js
   const useStyles = makeStyles(theme => ({
+    listItem: {
+      height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
+      padding: ({ open }) => (open ? 0 : theme.spacing(2)),
+      zIndex: ({ open }) => (open ? 1 : 0),
+      transition: 'padding 1s, height 1s, top 1s',
+      justifyContent: 'center',
+    },
     card: {
       height: '100%',
       width: '100%',
@@ -190,33 +197,40 @@ const Merchant = ({ loading, record, style }) => {
       borderRadius: ({ open }) => (open ? '0px' : '4px'),
     },
     media: {
-      height: ({ open }) => (open ? '45vh' : '20vh'),
+      height: '50%',
       transition: 'height 1s',
     },
-    listItem: {
-      height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
-      padding: ({ open }) => (open ? 0 : theme.spacing(2)),
-      zIndex: ({ open }) => (open ? 1 : 0),
-      transition: 'padding 1s, height 1s, top 1s',
-      justifyContent: 'center',
+    content: {
+      height: '50%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      visibility: 'visible',
+      border: '3px solid green',
     },
+    contentText: {},
+    contentActions: {},
     price: {
       fontWeight: '400',
     },
-    cardActions: {
+    closeActions: {
+      paddingLeft: '0',
       display: ({ open }) => (open ? 'none' : 'block'),
+    },
+    openActions: {
+      paddingLeft: '0',
+      display: ({ open }) => (open ? 'flex' : 'none'),
+      justifyContent: 'flex-end',
+    },
+    btn: {
+      paddingLeft: '0',
     },
     fab: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       margin: theme.spacing(3),
       alignSelf: 'flex-end',
     },
-    cardContent: {
-      visibility: 'visible',
-      display: 'block',
-      color: 'red',
-      border: '3px solid green',
-    },
+
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
@@ -373,58 +387,72 @@ const Merchant = ({ loading, record, style }) => {
 
     return (
       <Card className={classes.card} onClick={toggleCardState}>
-        <CardActionArea>
+        <CardActionArea style={{ height: '100%' }}>
           <CardMedia
             className={classes.media}
             image={imgUri}
             title="Contemplative Reptile"
             ref={cardMediaRef}
           />
-          <CardContent className={classes.cardContent}>
-            <Typography
-              style={{ ...ellipsis }}
-              gutterBottom
-              variant="h5"
-              component="h2"
-            >
-              {record.name}
-            </Typography>
-            <Typography
-              style={{ ...ellipsis }}
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              gutterBottom
-            >
-              {record.address || 'No address recorded'}
-            </Typography>
-            <Typography variant="h6" className={classes.price}>
-              {price(record)}
-            </Typography>
+          <CardContent className={classes.content}>
+            <div className={classes.contentText}>
+              <Typography
+                style={{ ...ellipsis }}
+                gutterBottom
+                variant="h5"
+                component="h2"
+              >
+                {record.name}
+              </Typography>
+              <Typography
+                style={{ ...ellipsis }}
+                variant="body2"
+                color="textSecondary"
+                component="p"
+                gutterBottom
+              >
+                {record.address || 'No address recorded'}
+              </Typography>
+              <Typography variant="h6" className={classes.price}>
+                {price(record)}
+              </Typography>
+            </div>
+
+            <div className={classes.contentActions}>
+              <CardActions className={classes.closeActions}>
+                <Button size="large" color="primary" className={classes.btn}>
+                  Order
+                </Button>
+                <Button
+                  size="large"
+                  color="primary"
+                  onClick={toggleCardState}
+                  className={classes.btn}
+                >
+                  View
+                </Button>
+              </CardActions>
+            </div>
+            <div className={classes.contentActions}>
+              <CardActions className={classes.openActions}>
+                <Zoom in timeout={{ enter: 1000 }}>
+                  <Fab color="primary" aria-label="Add" className={classes.fab}>
+                    <ShoppingCart />
+                  </Fab>
+                </Zoom>{' '}
+              </CardActions>
+              <Zoom in timeout={{ enter: 1000 }}>
+                <Fab
+                  size="small"
+                  className={classes.threeSixty}
+                  onClick={toggleStreetView(cardMediaRef, record)}
+                >
+                  <ThreeSixty color="primary" />
+                </Fab>
+              </Zoom>
+            </div>
           </CardContent>
         </CardActionArea>
-        <CardActions className={classes.cardActions}>
-          <Button size="small" color="primary">
-            Order
-          </Button>
-          <Button size="small" color="primary" onClick={toggleCardState}>
-            View
-          </Button>
-        </CardActions>
-        <Zoom in timeout={{ enter: 1000 }}>
-          <Fab color="primary" aria-label="Add" className={classes.fab}>
-            <ShoppingCart />
-          </Fab>
-        </Zoom>
-        <Zoom in timeout={{ enter: 1000 }}>
-          <Fab
-            size="small"
-            className={classes.threeSixty}
-            onClick={toggleStreetView(cardMediaRef, record)}
-          >
-            <ThreeSixty color="primary" />
-          </Fab>
-        </Zoom>
       </Card>
     )
   }
