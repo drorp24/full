@@ -374,7 +374,9 @@ const Merchant = ({ loading, record, style }) => {
             title="Contemplative Reptile"
             ref={cardMediaRef}
           />
-          <CardContent style={{ display: 'block', color: 'red' }}>
+          <CardContent
+            style={{ display: 'block', color: 'red', height: '15vh' }}
+          >
             <Typography
               style={{ ...ellipsis }}
               gutterBottom
