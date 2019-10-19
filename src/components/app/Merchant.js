@@ -120,7 +120,7 @@ const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
     nextSibling,
   ].map(measureTopHeight)
 
-  // ! using 'window' is okay as long as any reference to it is made within a function or component that is performed only while on the client
+  // * using 'window' is okay as long as any reference to it is made within a function or component that is performed only while on the client
   const appBarHeight = window.innerHeight / 10
 
   previous.newTop = Math.max(previous.top - current.y, 0)
@@ -174,12 +174,25 @@ const Merchant = ({ loading, record, style }) => {
     setState({ open: !open })
   }
 
-  // ! Using window.innerHeight instead of css vh units
-  //   window.innerHeight is used instead of 90vh for the same reason <Div100vh /> was used in Page:
-  //   100vh includes the height of the mobile browsers' chromes.
-  //   So if I need an element to be on a fixed margin from (viewable) viewport bottom I'd need to use innerHeight rather than vh.
-  //   again, using the 'window' variable here below will not break the build since it is included inside of a function that would only run on the client.
-  // ! note: it's actually better to use the <Div100vh /> component rather than home-made calculating innerHeight * something - see note in AppBar.js
+  // ! Challenges of card's height
+  //
+  // * The Issue: '100vh' is not the viewport's height; it's the heights of the viewport + browser's chrome + address bar
+  //   Mobile experience frequently entails having a 'Page' which is precisely the viewport's height.
+  //   But 100vh is not the actual viewable viewport.
+  //   Counting on 100vh would make some page's components (esp. if desinbed to be at a given margin from bottom) hidden.
+  //   To overcome this, window.innerHeight is used instead of 90vh.
+  //   NOTE: for that purpose it's actually safer to use the <Div100vh /> component rather than innerHeight * something - see note in AppBar.js
+  //
+  // * The Issue: height in a windowed list is imposed; this can make a card content truncated
+  //   The height of every merchant card rendered here is governed by react-window.
+  //   react-window calculates that height according to the 'itemCount'.
+  //   It passes the height to each 'li' within the 'style' prop, making height sit on the DOM element - hence fixed.
+  //   The height restriction should be taken into account in the card design or else its content may be truncated.
+  //
+  //   In my case, every card has a 'media' part and a 'content' part.
+  //   When I initially set them both to 50% height, each of them got precisely 50% of the card's height, and then 'content' got truncated.
+  //   When 'content' was then relieved of the exact height rule, the 'media' part shrinked when 'content' needed more room (when the browser included its chrome)
+  //   and got 50% of the height when 'content' managed with 50% of the card's height (when the browser was in standalone, chromeless mode).
   const useStyles = makeStyles(theme => ({
     listItem: {
       height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
@@ -202,9 +215,11 @@ const Merchant = ({ loading, record, style }) => {
       transition: 'height 1s',
     },
     content: {
+      minHeight: '50%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
+      paddingBottom: 'unset',
     },
     contentText: {},
     closeActions: {
