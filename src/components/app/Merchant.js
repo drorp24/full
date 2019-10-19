@@ -64,7 +64,6 @@ import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/styles'
 import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
@@ -203,7 +202,6 @@ const Merchant = ({ loading, record, style }) => {
       transition: 'height 1s',
     },
     content: {
-      height: '50%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
