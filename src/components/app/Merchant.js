@@ -300,24 +300,30 @@ const Merchant = ({ loading, record, style }) => {
         currency: record.quote.quote,
       })
 
-    const toggleCardState = useCallback(() => {
-      // Clicking an open card should not close it
-      if (open && !shouldClose) return
+    const toggleCardState = useCallback(
+      e => {
+        // Clicking 'View' will trigger 'toggleCardState' twice if not for this line, misplacing the card
+        if (e) e.stopPropagation()
 
-      toggleState()
+        // Clicking an open card should not close it
+        if (open && !shouldClose) return
 
-      toggleScrolling(open, listItemRef)
+        toggleState()
 
-      toggleSiblings(open, listItemRef)
-
-      if (shouldClose) {
-        resetShouldClose()
-        resetContextual()
         toggleScrolling(open, listItemRef)
-      } else {
-        setContextualMenu({ contextual: true, name: record.name })
-      }
-    }, [listItemRef, record.name])
+
+        toggleSiblings(open, listItemRef)
+
+        if (shouldClose) {
+          resetShouldClose()
+          resetContextual()
+          toggleScrolling(open, listItemRef)
+        } else {
+          setContextualMenu({ contextual: true, name: record.name })
+        }
+      },
+      [listItemRef, record.name]
+    )
 
     const grantPermission = () => {
       if (
@@ -407,7 +413,7 @@ const Merchant = ({ loading, record, style }) => {
           title="Contemplative Reptile"
           ref={cardMediaRef}
         />
-        <CardContent className={classes.content}>
+        <CardContent className={classes.content} style={{ paddingBottom: '0' }}>
           <div className={classes.contentText}>
             <Typography
               style={{ ...ellipsis }}
