@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { Form, multiStepFormValidGeneric } from './formUtilities'
 
-const OneStepper = ({ structure, schema, show, ...rest }) => {
+const OneStepper = ({ structure, show, ...rest }) => {
   const form = useSelector(store => store.form)
   const formValid = () => multiStepFormValidGeneric(structure, 0, form)
 
@@ -25,7 +25,7 @@ const OneStepper = ({ structure, schema, show, ...rest }) => {
     </Grid>
   )
 
-  return <Form {...{ structure, schema, show, step: 0, footer, ...rest }} />
+  return <Form {...{ structure, show, step: 0, footer, ...rest }} />
 }
 
 export default OneStepper

@@ -11,7 +11,7 @@ import { Form, multiStepFormValidGeneric } from './formUtilities'
 
 import { unstable_Box as Box } from '@material-ui/core/Box'
 
-const MultiStepForm = ({ state, setState, schema, structure }) => {
+const MultiStepForm = ({ state, setState, structure }) => {
   const [activeStep, setActiveStep] = useState(0)
 
   function handleNext() {
@@ -38,7 +38,6 @@ const MultiStepForm = ({ state, setState, schema, structure }) => {
               <Form
                 state={state}
                 setState={setState}
-                schema={schema}
                 structure={structure}
                 step={activeStep}
                 key={activeStep}

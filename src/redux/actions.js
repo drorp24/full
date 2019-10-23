@@ -3,7 +3,6 @@ import {
   SET_COUNT,
   SET_FORM,
   SET_FORM_VALUES,
-  SET_FORM_SCHEMA,
   SET_LIST,
   SET_APP,
   SET_CONTEXTUAL,
@@ -44,11 +43,6 @@ export const setForm = form => ({
 export const setFormValues = values => ({
   type: SET_FORM_VALUES,
   values,
-})
-
-export const setFormSchema = schema => ({
-  type: SET_FORM_SCHEMA,
-  schema,
 })
 
 export const setList = ({ name, list, quote }) => ({

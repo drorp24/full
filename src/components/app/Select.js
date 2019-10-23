@@ -14,7 +14,11 @@ const structure = [
         type: 'autosuggest',
         list: 'currencies',
         update: 'coins',
-        fieldSchema: string().required(),
+        fieldSchema: string()
+          .required()
+          .matches(/^[^0-9]+$/, 'Please use letters')
+          .length(3, 'Please enter the 3-letters code')
+          .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters'),
         required: true,
         label: 'What are you paying with',
         helper: "The currency I'm paying with",
@@ -24,7 +28,11 @@ const structure = [
         type: 'autosuggest',
         list: 'coins',
         update: 'coins',
-        fieldSchema: string().required('Please specify'),
+        fieldSchema: string()
+          .required()
+          .matches(/^[^0-9]+$/, 'Please use letters')
+          .length(3, 'Please enter the 3-letters code')
+          .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters only'),
         required: true,
         label: 'What are you looking for',
         helper: "The currency I'm buying",

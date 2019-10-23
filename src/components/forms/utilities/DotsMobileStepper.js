@@ -13,7 +13,7 @@ import {
   visitUntouched,
 } from './formUtilities'
 
-const DotsMobileStepper = ({ schema, structure, show }) => {
+const DotsMobileStepper = ({ structure, show }) => {
   const [activeStep, setActiveStep] = useState(0)
   const form = useSelector(store => store.form)
   const dispatch = useDispatch()
@@ -27,7 +27,6 @@ const DotsMobileStepper = ({ schema, structure, show }) => {
       visitUntouched({
         form,
         updateForm,
-        schema,
         structure,
         step: prevActiveStep,
       })
@@ -80,13 +79,7 @@ const DotsMobileStepper = ({ schema, structure, show }) => {
   )
 
   return (
-    <Form
-      structure={structure}
-      schema={schema}
-      show={show}
-      step={activeStep}
-      footer={footer}
-    />
+    <Form structure={structure} show={show} step={activeStep} footer={footer} />
   )
 }
 

@@ -9,15 +9,11 @@ import {
 
 import DotsMobileStepper from './DotsMobileStepper'
 import OneStepper from './OneStepper'
-import {
-  createFormStateFromStructure,
-  createSchema,
-} from '../../forms/utilities/formUtilities'
+import { createFormStateFromStructure } from '../../forms/utilities/formUtilities'
 import { getLocationAndAddress } from '../../utility/geolocation'
 import LiveRates from '../../websocket/LiveRates'
 import { MyTypography } from '../../themed/Box'
 import { coinbaseProducts, getCoins, getCurrencies } from './lists'
-import { empty } from '../../utility/empty'
 
 const FormContainer = ({ structure, show }) => {
   const dispatch = useDispatch()
@@ -60,11 +56,10 @@ const FormContainer = ({ structure, show }) => {
 
   const lists = useSelector(store => store.lists)
   const populated = useSelector(store => store.app.populated)
-  // const schema = useSelector(store => store.form.schema)
-  const [schema, setSchema] = useState({})
   // Unlike lists and app selectors, whose properties are hard-coded hence initialized,
   // form.values' properties are unknown initially as they're dynamically built
   const quote = useSelector(store => (store.form.values || {}).quote)
+  const form = useSelector(store => store.form)
 
   // ! useCallback only when needed
   // The recommendation is to hoist functions that don’t need props or state outside of your component,
@@ -121,7 +116,7 @@ const FormContainer = ({ structure, show }) => {
   // In my case, such metadata includes a lot of info which is hard to get by and never changes.
   //
   // - entire list of coins with USD quotes - that require a heavy async API to get,
-  // - the schema and the form's state that are based on the dynamically-generated-but-never-changing structure
+  // - form's state which is dynamically-generated from configuration (structure) but never changes
   // - and naturally the user's keyed data
   //
   // In a sense, this acts like service worker for meta data.
@@ -148,31 +143,13 @@ const FormContainer = ({ structure, show }) => {
     if (!populated.currencies) {
       updateCurrencies()
     }
-
-    // ! Sets cannot be hydrated
-    // yup schema contains Sets.
-    // The Sets in the yup object is where yup holds the list of valid values to check validity against.
-    // It works well as long as the yup object is in the redux store, which supports Sets.
-    // But as soon as a redux store is hydrated back from localStorage, its Sets lose their values and become empty arrays.
-    // That makes yup, which has worked well from the redux storage, stop working after page refresh saying something like 'schema.validateSyncAt is not a function'
-    //
-    // Solution: keep yup schema in local state instead of redux
-    // Miraculously, even though it's in the component's state, schema does maintain its values after page refresh.
-    console.log('empty(schema): ', empty(schema))
-    console.log('populated.coins: ', populated.coins)
-    if (empty(schema) && populated.coins) {
-      setSchema(createSchema(structure, lists))
-    }
   }, [
-    lists,
     populated.state,
     populated.currencies,
-    populated.coins,
     structure,
     dispatch,
     updateList,
     updatePopulated,
-    schema,
   ])
 
   // quote useEffect
@@ -300,7 +277,6 @@ const FormContainer = ({ structure, show }) => {
 
   const properties = {
     structure,
-    schema,
     show,
     header,
   }

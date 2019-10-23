@@ -15,7 +15,6 @@ const initialState = {
     state: false,
     currencies: false,
     coins: false,
-    schema: false,
   },
 }
 

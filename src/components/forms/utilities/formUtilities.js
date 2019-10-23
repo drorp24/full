@@ -34,7 +34,7 @@ import getSymbolFromCurrency from 'currency-symbol-map'
 import { empty } from '../../utility/empty'
 
 //
-// A. Utility functions to create/modify state, lists and schema
+// A. Utility functions to create/modify state
 //
 export const createFormStateFromStructure = structure => {
   const form = { values: {}, touched: {}, errors: {} }
@@ -54,19 +54,55 @@ export const createFormStateFromStructure = structure => {
   return form
 }
 
-// Original idea to scan the configuration for any field defined as list
-// and extract the list was neglected. setLists is in no use currently.
-// Instead, 'currency' list is extracted by FormContainer's initialization useEffect
-// and 'coins' list is extracted whenever 'quote' field changes value.
-// export const setLists = ({ structure, quote, updateList, listName }) => {
+// ! Generating the lists dynamically: not always possible
+// Generating all lists mentioned in the configuration (e.g., Select) is a nice idea but not always possible.
+// While currency list can be generated once, coins list needs to be re-generated every time the currency changes.
+// That's why FormContainer has one initialization useEffect that generates the currency list,
+// and another useEffect to generate the coins list that depends on the currency value and re-generates it every time it changes.
+// The below code is from the time I thought I could just dynamically generate every list mentioned in the confiuration.
+//
+// export const setLists = ({ structure, quote, updateList}) => {
 //   getFields(structure)
 //     .filter(field => !!field.list)
-//     .filter(field => field.list === listName)
 //     .forEach(({ list }) => {
 //       setList({ list, quote, updateList })
 //     })
 // }
 
+// ! Generating the schema dynamically: not required
+// After much struggle with yup, I'm documenting the ultimate conclusions to hopefully save more struggles going forward.
+//
+// * Once thought to be required to generate oneOf rules dynamically, based on lists
+// Using oneOf rules in yup is kind of okay if the lists are short and hard-coded, though there are more reasons to not use it even then.
+// But generating a long oneOf rule based on a list (e.g., currencies) is always a bad idea as I discovered:
+// - Technically, it entails using a setTransform function in redux-persist, which would convert the yup whitelists that serve its oneOf rules
+//   from their Set representation into arrays when persisting, then back to Sets when rehydrating redux.
+//   This is annoying, as you have to traverse the schema structure, hard-code the Set's name in it and use Immer's produce since it's burried deep in the schema object. Yach.
+// - Effectively, when yup sees a oneOf rule, it essentially overrides all other rules (since 'oneOf' kinds of make the other rules redundant).
+//   The result is that user gets only one error message: this is not a valid value.
+//   On the other hand, when no oneOf rule is specified, then there can be used a number of rules that would help user such as: pick 3 characters,
+//   all of them must be capitals etc.
+// - Lastly, if the list of valid values is long, yup wouldn't anyway detail it on the line and there would be some kind of AutoSuggest
+//   so it's pointless to let yup warn the user, who see the list and doesn't pick any value off it.
+//   A general warning to pick from the list would be in place, but certainly yup doesn't need to store the entire list of values.
+// - If that's not enough, the consolidated schema captured a lot of space; having to persist it means capturing a lot of space.
+//
+// * "schema.validateSyncAt is not a function" error
+//
+//   This misleading error message is - probably - the result of a oneOf rule that can't work properly.
+//   It was raised after redux store was rehydrated, making the _whitelist Set empty.
+//   That was before I added the setTransform function, and stopped occuring once I did.
+//   It was also raised when I appended a oneOf rule in the configuration itself to a string() which also had length().
+//   According to yup documentation, oneOf can be applied to a mixed object only.
+//   Another reason to not use oneOf with yup.
+//
+// * Don't generate schema
+//
+//   One of the driving forces behind 'generating' a schema was that it will enable adding rules programmatically,
+//   such as the list-based oneOf rules.
+//   With them out of the way, there's no reason to accumulate the field schemas in the configuration into one consolidated schema.
+//   yup schema is a configuration, and the hard-coded fieldSchemas configured should be enough.
+//
 export const createSchema = (structure, lists) => {
   const shape = {}
 
@@ -120,7 +156,7 @@ const Fields = ({ structure, step }) =>
 // TODO: Form is called for every keystroke (regardless of field)
 // most probably because it gets state as a prop rather than creating its own
 // EveryField stopped doing that as soon as it was memoized, but that didn't help Form
-export const Form = ({ structure, schema, show, step, header, footer }) => {
+export const Form = ({ structure, show, step, header, footer }) => {
   const classes = useFormStyles()
   const form = useSelector(store => store.form)
   const dispatch = useDispatch()
@@ -128,9 +164,7 @@ export const Form = ({ structure, schema, show, step, header, footer }) => {
 
   return (
     <ErrorBoundary>
-      <FormContext.Provider
-        value={{ schema, structure, step, show, form, updateForm }}
-      >
+      <FormContext.Provider value={{ structure, step, show, form, updateForm }}>
         <form autoComplete="off" className={classes.root}>
           <Box formVariant="header">{header && header(form)}</Box>
           <Box formVariant="body" formColor="body.color">
@@ -144,7 +178,6 @@ export const Form = ({ structure, schema, show, step, header, footer }) => {
 }
 
 Form.propTypes = {
-  schema: PropTypes.object,
   structure: PropTypes.array,
   step: PropTypes.number,
   footer: PropTypes.func,
@@ -163,7 +196,7 @@ Form.propTypes = {
 
 const EveryField = ({ name }) => (
   <FormContext.Consumer>
-    {({ structure, step, schema, show, form, updateForm }) => {
+    {({ structure, step, show, form, updateForm }) => {
       //
       const field = structure[step].fields.filter(
         field => field.name === name
@@ -198,7 +231,6 @@ const EveryField = ({ name }) => (
         fieldSchema,
         form,
         updateForm,
-        schema,
       })
       const uniqProps = { update }
       const Options = () =>
@@ -571,9 +603,8 @@ const handleEveryChange = ({
   value,
   form,
   updateForm,
-  schema,
 }) => {
-  const error = checkByType({ name, type, fieldSchema, value, schema })
+  const error = checkByType({ name, type, fieldSchema, value })
   if (type === 'number') value = Number(value)
 
   updateForm(
@@ -586,9 +617,9 @@ const handleEveryChange = ({
   )
 }
 
-const checkByType = ({ name, type, fieldSchema, value, schema }) => {
+const checkByType = ({ name, type, fieldSchema, value }) => {
   if (type === 'phone') return phoneCheck({ name, value })
-  if (fieldSchema) return yupCheck({ name, value, schema })
+  if (fieldSchema) return yupCheck({ name, value, fieldSchema })
   return false
 }
 
@@ -597,14 +628,11 @@ const phoneCheck = ({ name, value }) =>
     ? false
     : `Please enter a valid ${name} number`
 
-const yupCheck = ({ name, value, schema }) => {
-  if (!schema || empty(schema)) return false
+const yupCheck = ({ name, value, fieldSchema }) => {
+  if (!fieldSchema || empty(fieldSchema)) return false
 
   try {
-    schema.validateSyncAt(name, {
-      [name]: value,
-    })
-
+    fieldSchema.validateSync(value)
     return false
   } catch (error) {
     return capitalize(error.message)
@@ -613,7 +641,7 @@ const yupCheck = ({ name, value, schema }) => {
 
 // return an onChange function whose signature matches the one used by the component type
 // that returns a single funified unction to deal with any change regardless of type
-const onChangeFor = ({ name, type, fieldSchema, form, updateForm, schema }) => {
+const onChangeFor = ({ name, type, fieldSchema, form, updateForm }) => {
   const handleChange = ({ name, value }) =>
     handleEveryChange({
       name,
@@ -622,7 +650,6 @@ const onChangeFor = ({ name, type, fieldSchema, form, updateForm, schema }) => {
       value,
       form,
       updateForm,
-      schema,
     })
 
   switch (type) {
@@ -657,13 +684,7 @@ export const multiStepFormValidGeneric = (steps, step, form) => {
 
 // Not required if user is forced to populate all fields to have the next/submit button enabled
 // Destructuring at its best
-export const visitUntouched = ({
-  form,
-  updateForm,
-  structure,
-  step,
-  schema,
-}) => {
+export const visitUntouched = ({ form, updateForm, structure, step }) => {
   structure[step].fields.forEach(field => {
     const { name, type } = field
     const {
@@ -671,7 +692,7 @@ export const visitUntouched = ({
       values: { [name]: value },
     } = form
     if (isTouched) return
-    handleEveryChange({ name, type, value, form, updateForm, schema })
+    handleEveryChange({ name, type, value, form, updateForm })
   })
 }
 

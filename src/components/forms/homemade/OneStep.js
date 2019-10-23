@@ -64,13 +64,7 @@ export default function SearchForm() {
 
   return (
     <Page>
-      <Form
-        state={state}
-        setState={setState}
-        schema={schema}
-        structure={structure}
-        step={0}
-      />
+      <Form state={state} setState={setState} structure={structure} step={0} />
     </Page>
   )
 }
