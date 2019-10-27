@@ -6,6 +6,7 @@ import counter from './counter'
 import form from './form'
 import lists from './lists'
 import app from './app'
+import user from './user'
 
 export default combineReducers({
   text,
@@ -13,4 +14,5 @@ export default combineReducers({
   form,
   lists,
   app,
+  user,
 })

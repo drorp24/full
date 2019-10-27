@@ -9,6 +9,7 @@ import {
   SHOULD_CLOSE,
   TOGGLE_VIEW,
   SET_POPULATED,
+  SET_A2HS,
 } from './types'
 
 export const setMessage = message => ({
@@ -75,4 +76,9 @@ export const toggleView = () => ({
 export const setPopulated = field => ({
   type: SET_POPULATED,
   field,
+})
+
+export const setA2hs = a2hs => ({
+  type: SET_A2HS,
+  a2hs,
 })

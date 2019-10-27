@@ -56,9 +56,10 @@
 //    But if there's another 'external' way to switch pages or close cards I'm not thinking about, the AppBar will remain contextual
 //    I wonder if tehre's a *declaratve* way of saying that, unless a card is [...], there's no 'contextual'. Probably not.
 //
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
+import { BrowserContext } from '../../index'
 
 import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
@@ -75,7 +76,6 @@ import Zoom from '@material-ui/core/Zoom'
 
 import Loader from '../utility/Loader'
 import { ellipsis } from '../themed/Box'
-import { isInStandaloneMode } from '../utility/detect'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
@@ -163,7 +163,6 @@ const toggleScrolling = (open, listItemRef) => {
   listElement.id = 'list'
 }
 
-const standaloneMode = isInStandaloneMode()
 //
 // * Being a child of FixedSizeList, the height of this component is fixed as determined by FixedSizeList's itemSize prop
 const Merchant = ({ loading, record, style }) => {
@@ -173,6 +172,9 @@ const Merchant = ({ loading, record, style }) => {
   const toggleState = () => {
     setState({ open: !open })
   }
+
+  const browserContext = useContext(BrowserContext)
+  const { standaloneMode } = browserContext
 
   // ! Challenges of card's height
   //
@@ -392,6 +394,15 @@ const Merchant = ({ loading, record, style }) => {
 
     const cardMediaRef = React.useRef()
 
+    // * Making AppBar's state change Merchant's own state
+    // This useEffect is in charge of closing an open card as soon as 'shouldClose' is set to true
+    // 'shouldClose' is a useSelector within Merchant, which means it acts like it was a Merchant prop
+    //  in that it makes Merchant re-render every time its value changes.
+    // This is what triggers the merchant card to close once the AppBar's 'X' is clicked.
+    // TODO: maintain consistency b/w AppBar's status and the Merchant card upon redux dehydration
+    // TODO: (which will occur after page is pulled to refresh or app is launched from homescreen)
+    // TODO: if AppBar's 'contextual' state is persisted then card should open etc.
+
     useEffect(() => {
       if (open && shouldClose) {
         toggleCardState()
@@ -402,7 +413,7 @@ const Merchant = ({ loading, record, style }) => {
       window.onpopstate = function() {
         resetContextual()
       }
-    })
+    }, [])
 
     return (
       <Card className={classes.card} onClick={toggleCardState}>

@@ -8,15 +8,16 @@ import merchantsQuery, {
 } from '../../queries/merchantsQuery'
 import QueryResponse from '../utility/QueryResponse'
 import Merchant from './Merchant'
+import A2HSPrompt from '../utility/A2HSPrompt'
 
 // Apollo client now enables getting the results ({data, loading etc}) by calling useQuery with the query as its arguments
 // Query isn't needed anymore  https://www.apollographql.com/docs/react/features/pagination/#cursor-based
 const Merchants = () => {
   // Look ma, no connect!
-  console.log('>>>>>>>>>>> in Merchants.js <<<<<<<<<<<<')
 
   const form = useSelector(state => state.form)
   const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
+
   return (
     <Page title="Merchants">
       <Query
@@ -39,6 +40,7 @@ const Merchants = () => {
           />
         )}
       </Query>
+      <A2HSPrompt />
     </Page>
   )
 }

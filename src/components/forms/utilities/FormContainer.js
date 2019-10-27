@@ -14,6 +14,7 @@ import { getLocationAndAddress } from '../../utility/geolocation'
 import LiveRates from '../../websocket/LiveRates'
 import { MyTypography } from '../../themed/Box'
 import { coinbaseProducts, getCoins, getCurrencies } from './lists'
+import { empty } from '../../utility/empty'
 
 const FormContainer = ({ structure, show }) => {
   const dispatch = useDispatch()
@@ -59,7 +60,6 @@ const FormContainer = ({ structure, show }) => {
   // Unlike lists and app selectors, whose properties are hard-coded hence initialized,
   // form.values' properties are unknown initially as they're dynamically built
   const quote = useSelector(store => (store.form.values || {}).quote)
-  const form = useSelector(store => store.form)
 
   // ! useCallback only when needed
   // The recommendation is to hoist functions that don’t need props or state outside of your component,
@@ -128,11 +128,20 @@ const FormContainer = ({ structure, show }) => {
 
     const updateForm = form => dispatch(setForm(form))
 
+    // ! Iterate or just refresh
+    // Finding user's location takes some time, and may require a number of intervaled attempts until info is there.
+    // That's why I iterate over location tracking, with a few seconds lapse b/w one attempt to another.
+    // getCurrencies on the other hand is an API that almost always succeeds.
+    // It fails (only) if WiFi signal is weak, in which case app would fail anyway.
+    // Generally when an API fails due to weak network signal, it's often easier to just refresh and try again
+    // rather than filling the code with iterators over every API.
+    // 'if (!empty)' ensures we can try again by refreshing.
+    // Once app supports offline, this API should anyway come from a cache rather than the network.
     const updateCurrencies = async () => {
       const name = 'currencies'
       const list = await getCurrencies()
       updateList({ name, list })
-      updatePopulated('currencies')
+      if (!empty(list)) updatePopulated('currencies')
     }
 
     if (!populated.state) {

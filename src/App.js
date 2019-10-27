@@ -25,8 +25,6 @@ import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotI
 import Select from './components/app/Select'
 import Delivery from './components/app/Delivery'
 
-import { measure } from './components/utility/performance'
-import moize from 'moize'
 import Dashboard from './components/utility/Dashboard'
 import ErrorBoundary from './components/utility/boundary'
 import Map from './components/app/Map'
@@ -43,26 +41,6 @@ class App extends Component {
     const hookStylesheet = document.querySelectorAll('style[data-meta=Hook]')[0]
 
     if (hookStylesheet) head.insertBefore(hookStylesheet, null)
-
-    window.measure = measure
-    moize.collectStats()
-    window.moize = moize
-
-    window.addEventListener('beforeinstallprompt', e => {
-      // Stash the event so it can be triggered later.
-      let deferredPrompt = e
-      // Update UI notify the user they can add to home screen
-      deferredPrompt.prompt()
-      // Wait for the user to respond to the prompt
-      deferredPrompt.userChoice.then(choiceResult => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt')
-        } else {
-          console.log('User dismissed the A2HS prompt')
-        }
-        deferredPrompt = null
-      })
-    })
   }
 
   render() {
