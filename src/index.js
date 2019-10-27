@@ -71,9 +71,8 @@ const AppBundle = (
   // </React.StrictMode>
 )
 
-const root = document.getElementById('root')
-
 if (inTheBrowser) {
+  const root = document.getElementById('root')
   window.onload = () => {
     // if ssr is not on there's nothing to hydrate
     // calling ReactDOM.hydrate in this case will result with a 'matching <div>' warning message (why?)
