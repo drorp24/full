@@ -6,6 +6,8 @@ import Loadable from 'react-loadable'
 import manifest from '../../build/asset-manifest.json'
 import { Provider as ReduxProvider } from 'react-redux'
 
+console.log('entering app/server/middleware/renderer.js')
+
 const path = require('path')
 const fs = require('fs')
 

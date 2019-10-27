@@ -4,6 +4,8 @@ import { setMessage } from '../../src/redux/actions'
 import serverRenderer from '../middleware/renderer'
 import configureStore from '../../src/redux/configureStore'
 
+console.log('entering app/server/controllers/index.js')
+
 const router = express.Router()
 const path = require('path')
 

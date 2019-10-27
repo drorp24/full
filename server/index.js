@@ -2,6 +2,7 @@ import express from 'express'
 import Loadable from 'react-loadable'
 import indexController from './controllers/index'
 
+console.log('entering app/server/index.js')
 // initialize the application and create the routes
 const app = express()
 

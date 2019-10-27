@@ -14,11 +14,17 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ApolloProvider } from 'react-apollo'
 import client from '../src/apollo/client'
 
-import { isIos, isInStandaloneMode } from '../src/components/utility/detect'
+import {
+  isIos,
+  isInStandaloneMode,
+  weAreInTheBrowser,
+} from '../src/components/utility/detect'
 
 const ssr = process.env.REACT_APP_SSR
 
-const storeConfig = configureStore(ssr ? window.REDUX_STATE || {} : {})
+const storeConfig = configureStore(
+  ssr && typeof window !== 'undefined' ? window.REDUX_STATE || {} : {}
+)
 const { store, persistor } = storeConfig
 
 // ! Device info - React context vs. Redux

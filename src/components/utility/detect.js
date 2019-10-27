@@ -9,3 +9,5 @@ export const isInStandaloneMode = () =>
   typeof window === 'object' &&
   'standalone' in window.navigator &&
   window.navigator.standalone
+
+export const weAreInTheBrowser = () => typeof window !== 'undefined'
