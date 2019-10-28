@@ -15,6 +15,7 @@ import { ApolloProvider } from 'react-apollo'
 import client from '../src/apollo/client'
 
 import { isIos, isInStandaloneMode } from '../src/components/utility/detect'
+import { BrowserContext } from '../src/components/utility/BrowserContext'
 
 const ssr = process.env.REACT_APP_SSR
 
@@ -27,7 +28,6 @@ const { store, persistor } = storeConfig
 // That info would also be persisted, but I'm not sure I'd want all device properties to be persisted.
 // And I'd have to exclude it from redux initialization, as it happens on the server as well, where all this info is unavailable
 // The fact this file runs only on the client by definition made me choose putting this logic here and not in redux.
-export const BrowserContext = React.createContext()
 const browserContext = {
   isIos: isIos(),
   isInStandaloneMode: isInStandaloneMode(),

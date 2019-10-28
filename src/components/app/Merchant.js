@@ -59,7 +59,7 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
-import { BrowserContext } from '../../index'
+import { BrowserContext } from '../utility/BrowserContext'
 
 import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
