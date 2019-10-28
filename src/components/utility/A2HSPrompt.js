@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { BrowserContext } from '../../index'
+import { BrowserContext } from '../utility/BrowserContext'
 
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
