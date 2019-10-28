@@ -14,18 +14,11 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ApolloProvider } from 'react-apollo'
 import client from '../src/apollo/client'
 
-import {
-  isIos,
-  isInStandaloneMode,
-  inBrowser,
-} from '../src/components/utility/detect'
+import { isIos, isInStandaloneMode } from '../src/components/utility/detect'
 
 const ssr = process.env.REACT_APP_SSR
-const inTheBrowser = inBrowser()
 
-const storeConfig = configureStore(
-  ssr && inTheBrowser ? window.REDUX_STATE || {} : {}
-)
+const storeConfig = configureStore(ssr ? window.REDUX_STATE || {} : {})
 const { store, persistor } = storeConfig
 
 // ! Device info - React context vs. Redux
@@ -35,22 +28,18 @@ const { store, persistor } = storeConfig
 // And I'd have to exclude it from redux initialization, as it happens on the server as well, where all this info is unavailable
 // The fact this file runs only on the client by definition made me choose putting this logic here and not in redux.
 export const BrowserContext = React.createContext()
-const browserContext = inTheBrowser
-  ? {
-      isIos: isIos(),
-      isInStandaloneMode: isInStandaloneMode(),
-      nativeInstall: null,
-    }
-  : {}
-
-if (inTheBrowser) {
-  window.addEventListener('beforeinstallprompt', e => {
-    // This event is fired by Chrome on mobile (and desktop) to signal that app is qualified to be installed ('add to home screen / A2HS')
-    // The event also allows getting the native prompt (e.prompt()) and, when the
-    // (note: If I use the native prompt (nativeInstall.prompt()) then I would end up with inconsistent iOS vs. Android experience).
-    browserContext.nativeInstall = e
-  })
+const browserContext = {
+  isIos: isIos(),
+  isInStandaloneMode: isInStandaloneMode(),
+  nativeInstall: null,
 }
+
+window.addEventListener('beforeinstallprompt', e => {
+  // This event is fired by Chrome on mobile (and desktop) to signal that app is qualified to be installed ('add to home screen / A2HS')
+  // The event also allows getting the native prompt (e.prompt()) and, when the
+  // (note: If I use the native prompt (nativeInstall.prompt()) then I would end up with inconsistent iOS vs. Android experience).
+  browserContext.nativeInstall = e
+})
 
 // Wrap <App /> here with browser-specific components only
 //(put server-specific ones in server/middleware/renderer)
@@ -71,16 +60,14 @@ const AppBundle = (
   // </React.StrictMode>
 )
 
-if (inTheBrowser) {
-  const root = document.getElementById('root')
-  window.onload = () => {
-    // if ssr is not on there's nothing to hydrate
-    // calling ReactDOM.hydrate in this case will result with a 'matching <div>' warning message (why?)
-    // calling ReactDOM.render in such case prevents the warning from appearing
-    const renderMethod = ssr ? ReactDOM.render : ReactDOM.hydrate
-    Loadable.preloadReady().then(() => {
-      renderMethod(AppBundle, root)
-    })
-  }
-  registerServiceWorker()
+const root = document.getElementById('root')
+window.onload = () => {
+  // if ssr is not on there's nothing to hydrate
+  // calling ReactDOM.hydrate in this case will result with a 'matching <div>' warning message (why?)
+  // calling ReactDOM.render in such case prevents the warning from appearing
+  const renderMethod = ssr ? ReactDOM.render : ReactDOM.hydrate
+  Loadable.preloadReady().then(() => {
+    renderMethod(AppBundle, root)
+  })
 }
+registerServiceWorker()

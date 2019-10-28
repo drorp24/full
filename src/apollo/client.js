@@ -111,28 +111,22 @@ console.log('httpEndpoint: ', httpEndpoint)
 
 // const wsLink = WebSocketLink(wsClient)
 
-console.log('process.browser: ', process.browser)
+const wsLink = new WebSocketLink({
+  uri: wsEndpoint,
+  options: {
+    reconnect: true,
+    timeout: 60000,
+  },
+})
 
-const wsLink = process.browser
-  ? new WebSocketLink({
-      uri: wsEndpoint,
-      options: {
-        reconnect: true,
-        timeout: 60000,
-      },
-    })
-  : null
-
-const link = process.browser
-  ? split(
-      ({ query }) => {
-        const { kind, operation } = getMainDefinition(query)
-        return kind === 'OperationDefinition' && operation === 'subscription'
-      },
-      wsLink,
-      ApolloLink.from([errorLink, httpLink])
-    )
-  : httpLink
+const link = split(
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query)
+    return kind === 'OperationDefinition' && operation === 'subscription'
+  },
+  wsLink,
+  ApolloLink.from([errorLink, httpLink])
+)
 
 const cache = new InMemoryCache()
 
