@@ -26,7 +26,7 @@ import Select from './components/app/Select'
 import Delivery from './components/app/Delivery'
 
 import Dashboard from './components/utility/Dashboard'
-import ErrorBoundary from './components/utility/boundary'
+import ErrorBoundary from './components/utility/ErrorBoundary'
 import Map from './components/app/Map'
 
 class App extends Component {
@@ -49,7 +49,7 @@ class App extends Component {
         <CssBaseline />
         <ThemeProvider theme={theme}>
           {/* ! ErrorBoundary must be beneath ThemeProvider */}
-          <ErrorBoundary>
+          <ErrorBoundary level="page">
             <Switch>
               <Redirect exact from="/" to="/select" />
               <Route path="/select" component={Select} />

@@ -76,6 +76,7 @@ import Zoom from '@material-ui/core/Zoom'
 
 import Loader from '../utility/Loader'
 import { ellipsis } from '../themed/Box'
+import { requestDeviceMotion } from '../utility/permissions'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
@@ -174,7 +175,7 @@ const Merchant = ({ loading, record, style }) => {
   }
 
   const browserContext = useContext(BrowserContext)
-  const { standaloneMode } = browserContext
+  const { standalone } = browserContext
 
   // ! Challenges of card's height
   //
@@ -249,7 +250,7 @@ const Merchant = ({ loading, record, style }) => {
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
-      top: standaloneMode ? '35vh' : '30vh',
+      top: standalone ? '35vh' : '30vh',
       right: 0,
       margin: theme.spacing(3),
       marginTop: 0,
@@ -327,38 +328,6 @@ const Merchant = ({ loading, record, style }) => {
       [listItemRef, record.name]
     )
 
-    const grantPermission = () => {
-      if (
-        DeviceMotionEvent &&
-        typeof DeviceMotionEvent.requestPermission === 'function'
-      ) {
-        DeviceMotionEvent.requestPermission()
-          .then(permissionState => {
-            if (permissionState === 'granted') {
-              window.addEventListener('devicemotion', () => {})
-              setPermissionGranted(true)
-            }
-          })
-          .catch(console.error)
-      } else if (
-        DeviceOrientationEvent &&
-        typeof DeviceOrientationEvent.requestPermission === 'function'
-      ) {
-        DeviceOrientationEvent.requestPermission()
-          .then(permissionState => {
-            if (permissionState === 'granted') {
-              window.addEventListener('deviceorientation', () => {})
-              setPermissionGranted(true)
-            }
-          })
-          .catch(console.error)
-      } else {
-        console.log(
-          'Neither DeviceMotionEvent nor DeviceOrientationEvent are supported'
-        )
-      }
-    }
-
     const toggleStreetView = useCallback(
       (ref, record) => () => {
         if (
@@ -374,7 +343,7 @@ const Merchant = ({ loading, record, style }) => {
         const [lat, lng] = [coordinates[1], coordinates[0]]
         const element = ref.current
 
-        if (!permissionGranted) grantPermission()
+        if (!permissionGranted) requestDeviceMotion(setPermissionGranted)
 
         if (!streetView && window) {
           new window.google.maps.StreetViewPanorama(element, {

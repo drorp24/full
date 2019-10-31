@@ -1,11 +1,11 @@
 // Detects if device is on iOS
-export const isIos = () => {
+export const ios = () => {
   const userAgent =
     typeof window === 'object' && window.navigator.userAgent.toLowerCase()
   return /iphone|ipad|ipod/.test(userAgent)
 }
 // Detects if device is in standalone mode
-export const isInStandaloneMode = () =>
+export const standalone = () =>
   typeof window === 'object' &&
   'standalone' in window.navigator &&
   window.navigator.standalone

@@ -24,7 +24,6 @@ import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
 import { Box, Row } from '../../themed/Box'
 import capitalize from '../../utility/capitalize'
-import ErrorBoundary from '../../utility/boundary'
 import Loader from '../../utility/Loader'
 // import { mark } from '../../utility/performance'
 import LocationSearchInput from './LocationSearchInput'
@@ -32,6 +31,8 @@ import { geocode } from '../../utility/geolocation'
 
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { empty } from '../../utility/empty'
+import { BrowserContext } from '../../utility/BrowserContext'
+import ErrorBoundary from '../../utility/ErrorBoundary'
 
 //
 // A. Utility functions to create/modify state
@@ -153,9 +154,16 @@ const useFormStyles = makeStyles(theme => ({
 const Fields = ({ structure, step }) =>
   structure[step].fields.map(({ name }) => <MemoField name={name} key={name} />)
 
-// TODO: Form is called for every keystroke (regardless of field)
-// most probably because it gets state as a prop rather than creating its own
-// EveryField stopped doing that as soon as it was memoized, but that didn't help Form
+// ! Why 'Form' is called for each and every keystroke
+// Form has a useSelector on 'form', and the latter changes with every keystroke.
+// A useSelector behaves like prop, in that it triggers a re-render every time its values changes.
+// useSelector is a recent addition, but most of formUtilities was written when there were no hooks around, and that is the key to this behavior:
+//
+// EveryField needs 'form' in its entirety to continue to be generic, and there are other things Form provides in its context.
+// It used to be cumbersome to provide a context so I used to combine and hoist them, let alone redux direct access by a component.
+// Nowadays I'd probably split the contexts so that only EveryField passes it
+// or better yet, let each field get only the value it needs by accessing redux directly rather than getting it from a context.
+// Luckily, React doesn't really re-renders the entire Form DOM element, only what's actually changed.
 export const Form = ({ structure, show, step, header, footer }) => {
   const classes = useFormStyles()
   const form = useSelector(store => store.form)
@@ -163,17 +171,15 @@ export const Form = ({ structure, show, step, header, footer }) => {
   const updateForm = useCallback(form => dispatch(setForm(form)), [dispatch])
 
   return (
-    <ErrorBoundary>
-      <FormContext.Provider value={{ structure, step, show, form, updateForm }}>
-        <form autoComplete="off" className={classes.root}>
-          <Box formVariant="header">{header && header(form)}</Box>
-          <Box formVariant="body" formColor="body.color">
-            <Fields {...{ structure, step }} />
-          </Box>
-          <Box formVariant="footer">{footer && footer(step)}</Box>
-        </form>
-      </FormContext.Provider>
-    </ErrorBoundary>
+    <FormContext.Provider value={{ structure, step, show, form, updateForm }}>
+      <form autoComplete="off" className={classes.root}>
+        <Box formVariant="header">{header && header(form)}</Box>
+        <Box formVariant="body" formColor="body.color">
+          <Fields {...{ structure, step }} />
+        </Box>
+        <Box formVariant="footer">{footer && footer(step)}</Box>
+      </form>
+    </FormContext.Provider>
   )
 }
 
@@ -274,6 +280,9 @@ const MemoField = React.memo(EveryField)
 // There's no 'Display' Component per ce, it's just a cover for a host of other components
 // Dynamic component is for cases where different components all require the same props but each does differet things with these same props
 const DisplayField = ({ type, ...rest }) => {
+  const browserContext = useContext(BrowserContext)
+  const { online } = browserContext
+
   const display = {
     phone: PhoneField,
     switch: SwitchField,
@@ -285,7 +294,11 @@ const DisplayField = ({ type, ...rest }) => {
   }
 
   const Display = display[type]
-  return <Display {...rest} />
+  return (
+    <ErrorBoundary level="line" online={online}>
+      <Display {...rest} />
+    </ErrorBoundary>
+  )
 }
 
 DisplayField.propTypes = {
@@ -504,6 +517,7 @@ const LocationField = ({
   const classes = useFormStyles()
   const context = useContext(FormContext)
   const { form, updateForm } = context
+
   const updateLocation = location =>
     updateForm(
       produce(form, draft => {
@@ -546,6 +560,7 @@ const DefaultField = ({
   children,
   clearable = false,
   uniqProps,
+  onChange,
   ...rest
 }) => {
   const classes = useFormStyles()
@@ -564,6 +579,7 @@ const DefaultField = ({
       }}
       value={value}
       name={name}
+      onChange={onChange}
       {...rest}
     >
       {children}

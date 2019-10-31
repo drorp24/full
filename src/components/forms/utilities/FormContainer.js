@@ -304,10 +304,7 @@ const FormContainer = ({ structure, show }) => {
   // When there's no such useEffect to do the ssr blocking, one can create one, and set a boolean 'showChild' to true inside of that useEffect
   // which would prevent rendering that child on the server (Dan Abramov's trick).
   //
-  console.log('Before ssr road block. populated: ', populated)
   if (!populated.state) return null
-  console.log('After ssr road block')
-  console.log('window.innerHeight: ', window.innerHeight)
 
   return structure.length > 1 ? (
     <DotsMobileStepper {...properties} />
