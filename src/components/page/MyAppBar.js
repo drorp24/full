@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
 
@@ -14,19 +14,30 @@ import MenuIcon from '@material-ui/icons/Menu'
 import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
 import ViewList from '@material-ui/icons/ViewList'
+import CloudOff from '@material-ui/icons/CloudOff'
 import Div100vh from 'react-div-100vh'
 
-const ButtonAppBar = ({ title }) => {
+import { inBrowser } from '../utility/detect'
+import { BrowserContext } from '../utility/BrowserContext'
+
+// ! useStyles' argument must be an object
+// useStyles hook can receive a variable as an optional argument, which can then be used
+// in a function that calculates the style according to it.
+// In Merchant, I'm passing the Merchant's state to have its content a function of whether it is 'open' or not
+// Here, I'm passing the redux selector 'contextualMenu' so the background color is a function of whether the state is contextual or not.
+// In Merchant.js, 'state' is an object. But 'contextualMenu' is not.
+// Aparently, it's essential to pass an obj into useStyles or else MUI will log a (misleading) 'missing prop' error.
+const MyAppBar = ({ title }) => {
   const useStyles = makeStyles(theme => ({
     root: {
       flexGrow: 0,
       width: '100%',
     },
     appBar: {
-      backgroundColor: contextualMenu =>
+      backgroundColor: ({ contextualMenu }) =>
         contextualMenu
           ? theme.palette.primary.contextual
-          : theme.palette.primary.main,
+          : 'theme.palette.primary.main',
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
       // hence isn't good for the first (and only in my case) page: it makes 100vh longer than the viewport actual height
@@ -47,18 +58,22 @@ const ButtonAppBar = ({ title }) => {
     menuButton: {
       marginLeft: -12,
       marginRight: 20,
-      transform: contextualMenu =>
+      transform: ({ contextualMenu }) =>
         contextualMenu ? 'rotate(90deg)' : 'initial',
       transition: 'transform 0.3s',
     },
     view: {},
   }))
 
-  const contextualMenu = useSelector(state => state.app.contextual)
   const name = useSelector(state => state.app.name)
   const view = useSelector(state => state.app.view)
+  const contextualMenu = useSelector(state => state.app.contextual)
+  const browserContext = useContext(BrowserContext)
+  const online = !inBrowser() || browserContext.online
+  console.log('MyAppBar is rendered')
+  console.log('>>>>>>  online: ', online)
 
-  const classes = useStyles(contextualMenu)
+  const classes = useStyles({ contextualMenu })
 
   const dispatch = useDispatch()
 
@@ -105,6 +120,7 @@ const ButtonAppBar = ({ title }) => {
           >
             {name || title}
           </Typography>
+          <CloudOff style={{ display: online ? 'none' : 'inline' }} />
           <Link to={view === 'list' ? '/map' : '/merchants'} color="inherit">
             <IconButton
               className={classes.view}
@@ -120,4 +136,4 @@ const ButtonAppBar = ({ title }) => {
   )
 }
 
-export default ButtonAppBar
+export default MyAppBar

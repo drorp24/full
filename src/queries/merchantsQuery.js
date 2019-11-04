@@ -20,8 +20,8 @@ export const mapFormToMerchantQueryVariables = form => {
       delivery,
     },
     area: {
-      lat,
-      lng,
+      lat: 32.0853, // Temporary, required as long as Google locates me in Ramat Hanegev
+      lng: 34.781769, // Same
       distance: lookaround ? 5 : 50,
     },
     pagination: {

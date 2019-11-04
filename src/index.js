@@ -11,13 +11,9 @@ import { Provider as ReduxProvider } from 'react-redux'
 import configureStore from './redux/configureStore'
 import { PersistGate } from 'redux-persist/integration/react'
 
-import { ApolloProvider } from 'react-apollo'
-import client from '../src/apollo/client'
+import ApolloProviderClient from './apollo/ApolloProviderClient'
 
-import {
-  BrowserContext,
-  populateBrowserContext,
-} from '../src/components/utility/BrowserContext'
+import { BrowserContextProvider } from '../src/components/utility/BrowserContext'
 
 const ssr = process.env.REACT_APP_SSR
 
@@ -30,25 +26,22 @@ const { store, persistor } = storeConfig
 // That info would also be persisted, but I'm not sure I'd want all device properties to be persisted.
 // And I'd have to exclude it from redux initialization, as it happens on the server as well, where all this info is unavailable
 // The fact this file runs only on the client by definition made me choose putting this logic here and not in redux.
-const browserContext = populateBrowserContext()
 
 // Wrap <App /> here with browser-specific components only
 //(put server-specific ones in server/middleware/renderer)
 // Common stuff (e.g., theme) should be included in <App />
 const AppBundle = (
-  // <React.StrictMode>
-  <ApolloProvider client={client}>
+  <ApolloProviderClient>
     <ReduxProvider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <BrowserContext.Provider value={browserContext}>
+          <BrowserContextProvider>
             <App />
-          </BrowserContext.Provider>
+          </BrowserContextProvider>
         </BrowserRouter>
       </PersistGate>
     </ReduxProvider>
-  </ApolloProvider>
-  // </React.StrictMode>
+  </ApolloProviderClient>
 )
 
 const root = document.getElementById('root')

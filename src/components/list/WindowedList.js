@@ -14,8 +14,10 @@ const WindowedList = ({
   records,
   cursor,
   hasMore,
+  online,
 }) => {
   //
+
   const Item = ({ index, style }) => {
     // That trick again to pass a component rather than a render prop/function
     const Component = component

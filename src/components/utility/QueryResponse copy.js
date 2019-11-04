@@ -2,11 +2,10 @@
 // ApolloClient Query 'loading' is actually ignored and empty 'data' is used instead because of the inifinite loading mechanism used
 // Result handling (here) and list windowing and inifinite loading (handled by WiundowedList) are entirely generic
 // The only non-generic thing is what component to render for every item, which is passed in the 'component' render prop
-import React, { useContext } from 'react'
+import React from 'react'
 import Messages from '../utility/Messages'
 import Loader from '../utility/Loader'
 import WindowedList from '../list/WindowedList'
-import { BrowserContext } from './BrowserContext'
 // import List from '../list/NonWindowedList' // The non react-window, .map solution, that eagerly renders and scrolls the entire page
 
 // ! InfiniteLoader requires different 'loading' logic than Apollo's own 'loading' indicator
@@ -25,8 +24,8 @@ import { BrowserContext } from './BrowserContext'
 // Regardless of offline, 'all' errorPolicy will make Apollo return *both* error and data for whatever reason,
 // but it's really useful for offline situations, as Apollo can fetch from its own cache on some offline occasions.
 // The above means that:
-// - We should show data even if there's an error (adversely, not count on everything being ok if there's data)
-// - UI-wise we should prepare to show an error alongside data (hence the new error prop of WindowedList)
+// - We should show data even if there's an error (and not count on everything being ok if there's data)
+// - We should prepare to show an error alongside data (hence the new error prop of WindowedList)
 // - If the error stems from being offline then we need to identify it ourselves (Apollo won't indicate that)
 //   and modify the message accordingly so user becomes aware that the data may not be fresh.
 //
@@ -41,55 +40,29 @@ const QueryResponse = ({
   entity,
   component,
 }) => {
-  console.log('QueryResponse. error: ', error)
+  // Forbidden for InfiniteLoader, see above
+  // if (loading) {}
 
-  const browserContext = useContext(BrowserContext)
-  const { online } = browserContext
-  const userError = !online
-    ? 'You are offline. Please refresh and try again'
-    : error
-    ? 'Our GraphQl server is temporarily down. Please refresh and try again'
-    : null
+  // This is used instead
+  if (!(data && data[entity])) return <Loader />
 
-  if (data && data[entity]) {
-    const { records, cursor, hasMore } = data[entity]
+  if (error) {
+    console.log('QueryResponse. error: ', error)
+    const errors = error.graphQLErrors || [error.networkError]
+    const kiy = error.graphQLErrors ? 'message' : null
+    return <Messages title="GraphQL Error" array={errors} kiy={kiy} />
+  }
 
-    if (records.length) {
-      return (
-        <WindowedList
-          {...{
-            loading,
-            fetchMore,
-            entity,
-            component,
-            records,
-            cursor,
-            hasMore,
-            online,
-          }}
-        />
-      )
-    } else {
-      return (
-        <Messages
-          title="None found"
-          array={['No merchants found for this criteria. Try modifying it']}
-          kiy={null}
-        />
-      )
-    }
+  const { records, cursor, hasMore } = data[entity]
+
+  if (!records.length) {
+    return <Messages title="No records" array={['No merchants']} kiy={null} />
   } else {
-    if (error) {
-      return (
-        <Messages
-          title={!online ? 'No Connection' : 'Error'}
-          array={[userError]}
-          kiy={!online ? null : error.graphQLErrors ? 'message' : null}
-        />
-      )
-    } else {
-      return <Loader />
-    }
+    return (
+      <WindowedList
+        {...{ loading, fetchMore, entity, component, records, cursor, hasMore }}
+      />
+    )
   }
 }
 

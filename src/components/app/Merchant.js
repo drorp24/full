@@ -158,8 +158,6 @@ const toggleScrolling = (open, listItemRef) => {
   const listElement = listItemRef
     ? listItemRef.current.parentNode.parentNode
     : document.getElementById('list')
-  console.log('listElement: ', listElement)
-  window.listElement = listElement
   listElement.style.overflow = open ? 'auto' : 'hidden'
   listElement.id = 'list'
 }
