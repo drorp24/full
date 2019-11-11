@@ -173,7 +173,7 @@ const Merchant = ({ loading, record, style }) => {
   }
 
   const browserContext = useContext(BrowserContext)
-  const { standalone } = browserContext
+  const { standalone, online } = browserContext
 
   // ! Challenges of card's height
   //
@@ -463,7 +463,15 @@ const Merchant = ({ loading, record, style }) => {
       disableGutters={true}
       ref={listItemRef}
     >
-      {loading ? <Loader /> : <MerchantCard {...{ record, listItemRef }} />}
+      {loading ? (
+        online ? (
+          <Loader />
+        ) : (
+          <div />
+        )
+      ) : (
+        <MerchantCard {...{ record, listItemRef }} />
+      )}
     </ListItem>
   )
 }

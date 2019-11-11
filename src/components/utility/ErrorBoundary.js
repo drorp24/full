@@ -28,9 +28,11 @@ class ErrorBoundary extends React.Component {
         <TextField
           error
           fullWidth
-          helperText={`Something went wrong ${
-            online ? '' : ". Maybe it's the connection"
-          }`}
+          helperText={
+            online
+              ? 'Something went wrong'
+              : "Can't show, Internet connection seems to be lost"
+          }
         ></TextField>
       ) : (
         <Page title="Something went wrong">

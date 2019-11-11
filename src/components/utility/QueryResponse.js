@@ -65,7 +65,6 @@ const QueryResponse = ({
             records,
             cursor,
             hasMore,
-            online,
           }}
         />
       )
@@ -88,7 +87,12 @@ const QueryResponse = ({
         />
       )
     } else {
-      return <Loader />
+      if (online) {
+        return <Loader />
+      } else {
+        // don't show a loader while offline
+        return <div />
+      }
     }
   }
 }

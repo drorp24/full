@@ -89,4 +89,6 @@ const theme = createMuiTheme({
   },
 })
 
+// window.theme = theme
+
 export default theme
