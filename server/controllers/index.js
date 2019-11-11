@@ -1,36 +1,44 @@
 import express from 'express'
+import path from 'path'
+
+import configureStore from '../../src/redux/configureStore'
 import { setMessage } from '../../src/redux/actions'
 
 import serverRenderer from '../middleware/renderer'
-import configureStore from '../../src/redux/configureStore'
 
 console.log('entering app/server/controllers/index.js')
 
-const router = express.Router()
-const path = require('path')
+const app = express()
 
-const actionIndex = (req, res, next) => {
-  const { store } = configureStore()
-  store.dispatch(setMessage('Server'))
+// Instruct browser to not cache service-worker.
+//
+// This will make it fetch from the server a new release (= represented by a newer, waiting sw)
+// as soon as it is ready (or at least, next time user reloads or enters app)
+// which enables to inform the user of the new release and let him upgrade if desired.
+app.get('/service-worker.js', (req, res, next) => {
+  res.setHeader(
+    'Cache-Control',
+    'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+  )
+  next()
+})
 
-  serverRenderer(store)(req, res, next)
-}
-
-// root (/) should always serve our server rendered page
-router.use('^/$', actionIndex)
-
-// other static resources should just be served as they are
-router.use(
+// Serve files from the build folder for every static file request
+app.use(
   express.static(path.resolve(__dirname, '..', '..', 'build'), {
     maxAge: '30d',
   })
 )
 
-// 3rd rule, ignored by Duca
-// anything else should act as our index page
-// react-router will take care of everything
-// NOTE: router.use did *not* pass the correct req.url into serverRenderer! Neither did app.use!
-// That's why it has been changed to router.get
-router.get('*', actionIndex)
+// Serve the built/ssr'd index.html for all other requests from our domain
+app.use('*', (req, res, next) => {
+  // An example of how the server can create some redux value of its own and send it to client
+  // Other redux values are initiated by the client using redux-persist
+  const { store } = configureStore()
+  store.dispatch(setMessage('Server'))
 
-export default router
+  serverRenderer(store)(req, res, next)
+})
+
+// Either 'app' or 'router' can be use'd
+export default app
