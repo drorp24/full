@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { BrowserContext } from '../utility/BrowserContext'
 
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -12,8 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { setA2hs } from '../../redux/actions'
 
 export default function A2HSPrompt() {
-  const browserContext = useContext(BrowserContext)
-  let { nativeInstall } = browserContext
+  let nativeInstall = useContext(store => store.device.nativeInstall)
 
   const [show, setShow] = useState(false)
 
@@ -71,7 +69,6 @@ export default function A2HSPrompt() {
             recordAccepted('native')
           } else {
             console.log('User dismissed the native A2HS prompt')
-            setA2hs({ prompted: now(), accepted: false })
             recordDismissed('native')
           }
         })

@@ -18,7 +18,6 @@ import CloudOff from '@material-ui/icons/CloudOff'
 import Div100vh from 'react-div-100vh'
 
 import { inBrowser } from '../utility/detect'
-import { BrowserContext } from '../utility/BrowserContext'
 
 // ! useStyles' argument must be an object
 // useStyles hook can receive a variable as an optional argument, which can then be used
@@ -68,8 +67,8 @@ const MyAppBar = ({ title }) => {
   const name = useSelector(state => state.app.name)
   const view = useSelector(state => state.app.view)
   const contextualMenu = useSelector(state => state.app.contextual)
-  const browserContext = useContext(BrowserContext)
-  const online = !inBrowser() || browserContext.online
+  const deviceIsOnline = useSelector(state => state.device.online)
+  const online = !inBrowser() || deviceIsOnline
   console.log('MyAppBar is rendered')
   console.log('>>>>>>  online: ', online)
 

@@ -12,4 +12,6 @@ export const standalone = () =>
 
 export const inBrowser = () => typeof window !== 'undefined'
 
-export const online = () => navigator.onLine
+export const online = () => {
+  return typeof window === 'object' && window.navigator.onLine
+}

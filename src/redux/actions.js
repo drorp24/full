@@ -10,6 +10,7 @@ import {
   TOGGLE_VIEW,
   SET_POPULATED,
   SET_A2HS,
+  SET_DEVICE,
 } from './types'
 
 export const setMessage = message => ({
@@ -82,3 +83,31 @@ export const setA2hs = a2hs => ({
   type: SET_A2HS,
   a2hs,
 })
+
+export const setDevice = payload => ({
+  type: SET_DEVICE,
+  payload,
+})
+
+// ! generic setting
+// Will work with any reducer that accepts {type, payload} (e.g., device.js)
+// saves the need to define here a new function for every new reducer / action
+// particulalry useful when value needs to be temporarily set, such as when a message should be displayed for a potentially reccurring event
+// to make 'temporarily' simple, 'setValue' accepts only one key-value pair and the value must be boolean
+export const setValue = (type, key, value) => ({
+  type,
+  payload: { [key]: value },
+})
+
+// ! self-removing value setting
+// Turns ongoing states into periodical events, whose frequency I can control
+// Useful to periodically remind user of states which by nature are ongoing.
+export const temporarilySetValue = (type, key, value, time = 10) => {
+  return dispatch => {
+    dispatch(setValue(type, key, value))
+    setTimeout(() => {
+      const negValue = !value
+      dispatch(setValue(type, key, negValue))
+    }, time * 1000)
+  }
+}

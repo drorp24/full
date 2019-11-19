@@ -13,7 +13,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import ApolloProviderClient from './apollo/ApolloProviderClient'
 
-import { BrowserContextProvider } from '../src/components/utility/BrowserContext'
+import { initiateDeviceProperties } from './components/utility/deviceProperties'
 
 const ssr = process.env.REACT_APP_SSR
 
@@ -35,9 +35,7 @@ const AppBundle = (
     <ReduxProvider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <BrowserContextProvider>
-            <App />
-          </BrowserContextProvider>
+          <App />
         </BrowserRouter>
       </PersistGate>
     </ReduxProvider>
@@ -54,4 +52,14 @@ window.onload = () => {
     renderMethod(AppBundle, root)
   })
 }
-registerServiceWorker()
+
+// ! Use Redux not React.Context when there is no component to hang to
+// 'registerServiceWorker' must be run upon window.load, i.e., before any component is rendered
+// (putting code inside a window.onload in a component's useEffect will do nothing: the onload event will be missed)
+// if I need to write something in a place "everyone can see", there is no component to attach a hook such as useSelector or useContext.
+// Redux to the rescue:
+// Passing 'store' into registerServiceWorker enables it to access 'dispatch' with store.dispatch with no hook or old-fashioned connect.
+//
+// 'initiateDeviceProperties' even manages to dispatch a thunk.
+registerServiceWorker(store)
+initiateDeviceProperties(store)

@@ -2,11 +2,11 @@
 // ApolloClient Query 'loading' is actually ignored and empty 'data' is used instead because of the inifinite loading mechanism used
 // Result handling (here) and list windowing and inifinite loading (handled by WiundowedList) are entirely generic
 // The only non-generic thing is what component to render for every item, which is passed in the 'component' render prop
-import React, { useContext } from 'react'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import Messages from '../utility/Messages'
 import Loader from '../utility/Loader'
 import WindowedList from '../list/WindowedList'
-import { BrowserContext } from './BrowserContext'
 // import List from '../list/NonWindowedList' // The non react-window, .map solution, that eagerly renders and scrolls the entire page
 
 // ! InfiniteLoader requires different 'loading' logic than Apollo's own 'loading' indicator
@@ -43,8 +43,7 @@ const QueryResponse = ({
 }) => {
   console.log('QueryResponse. error: ', error)
 
-  const browserContext = useContext(BrowserContext)
-  const { online } = browserContext
+  const online = useSelector(store => store.device.online)
   const userError = !online
     ? 'You are offline. Please refresh and try again'
     : error

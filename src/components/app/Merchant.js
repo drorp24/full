@@ -59,7 +59,6 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
-import { BrowserContext } from '../utility/BrowserContext'
 
 import ListItem from '@material-ui/core/ListItem'
 import Typography from '@material-ui/core/Typography'
@@ -172,8 +171,7 @@ const Merchant = ({ loading, record, style }) => {
     setState({ open: !open })
   }
 
-  const browserContext = useContext(BrowserContext)
-  const { standalone, online } = browserContext
+  const { standalone, online } = useSelector(store => store.device)
 
   // ! Challenges of card's height
   //

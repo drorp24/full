@@ -7,6 +7,7 @@ import form from './form'
 import lists from './lists'
 import app from './app'
 import user from './user'
+import device from './device'
 
 export default combineReducers({
   text,
@@ -15,4 +16,5 @@ export default combineReducers({
   lists,
   app,
   user,
+  device,
 })

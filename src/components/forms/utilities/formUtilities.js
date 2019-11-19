@@ -31,7 +31,6 @@ import { geocode } from '../../utility/geolocation'
 
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { empty } from '../../utility/empty'
-import { BrowserContext } from '../../utility/BrowserContext'
 import ErrorBoundary from '../../utility/ErrorBoundary'
 
 //
@@ -280,8 +279,7 @@ const MemoField = React.memo(EveryField)
 // There's no 'Display' Component per ce, it's just a cover for a host of other components
 // Dynamic component is for cases where different components all require the same props but each does differet things with these same props
 const DisplayField = ({ type, ...rest }) => {
-  const browserContext = useContext(BrowserContext)
-  const { online } = browserContext
+  const online = useSelector(store => store.device.online)
 
   const display = {
     phone: PhoneField,
