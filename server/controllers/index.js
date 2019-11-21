@@ -15,18 +15,18 @@ const app = express()
 // This will make it fetch from the server a new release (= represented by a newer, waiting sw)
 // as soon as it is ready (or at least, next time user reloads or enters app)
 // which enables to inform the user of the new release and let him upgrade if desired.
-app.get('/service-worker.js', (req, res, next) => {
-  res.setHeader(
-    'Cache-Control',
-    'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
-  )
-  next()
-})
+// app.get('/service-worker.js', (req, res, next) => {
+//   res.setHeader(
+//     'Cache-Control',
+//     'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+//   )
+//   next()
+// })
 
 // Serve files from the build folder for every static file request
 app.use(
   express.static(path.resolve(__dirname, '..', '..', 'build'), {
-    maxAge: '30d',
+    maxAge: 0,
   })
 )
 

@@ -38,26 +38,37 @@ const reload = () => {
 }
 
 const install = () => {
-  console.log('install called')
-  // skipWaiting...
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+    }
+  })
 }
 
 const messages = {
-  offline: {
+  offlineMsg: {
     type: 'offline',
-    text: 'Connection lost. Try reloading',
+    text:
+      'Connection is lost, but no worries: <br/><strong>you can use the app offline!</strong>',
+    action: null,
+    invoke: () => {},
+  },
+  onlineMsg: {
+    type: 'online',
+    text:
+      'Connection is on again! <br /><strong>Reload</strong> to see the latest offers.',
     action: 'Reload',
     invoke: reload,
   },
-  newerSwWaiting: {
+  newerSwWaitingMsg: {
     type: 'newerSwWaiting',
     text: 'New release ready. Install?',
     action: 'Install',
     invoke: install,
   },
-  contentCashed: {
+  contentCashedMsg: {
     type: 'contentCached',
-    text: 'App is cached now. You can work offline!',
+    text: 'Our app can now work offline!',
     action: '',
     invoke: () => {},
   },
@@ -76,6 +87,9 @@ export default function MySnackbar() {
   })
 
   const useStyles = makeStyles(theme => ({
+    content: {
+      flexWrap: 'nowrap',
+    },
     close: {
       padding: theme.spacing(0.5),
       fontSize: '1.5rem',
@@ -97,7 +111,6 @@ export default function MySnackbar() {
   const classes = useStyles()
 
   const handleClose = (event, reason) => {
-    console.log('event, reason: ', event, reason)
     if (reason === 'clickaway') {
       return
     }
@@ -105,19 +118,28 @@ export default function MySnackbar() {
   }
 
   useEffect(() => {
-    console.log(`!! Snackbar useEffect entered `)
+    const { type } = message
+    const {
+      offlineMsg,
+      onlineMsg,
+      newerSwWaitingMsg,
+      contentCashedMsg,
+    } = messages
 
     if (!online) {
       setOpen(true)
-      setMessage(messages.offline)
+      setMessage(offlineMsg)
+    } else if (online && type === 'offline') {
+      setOpen(true)
+      setMessage(onlineMsg)
     } else if (newerSwWaiting) {
       setOpen(true)
-      setMessage(messages.newerSwWaiting)
+      setMessage(newerSwWaitingMsg)
     } else if (contentCashed) {
       setOpen(true)
-      setMessage(messages.contentCashed)
+      setMessage(contentCashedMsg)
     }
-  }, [contentCashed, newerSwWaiting, online])
+  }, [contentCashed, newerSwWaiting, online, message])
 
   return (
     <div>
@@ -131,22 +153,25 @@ export default function MySnackbar() {
         onClose={handleClose}
         ContentProps={{
           'aria-describedby': 'message-id',
+          className: classes.content,
         }}
         message={
           <div id="message-id" className={classes.message}>
             <InfoOutlinedIcon className={classes.icon} />
-            <span>{message.text} </span>
+            <span dangerouslySetInnerHTML={{ __html: message.text }} />
           </div>
         }
         action={[
-          <Button
-            key="undo"
-            color="secondary"
-            size="small"
-            onClick={message.invoke}
-          >
-            <span className={classes.action}>{message.action}</span>
-          </Button>,
+          message.action && (
+            <Button
+              key="undo"
+              color="secondary"
+              size="small"
+              onClick={message.invoke}
+            >
+              <span className={classes.action}>{message.action}</span>
+            </Button>
+          ),
           <IconButton
             key="close"
             aria-label="close"
@@ -161,5 +186,3 @@ export default function MySnackbar() {
     </div>
   )
 }
-
-// comment

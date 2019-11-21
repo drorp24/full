@@ -124,8 +124,6 @@ const FormContainer = ({ structure, show }) => {
 
   // Initialization useEffect
   useEffect(() => {
-    console.log('FormContainer initialization useEffect entered')
-
     const updateForm = form => dispatch(setForm(form))
 
     // ! Iterate or just refresh
@@ -167,17 +165,13 @@ const FormContainer = ({ structure, show }) => {
     // this enables viewing all coin quotes when browsing the dropdown coins list.
     // Since it entains invoking a heavy api, attempt is made to prevent calling that api unnecessarily.
 
-    console.log('** quote useEffect for quote: ', quote)
-
     // No use to call the api upon initial render of FormContainer, when the user hasn't yet populated anything into quote
     if (!quote) {
-      console.log('no quote - leaving')
       return
     }
 
     // No use to call it before list.currencies had a chance to be built
     if (!lists.currencies) {
-      console.log('list.currencies isnt built yet - leaving')
       return
     }
 
@@ -188,7 +182,6 @@ const FormContainer = ({ structure, show }) => {
       lists.currencies.find(currency => currency.name === quote)
 
     if (!found) {
-      console.log('no such currency - leaving')
       return
     }
 
@@ -205,15 +198,12 @@ const FormContainer = ({ structure, show }) => {
       updatePopulated('coins')
     }
 
-    console.log(`Calling updateCoins with ${quote}`)
     updateCoins(quote)
     //
   }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
 
   // address useEffect
   useEffect(() => {
-    console.log('address useEffect entered')
-
     const updateFormValues = values => dispatch(setFormValues(values))
 
     const locateUser = async attempts => {
@@ -242,12 +232,10 @@ const FormContainer = ({ structure, show }) => {
       }
 
       for (let i = 0; i < attempts; i++) {
-        console.log('attempting to locate user...')
         const { location, address } = await getLocationAndAddress()
 
         if (!location.error) {
           updateFormValues({ location, address })
-          console.log('User successfully located')
           break
         } else {
           updateFormValues({ location })
