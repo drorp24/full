@@ -10,11 +10,11 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
 
-import MenuIcon from '@material-ui/icons/Menu'
 import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
 import ViewList from '@material-ui/icons/ViewList'
 import CloudOff from '@material-ui/icons/CloudOff'
+import MySvg from '../utility/svg'
 import Div100vh from 'react-div-100vh'
 
 import { inBrowser } from '../utility/detect'
@@ -26,7 +26,7 @@ import { inBrowser } from '../utility/detect'
 // Here, I'm passing the redux selector 'contextualMenu' so the background color is a function of whether the state is contextual or not.
 // In Merchant.js, 'state' is an object. But 'contextualMenu' is not.
 // Aparently, it's essential to pass an obj into useStyles or else MUI will log a (misleading) 'missing prop' error.
-const MyAppBar = ({ title }) => {
+const MyAppBar = ({ title, icon }) => {
   const useStyles = makeStyles(theme => ({
     root: {
       flexGrow: 0,
@@ -106,10 +106,9 @@ const MyAppBar = ({ title }) => {
           <IconButton
             className={classes.menuButton}
             color="inherit"
-            aria-label="Menu"
             onClick={iconButtonClicked}
           >
-            {contextualMenu ? <Close /> : <MenuIcon />}
+            {contextualMenu ? <Close /> : <MySvg icon={icon} />}
           </IconButton>
           <Typography
             variant="h6"

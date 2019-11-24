@@ -31,7 +31,7 @@ const Merchants = () => {
   const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
 
   return (
-    <Page title="Merchants">
+    <Page title="Offers" icon="quote">
       <Query
         query={merchantsQuery}
         variables={merchantsQueryVariables}

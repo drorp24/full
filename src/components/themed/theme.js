@@ -60,6 +60,7 @@ const theme = createMuiTheme({
     },
     footer: {
       height: '15%',
+      padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',

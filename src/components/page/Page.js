@@ -4,10 +4,10 @@ import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
 import SnackBar from './Snackbar'
 
-const Page = ({ title, children }) => (
+const Page = ({ title, icon, children }) => (
   <Div100vh>
     <Box pageVariant="content">
-      <MyAppBar title={title} />
+      <MyAppBar {...{ title, icon }} />
       {children}
       <SnackBar />
     </Box>

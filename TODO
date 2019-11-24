@@ -1,9 +1,25 @@
 
 Todo:
   Purpose:
+    ☐ Demonstrate all the new things not possible with the prev technology as part of my STORY
     ☐ Demonstrate proficiency with live, sophisticated product
     ☐ Do it in as few as possible screens. One, two would be ideal
+  Story:
+    ☐ Early convinction in web when it wasn't a popular belief 
+      ☐ Have Eyal testify on that
+    ☐ Commercial benefit with Cambiu, bahving as a mobile app while integrated with a website at the same time (London waits)
+      ☐ Demo Cambiu app thru London Waits 
+      ☐ Brag it's still working in production and generates traffic - no bugs!
+    ☐ Study leave once I’ve realized that my web conviction would not be entirely fulfilled without investing in the new technologies
+      ☐ Demo Full app according to 'Advanced' list and/or a table 
   Demonstrate:
+    Advanced:
+      ☐ Note: This list is just an extract of the latest and greatest techniques & technologies. They should also be specified below.
+      ☐ Windowing - dynamically mount and unmount components as user scrolls, to create the illusion of scrolling a huge list
+      ☐ GraphQl, Apollo caching
+      ☐ Cursor paging - paging using a pointer (GraphQl, Apollo2 Client & Server)
+      ☐ Lazy code loading- dynamic file name determined at runtime (icon names. Using webpack, not yet supported in React)
+      ☐ TBC 
     PWA:
       ☐ Fullscreen / Standalone
       ☐ Shortcut icon
@@ -181,7 +197,7 @@ Todo:
       ☐ Merchant - both cards have icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
       ☐ Directions - when available: enable Live View directions (AR)
     PWA:
-      ☐ Check what each mobile browser supports re PWA (caniuse)
+      ✔ Check what each mobile browser supports re PWA (caniuse) @done(19-11-24 16:43)
       ☐ Complete iOS still missing parts (A Few Tips That Will Make Your PWA on iOS...)
       ☐ Decide which mobile browser to use for demos
       ☐ Complete the Demo note: decide how to best demo the following:

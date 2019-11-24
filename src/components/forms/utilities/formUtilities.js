@@ -364,6 +364,7 @@ const useSwitchStyles = makeStyles(theme => ({
 const SwitchField = ({ name, value, helper, onChange }) => {
   const classes = useSwitchStyles({ checked: value })
   const { root, switchLabel } = classes
+
   return (
     <Row>
       <span className={switchLabel}>{helper}</span>
