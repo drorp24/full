@@ -11,10 +11,11 @@ Todo:
       ☐ Demo Cambiu app thru London Waits 
       ☐ Brag it's still working in production and generates traffic - no bugs!
     ☐ Study leave once I’ve realized that my web conviction would not be entirely fulfilled without investing in the new technologies
-      ☐ Demo Full app according to 'Advanced' list and/or a table 
+      ☐ Demo Full app according to 'Novelty features' list and/or a table 
   Demonstrate:
-    Advanced:
+    Novelty features:
       ☐ Note: This list is just an extract of the latest and greatest techniques & technologies. They should also be specified below.
+      ☐ (The demo will start from a) standalone mode, splash screen (even on iOs), some animation (when in standalone only!)
       ☐ Windowing - dynamically mount and unmount components as user scrolls, to create the illusion of scrolling a huge list
       ☐ GraphQl, Apollo caching
       ☐ Cursor paging - paging using a pointer (GraphQl, Apollo2 Client & Server)
