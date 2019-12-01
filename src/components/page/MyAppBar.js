@@ -46,7 +46,7 @@ const MyAppBar = ({ title, icon }) => {
       // (some times not symetrically!)
       // only when replaced the home-made line below to using <Div100vh style={{ height: '10rvh' }} /> did it maintain an exact 10% height AppBar!
       // height: typeof window === 'object' ? window.innerHeight * 0.1 : '10vh', // see 'using innerHeight instead of vh units in Merchant.js
-      height: '100%',
+      // height: '100%',
     },
     toolbar: {
       height: '100%',

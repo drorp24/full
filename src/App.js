@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Suspense, lazy } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './redux/actions'
@@ -9,9 +9,11 @@ import { ThemeProvider } from '@material-ui/styles'
 import theme from './components/themed/theme'
 
 import Select from './components/app/Select'
-import Merchants from './components/app/Merchants'
 
 import ErrorBoundary from './components/utility/ErrorBoundary'
+import Loader from './components/utility/Loader'
+
+const Merchants = lazy(() => import('./components/app/Merchants'))
 
 class App extends Component {
   componentDidMount() {
@@ -38,7 +40,9 @@ class App extends Component {
               <Route path="/select" component={Select} />
               <Route path="/merchants">
                 {this.props.values && this.props.values.quote ? (
-                  <Merchants />
+                  <Suspense fallback={Loader}>
+                    <Merchants />
+                  </Suspense>
                 ) : (
                   <Redirect to="/select" />
                 )}
