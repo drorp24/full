@@ -148,6 +148,9 @@ const FormContainer = ({ structure, show }) => {
     }
 
     if (!populated.currencies) {
+      console.log(
+        'about to call updateCurrencies (see if this msg appears 2 times'
+      )
       updateCurrencies()
     }
   }, [

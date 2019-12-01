@@ -180,7 +180,7 @@ Todo:
         ☐ Create an MD backdrop that will enable: sort, filter, change to map (that seems to be the new standard)
       Item-level operations:
         ✘ Enable item reodering if supported by MUI (adding 3-dot 'handlers' that indicate draggability) @cancelled(19-10-02 14:52)
-        ☐ Enable 'swap to buy' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
+        ☐ Enable 'swap to order' if supported by MUI (reveal an item context menu upon swapping - as in gmail, iOS reminders app etc)
       List-Card transition:
         ✔ Clicking a list item should expand into the merchant's card as in MD specs (https://material.io/design/components/lists.html#behavior) @done(19-07-10 17:34)
         ✔ Expand the place photo in the list into an expanded place photo in the opened card, as I did in Cambiu and as in https://uxdesign.cc/good-to-great-ui-animation-tips-7850805c12e5 @done(19-07-10 17:34)
@@ -188,19 +188,19 @@ Todo:
       ✔ Create a merchant card @done(19-07-10 17:34)
       ✔ Include an icon that enables to switch from static to StreetView mode @done(19-08-13 16:21)
       ✔ Fix then check mobile tracking is enabled by just swinging the phone @done(19-10-02 14:53)
-      ☐ Ask for permission and check it works on mobile safari (“No device motion or orientation events will be fired until permission has been requested and granted.”)
+      ✔ Ask for permission and check it works on mobile safari (“No device motion or orientation events will be fired until permission has been requested and granted.”) @done(19-11-27 16:35)
       ☐ Include an icon that directs to a directions page / sliding window (like google maps app does it when it opens a sliding window in map)
     Map:
-      ☐ AppBar - an icon will enable to toggle b/w the default list view to map view
-      ☐ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants
-      ☐ Map - Clicking a marker opens the merchant card page (Merchant component, identically-looking to the one you get by clicking a list item 
-      ☐ Merchant - like the identically-looking card, an 'X' returns to Map  
+      ✘ AppBar - an icon will enable to toggle b/w the default list view to map view @cancelled(19-11-27 16:33)
+      ✘ Map - a page with a map  centered around user's picked address (not necessarily his current location) and markers for merchants @cancelled(19-11-27 16:34)
+      ✘ Map - Clicking a marker opens the merchant card page (Merchant component, identically-looking to the one you get by clicking a list item @cancelled(19-11-27 16:34)
+      ✘ Merchant - like the identically-looking card, an 'X' returns to Map @cancelled(19-11-27 16:34)
       ☐ Merchant - both cards have icon directing to a Directions page / sliding window, enabling to choose b/w walking / driving mode from user's current position to the merchant's shop
-      ☐ Directions - when available: enable Live View directions (AR)
+      ✘ Directions - when available: enable Live View directions (AR) @cancelled(19-11-27 16:34)
     PWA:
       ✔ Check what each mobile browser supports re PWA (caniuse) @done(19-11-24 16:43)
       ☐ Complete iOS still missing parts (A Few Tips That Will Make Your PWA on iOS...)
-      ☐ Decide which mobile browser to use for demos
+      ✔ Decide which mobile browser to use for demos @done(19-11-27 16:34)
       ☐ Complete the Demo note: decide how to best demo the following:
       ☐ Fullscreen / Standalone
       ☐ Shortcut icon
@@ -209,24 +209,25 @@ Todo:
       ☐ Push notifications (e.g., occasional price offers popping as snackbars, while the proper list item is highlighted)
     Orders:
       ☐ Use a FAB to order
-      ☐ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid)
+      ✘ Consider adding a bottom sheet for other activities on the merchant: call, share, review etc (https://material.io/design/components/sheets-bottom.html#dummybodyid) @cancelled(19-11-27 16:33)
     Payment: 
       ☐ Consider using stripe for dummy payment (demonstrating a complete eCommerce functionality)
       ☐ Use react-credit-cards for CC data entry
     Header / Footer / Theme:
-      ☐ Create a branded header
-      ☐ Create a footer with action icons
-      ☐ Place a list/map toggle icon on either of them, and let it toggle b/w map | list 
-      ☐ Consider making a grey background, or better make two themes, and let the user toggle b/w them
+      ✘ Create a branded header @cancelled(19-11-27 16:32)
+      ✘ Create a footer with action icons @cancelled(19-11-27 16:32)
+      ✘ Place a list/map toggle icon on either of them, and let it toggle b/w map | list @cancelled(19-11-27 16:32)
+      ✘ Consider making a grey background, or better make two themes, and let the user toggle b/w them @cancelled(19-11-27 16:33)
+      ☐ Consider supporting dark mode
     Communication:
       Banner / Snackbar: 
         ☐ Add a banner / snackbar (depending on whether it's actionable or not) to inform when the desired coin changed price (demonstrate WS / real time)
     Reviews:
-      ☐ Make a reviews page like the one I had in Cambiu
+      ✘ Make a reviews page like the one I had in Cambiu @cancelled(19-11-27 16:36)
     Live graph:
-      ☐ Make a live ws-based crypto graph for 3 crypto currencies
+      ✘ Make a live ws-based crypto graph for 3 crypto currencies @cancelled(19-11-27 16:32)
     Menu:
-      ☐ Consider creating a left-drawer menu
+      ✘ Consider creating a left-drawer menu @cancelled(19-11-27 16:32)
     Progressive Web App (PWA): 
       ✔ Opt-in to use service worker (https://create-react-app.dev/docs/making-a-progressive-web-app) @done(19-09-17 18:16)
       ☐ Check the app's PWA grade (by google)

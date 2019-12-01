@@ -6,28 +6,12 @@ import { setMessage, setCount } from './redux/actions'
 import 'typeface-roboto'
 
 import { ThemeProvider } from '@material-ui/styles'
-
-import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './components/themed/theme'
 
-import Practice from './components/sync/Practice'
-import TradingUpdated from './components/graphql/TradingUpdated'
-import Topics from './components/sync/Topics'
-import AsyncLazyComponent from './components/async/lazy/AsyncLazyComponent'
-import Trading from './components/graphql/Trading'
-// import CryptoChart from './components/websocket/CryptoChart'
-// import CryptoChartUsingHooks from './components/websocket/CryptoChartUsingHooks'
-import Merchants from './components/app/Merchants'
-import Try from './components/utility/Try'
-import AsyncNotInitialRender from './components/async/notInitialRender/AsyncNotInitialRender'
-// import Wizard from './components/forms/homemade/Wizard'
-
 import Select from './components/app/Select'
-import Delivery from './components/app/Delivery'
+import Merchants from './components/app/Merchants'
 
-import Dashboard from './components/utility/Dashboard'
 import ErrorBoundary from './components/utility/ErrorBoundary'
-import Map from './components/app/Map'
 
 class App extends Component {
   componentDidMount() {
@@ -46,26 +30,12 @@ class App extends Component {
   render() {
     return (
       <>
-        <CssBaseline />
         <ThemeProvider theme={theme}>
           {/* ! ErrorBoundary must be beneath ThemeProvider */}
           <ErrorBoundary level="page">
             <Switch>
               <Redirect exact from="/" to="/select" />
               <Route path="/select" component={Select} />
-              <Route path="/delivery" component={Delivery} />
-              {/* <Route path="/next" component={Next} /> */}
-              <Route path="/dashboard" component={Dashboard} />
-              {/* <Route path="/wizard" component={Wizard} /> */}
-              <Route path="/practice" component={Practice} />
-              {/* <Route path="/cryptochart" component={CryptoChart} /> */}
-              {/* <Route
-        	      path="/cryptochartUsingHooks"
-        	      component={CryptoChartUsingHooks}
-        	  /> */}
-              <Route path="/realtimetrading/" component={TradingUpdated} />
-              <Route path="/trading" component={Trading} />
-              {/* forcing user to populate values if /merchants was manually requested or redux values didn't survive page refresh */}
               <Route path="/merchants">
                 {this.props.values && this.props.values.quote ? (
                   <Merchants />
@@ -73,18 +43,6 @@ class App extends Component {
                   <Redirect to="/select" />
                 )}
               </Route>
-
-              <Route path="/map" component={Map} />
-              <Route
-                path="/asyncNotInitialRender"
-                component={AsyncNotInitialRender}
-              />
-              <Route
-                path="/asyncLazyComponent"
-                component={AsyncLazyComponent}
-              />
-              <Route path="/topics" component={Topics} />
-              <Route path="/try" component={Try} />
             </Switch>
           </ErrorBoundary>
         </ThemeProvider>

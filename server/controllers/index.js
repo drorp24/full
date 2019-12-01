@@ -1,5 +1,6 @@
 import express from 'express'
 import path from 'path'
+import compression from 'compression'
 
 import configureStore from '../../src/redux/configureStore'
 import { setMessage } from '../../src/redux/actions'
@@ -22,6 +23,8 @@ const app = express()
 //   )
 //   next()
 // })
+
+app.use(compression())
 
 // Serve files from the build folder for every static file request
 app.use(
