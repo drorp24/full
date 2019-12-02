@@ -84,6 +84,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
+    "source-map-explorer": "^2.1.1",
     "subscriptions-transport-ws": "^0.9.15",
     "typeface-roboto": "^0.0.54",
     "yup": "^0.26.6"
@@ -97,8 +98,9 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "build": "REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build",
-    "buildNoSsr": "REACT_APP_SERVER=true REACT_APP_SSR=false react-scripts build",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "build": "REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build --profile ",
+    "buildNoSsr": "REACT_APP_SERVER=true REACT_APP_SSR=false react-scripts build --ptofile ",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow",
@@ -110,8 +112,8 @@
     "noServerGraphqlDev": "REACT_APP_SERVER=false REACT_APP_SSR=false yarn graphqlDev",
     "serverGraphqlDev": "REACT_APP_SERVER=true yarn graphqlDev",
     "noServerAndGraphqlDev": "concurrently \"yarn noServer\" \"yarn noServerGraphqlDev\"",
-    "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build --profile && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
-    "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn buildNoSsr --profile && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
+    "serverSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn build  && yarn analyze && yarn serverSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=true yarn graphqlDev\"",
+    "serverNoSsrDevAndGraphqlDev": "concurrently \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn buildNoSsr && yarn serverNoSsr\" \"REACT_APP_SERVER=true REACT_APP_SSR=false yarn graphqlDev\"",
     "start": "yarn serverSsr"
   },
   "browserslist": [

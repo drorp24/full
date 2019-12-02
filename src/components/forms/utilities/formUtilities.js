@@ -5,21 +5,26 @@ import PropTypes from 'prop-types'
 import { produce } from 'immer'
 
 import { makeStyles } from '@material-ui/styles'
-import { FormHelperText } from '@material-ui/core'
+// import { FormHelperText } from '@material-ui/core'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
-import FormLabel from '@material-ui/core/FormLabel'
-import FormControl from '@material-ui/core/FormControl'
+// import FormLabel from '@material-ui/core/FormLabel'
+// import FormControl from '@material-ui/core/FormControl'
 import Switch from '@material-ui/core/Switch'
 import Cancel from '@material-ui/icons/Cancel'
 
+// ! Commenting for better bundle size
+// My library-like would have to include a few library imports in order to truly be generic, i.e., support any of the field types;
+// However, for reasons of bundle shrinking I have commented some of the code that depends on big sized libraries.
+// Currently, Phone, Time & Date fields are commented for this reason
+
 import { object } from 'yup'
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import 'react-phone-number-input/style.css'
+// import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+// import 'react-phone-number-input/style.css'
 import NumberFormat from 'react-number-format'
-import { TimePicker, MuiPickersUtilsProvider } from 'material-ui-pickers'
-import DateFnsUtils from '@date-io/date-fns'
+// import { TimePicker, MuiPickersUtilsProvider } from 'material-ui-pickers'
+// import DateFnsUtils from '@date-io/date-fns'
 import MuiAutosuggest from '../utilities/MuiAutosuggest'
 
 import { Box, Row } from '../../themed/Box'
@@ -282,10 +287,10 @@ const DisplayField = ({ type, ...rest }) => {
   const online = useSelector(store => store.device.online)
 
   const display = {
-    phone: PhoneField,
+    // phone: PhoneField,
     switch: SwitchField,
     number: NumberField,
-    time: TimeField,
+    // time: TimeField,
     autosuggest: AutosuggestField,
     location: LocationField,
     default: DefaultField,
@@ -312,35 +317,35 @@ DisplayField.propTypes = {
 }
 
 // An example for using the classNames approach for customization (rather than props for instance)
-const PhoneField = ({
-  error,
-  fullWidth,
-  required,
-  label,
-  value,
-  onChange,
-  helperText,
-}) => {
-  const classes = useFormStyles()
-  return (
-    <FormControl error={error} fullWidth={fullWidth}>
-      <FormLabel className={classes.label} required={required}>
-        {label}
-      </FormLabel>
-      <PhoneInput
-        country="IL"
-        value={value}
-        onChange={onChange}
-        inputClassName={
-          error
-            ? classes.phone + ' ' + classes.error // classNames-style working solution
-            : classes.phone
-        }
-      />
-      <FormHelperText component="p">{helperText}</FormHelperText>
-    </FormControl>
-  )
-}
+// const PhoneField = ({
+//   error,
+//   fullWidth,
+//   required,
+//   label,
+//   value,
+//   onChange,
+//   helperText,
+// }) => {
+//   const classes = useFormStyles()
+//   return (
+//     <FormControl error={error} fullWidth={fullWidth}>
+//       <FormLabel className={classes.label} required={required}>
+//         {label}
+//       </FormLabel>
+//       <PhoneInput
+//         country="IL"
+//         value={value}
+//         onChange={onChange}
+//         inputClassName={
+//           error
+//             ? classes.phone + ' ' + classes.error // classNames-style working solution
+//             : classes.phone
+//         }
+//       />
+//       <FormHelperText component="p">{helperText}</FormHelperText>
+//     </FormControl>
+//   )
+// }
 
 // It's best to separate use<component>style and place it just before the customized component
 // since then I can use the very same class names used by the componments I'm customizing
@@ -433,35 +438,35 @@ const NumberField = ({
 // <NumberFormat /> doesn't recognize it, so it passes it onwards to native <input>, which complains about not recognizing it either
 const MyNumberFormat = ({ inputRef, ...rest }) => <NumberFormat {...rest} />
 
-const TimeField = ({ value, onChange, icon, label, helperText }) => {
-  const classes = useFormStyles()
-  const context = useContext(FormContext)
-  const { form } = context
+// const TimeField = ({ value, onChange, icon, label, helperText }) => {
+//   const classes = useFormStyles()
+//   const context = useContext(FormContext)
+//   const { form } = context
 
-  return (
-    // I'm sure I could use here TextField as well
-    <FormControl>
-      <FormLabel style={{ fontSize: '0.75rem' }}>{label}</FormLabel>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <TimePicker
-          value={value}
-          onChange={onChange}
-          TextFieldComponent={DefaultField}
-          // not recognized by TimePicker , InputProps are passed onwards to DefaultField, which uses them to add the icon
-          InputProps={{
-            startAdornment:
-              showAdornment(icon, value) && IconAdornment({ icon, form }),
-            className: classes.primary,
-          }}
-          InputLabelProps={{
-            className: classes.label,
-          }}
-        />
-      </MuiPickersUtilsProvider>
-      <FormHelperText component="p">{helperText}</FormHelperText>
-    </FormControl>
-  )
-}
+//   return (
+//     // I'm sure I could use here TextField as well
+//     <FormControl>
+//       <FormLabel style={{ fontSize: '0.75rem' }}>{label}</FormLabel>
+//       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+//         <TimePicker
+//           value={value}
+//           onChange={onChange}
+//           TextFieldComponent={DefaultField}
+//           // not recognized by TimePicker , InputProps are passed onwards to DefaultField, which uses them to add the icon
+//           InputProps={{
+//             startAdornment:
+//               showAdornment(icon, value) && IconAdornment({ icon, form }),
+//             className: classes.primary,
+//           }}
+//           InputLabelProps={{
+//             className: classes.label,
+//           }}
+//         />
+//       </MuiPickersUtilsProvider>
+//       <FormHelperText component="p">{helperText}</FormHelperText>
+//     </FormControl>
+//   )
+// }
 
 const AutosuggestField = ({
   name,
@@ -587,22 +592,27 @@ const DefaultField = ({
 }
 
 const IconAdornment = ({ icon, form }) => {
+  // ! Webpack eager comment may make bundle bloat
+  // Webpack dynamic imports in general, and webpack-comments in particular are merely an interim solution;
+  // Down the road, React.lazy should know to handle a *dynamic* (= determined at runtime) filename to import
+  // I've been using the below 'eager' webpack comment, which worked well but bloated my bundle.
+  // Left the eager part commented to remember the technique, hoping I won't have to use it though
+  // IconAdornment is not used anyway, as 'Select' includes no 'icon' config.
+  //
   // 'eager' comment forces webpack to include such imports in main chunk
   // rather than having to fetch each during runtime
-  // There's no other way either, as omitting this comment will make webpack crash compiling.
   // In this case import() is used to enable using dynamic file names, not for code split (which is not happenning).
-  // Remarkably, it doesnt affect the bundle sizes nor the elapsed load time but both are bloated anyway.
 
   const iconFile = typeof icon === 'function' ? icon(form) : icon
-  const Icon =
-    iconFile &&
-    React.lazy(() =>
-      import(/* webpackMode: "eager" */ `mdi-material-ui/${iconFile}`)
-    )
+  // const Icon =
+  //   iconFile &&
+  //   React.lazy(() =>
+  //     import(/* webpackMode: "eager" */ `mdi-material-ui/${iconFile}`)
+  //   )
 
   return (
     <InputAdornment position="start">
-      <Suspense fallback={<Loader />}>{iconFile && <Icon />}</Suspense>
+      <Suspense fallback={<Loader />}>{iconFile && <Cancel />}</Suspense>
     </InputAdornment>
   )
 }
@@ -633,15 +643,15 @@ const handleEveryChange = ({
 }
 
 const checkByType = ({ name, type, fieldSchema, value }) => {
-  if (type === 'phone') return phoneCheck({ name, value })
+  // if (type === 'phone') return phoneCheck({ name, value })
   if (fieldSchema) return yupCheck({ name, value, fieldSchema })
   return false
 }
 
-const phoneCheck = ({ name, value }) =>
-  isValidPhoneNumber(String(value))
-    ? false
-    : `Please enter a valid ${name} number`
+// const phoneCheck = ({ name, value }) =>
+//   isValidPhoneNumber(String(value))
+//     ? false
+//     : `Please enter a valid ${name} number`
 
 const yupCheck = ({ name, value, fieldSchema }) => {
   if (!fieldSchema || empty(fieldSchema)) return false

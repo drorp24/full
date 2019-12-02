@@ -40,7 +40,7 @@ class App extends Component {
               <Route path="/select" component={Select} />
               <Route path="/merchants">
                 {this.props.values && this.props.values.quote ? (
-                  <Suspense fallback={Loader}>
+                  <Suspense fallback={<Loader />}>
                     <Merchants />
                   </Suspense>
                 ) : (
