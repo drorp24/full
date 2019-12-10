@@ -122,7 +122,7 @@ export default ({ store, persistor }) => (req, res, next) => {
 
     if (context.url) {
       return res.redirect(301, context.url)
-    } else
+    } else {
       return res.send(
         htmlData
           .replace(
@@ -133,5 +133,6 @@ export default ({ store, persistor }) => (req, res, next) => {
           .replace('</body>', extraChunks.join('') + '</body>')
           .replace('"__SERVER_REDUX_STATE__"', reduxState)
       )
+    }
   })
 }

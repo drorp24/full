@@ -1,12 +1,9 @@
 import express from 'express'
+import enforce from 'express-sslify'
 import Loadable from 'react-loadable'
 import indexController from './controllers/index'
 
 console.log('entering app/server/index.js')
-// initialize the application and create the routes
-const app = express()
-
-app.use(indexController)
 
 // in a local environment (only), each of the 3 web servers (CRA's HMR, server with ssr, server with no ssr) is assigned its own different port number.
 // That enables running locally a CRA server alongside a production-like server w/o having to kill processes with identical ports.
@@ -49,6 +46,15 @@ const port =
     : REACT_APP_NOSERVER_NOSSR_WEB_PORT)
 
 console.log('web server ssr port: ', port)
+
+// initialize the application and create the routes
+const app = express()
+
+const heroku = REACT_APP_ENV_FILE === 'heroku drorpoliakfull'
+
+if (heroku) app.use(enforce.HTTPS({ trustProtoHeader: true }))
+
+app.use(indexController)
 
 // start the app
 Loadable.preloadAll().then(() => {
