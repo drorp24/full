@@ -56,7 +56,7 @@
 //    But if there's another 'external' way to switch pages or close cards I'm not thinking about, the AppBar will remain contextual
 //    I wonder if tehre's a *declaratve* way of saying that, unless a card is [...], there's no 'contextual'. Probably not.
 //
-import React, { useState, useCallback, useEffect, useContext } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
 

@@ -38,10 +38,7 @@ const LiveRates = ({ base, quote, quantity }) => {
   // or make you compelled to update state only to obtain its value, which is forbidden upon unmounting,
   // then this would imply react hooks would have a serious flaw, which i find it hard to believe
   const request = (type, pair = null) => {
-    console.log('request called with: ', type)
-
     setSubscribed(currSubscribed => {
-      console.log('currSubscribed: ', currSubscribed)
       const product_ids = pair ? [pair] : currSubscribed
 
       const message = {

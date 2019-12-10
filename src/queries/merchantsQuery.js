@@ -6,7 +6,7 @@ export const mapFormToMerchantQueryVariables = form => {
     quote,
     amount,
     delivery,
-    location: { lat = 32.0853, lng = 34.781769 },
+    // location: { lat = 32.0853, lng = 34.781769 } = {},
     lookaround,
   } = form.values
 

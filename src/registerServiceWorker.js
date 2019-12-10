@@ -1,5 +1,4 @@
-import { setValue, temporarilySetValue } from '../src/redux/actions'
-import { SET_DEVICE } from '../src/redux/types'
+import { temporarilySetValue } from '../src/redux/actions'
 
 // ! Upgrading a running app to a new release
 //

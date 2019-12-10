@@ -1,3 +1,6 @@
+// cryptocompare
+// There's also an npm package
+// as of Chrome 77, chrome warns about the returned cookie not including the 'SameSite' attribute
 import axios from 'axios'
 import { mark } from '../../../components/utility/performance'
 

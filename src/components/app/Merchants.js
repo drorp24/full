@@ -1,12 +1,14 @@
 import React from 'react'
-import Page from '../page/Page'
 import { useSelector } from 'react-redux'
-import { Query } from 'react-apollo'
 
+import ApolloProviderClient from '../../apollo/ApolloProviderClient'
+import { Query } from 'react-apollo'
 import merchantsQuery, {
   mapFormToMerchantQueryVariables,
 } from '../../queries/merchantsQuery'
 import QueryResponse from '../utility/QueryResponse'
+
+import Page from '../page/Page'
 import Merchant from './Merchant'
 import A2HSPrompt from '../utility/A2HSPrompt'
 
@@ -31,36 +33,33 @@ const Merchants = () => {
   const merchantsQueryVariables = mapFormToMerchantQueryVariables(form)
 
   return (
-    <Page title="Offers" icon="quote">
-      <Query
-        query={merchantsQuery}
-        variables={merchantsQueryVariables}
-        fetchPolicy="cache-and-network"
-        errorPolicy="all"
-        notifyOnNetworkStatusChange={false}
-      >
-        {({ loading, error, data, fetchMore }) => {
-          console.log('+++ Query result (render props / hook) +++')
-          console.log('loading: ', loading)
-          console.log('error: ', error)
-          console.log('data: ', data)
-          console.log('+++ +++')
-          return (
-            <QueryResponse
-              {...{
-                loading,
-                error,
-                data,
-                fetchMore,
-                entity: 'merchants',
-                component: Merchant,
-              }}
-            />
-          )
-        }}
-      </Query>
-      <A2HSPrompt />
-    </Page>
+    <ApolloProviderClient>
+      <Page title="Offers" icon="quote">
+        <Query
+          query={merchantsQuery}
+          variables={merchantsQueryVariables}
+          fetchPolicy="cache-and-network"
+          errorPolicy="all"
+          notifyOnNetworkStatusChange={false}
+        >
+          {({ loading, error, data, fetchMore }) => {
+            return (
+              <QueryResponse
+                {...{
+                  loading,
+                  error,
+                  data,
+                  fetchMore,
+                  entity: 'merchants',
+                  component: Merchant,
+                }}
+              />
+            )
+          }}
+        </Query>
+        <A2HSPrompt />
+      </Page>
+    </ApolloProviderClient>
   )
 }
 

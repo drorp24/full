@@ -149,9 +149,9 @@ const FormContainer = ({ structure, show }) => {
 
     if (!populated.currencies) {
       console.log(
-        'about NOT to call updateCurrencies (see if this msg appears 2 times'
+        'about to call updateCurrencies (see if this msg appears 2 times'
       )
-      // updateCurrencies()
+      updateCurrencies()
     }
   }, [
     populated.state,
@@ -248,7 +248,7 @@ const FormContainer = ({ structure, show }) => {
       }
     }
 
-    // locateUser(5)
+    locateUser(5)
   }, [dispatch])
 
   const header = form => {

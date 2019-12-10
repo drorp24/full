@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
 
@@ -69,8 +69,6 @@ const MyAppBar = ({ title, icon }) => {
   const contextualMenu = useSelector(state => state.app.contextual)
   const deviceIsOnline = useSelector(state => state.device.online)
   const online = !inBrowser() || deviceIsOnline
-  console.log('MyAppBar is rendered')
-  console.log('>>>>>>  online: ', online)
 
   const classes = useStyles({ contextualMenu })
 

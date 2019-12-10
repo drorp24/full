@@ -65,12 +65,10 @@ export const BrowserContextProvider = ({ children }) => {
     })
 
     window.addEventListener('online', e => {
-      console.log('Online. e: ', e)
       setBrowserContext(browserContext => ({ ...browserContext, online: true }))
     })
 
     window.addEventListener('offline', e => {
-      console.log('Offline. e: ', e)
       setBrowserContext(browserContext => ({
         ...browserContext,
         online: false,

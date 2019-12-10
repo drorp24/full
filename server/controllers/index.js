@@ -11,37 +11,90 @@ console.log('entering app/server/controllers/index.js')
 
 const app = express()
 
-// Instruct browser to not cache service-worker.
-//
-// This will make it fetch from the server a new release (= represented by a newer, waiting sw)
-// as soon as it is ready (or at least, next time user reloads or enters app)
-// which enables to inform the user of the new release and let him upgrade if desired.
-// app.get('/service-worker.js', (req, res, next) => {
-//   res.setHeader(
-//     'Cache-Control',
-//     'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
-//   )
-//   next()
-// })
+// ! app.use vs. app.get
+// Eternal confusion.
+// If http verb nor the path matter, app.use should be used. app.use(compression()) is a good example.
+// The confusing part with app.use is that its optional 1st arg is *different* than app.get's mandatory 1st arg which is the path
+// so while app.get('*', function(...)) stands for "all paths", app.use('*', function(...)) means something else.
+// Using app.use('*', function(req)) will pass an *incorrect* req ('/' instead of '/welcome' for instance)
+// unlike app.use(function(req)), which would pass the correct req.
 
+// ! 3 routes instead of 2
+// CRA official solution (https://create-react-app.dev/docs/deployment/#serving-apps-with-client-side-routing) never worked for me.
+// When I did exactly as prescribed, app entry ('/') wasn't caught by app.get('/*').
+// Instead, it was caught by the app.use(express.static) line that preceeds app.get('/*').
+// The only way that worked for me was to split the two ('/') from ('/*')
+// - putting ('/') first so it is server-rendered rather than being caught by express' static handler,
+// - then handle anything that is found in the build folder by express' static handler,
+// - then server-rendering all the other requests ('*') that match neither criteria.
+// Not sure if it's me or the documentation (which is bad anyway).
+
+// compress any response
 app.use(compression())
 
-// Serve files from the build folder for every static file request
+// ! Letting the server initiate values in redux store
+// Generally, including data in the server-rendered html is not a good idea.
+// But some times, it may be beneficial for the server to initiate some values to the client (value from DB perhaps)
+// The way for the server to do that is to hop on the redux store, which would be passed inside a <script> tag.
+// This is anyway for data, never for state (server should never be stateful)
+// State is only maintained by the client, and if needs to be persistent, is persisted by the client (with the help of redux-persist).
+//
+// I'm using here the same trick I've used on the client when I'm not yet exposed to 'dispatch': store.dispatch
+const { store, persistor } = configureStore()
+store.dispatch(setMessage('Server'))
+
+// ! ssr is really for first static page only
+// This code will not only be accessed upon entry to the app ('/') but for every page reload as well
+// However usually, pages other than the first are better client- than server-generated
+// Such pages will typically have a 'ssr road block' like the one I put in FormContainer,
+// prevernting the server from rendering the page or (as in my case) the complex part of it.
+//
+// Ssr is anyway meant to facilitate first load perception and not for reloads (which should rarely happen anyway).
+// Even if reloads would be server-rendered, it would anyway take time to populate the current state in them,
+// as the state is held by the client not the server, let alone the time it would take to hydrate, before which
+// the page won't allow any interaction.
+//
+// I think Ssr should be kept only for first load perception and as such should handle only the first page,
+// which has to be static and quick to render.
+//
+// * Pre-rendering
+// If it's only for the first page and blocked for the other pages then I would go the full monty
+// and pre-render the first page at build time.
+// If only for the fist page then I don't see the point in ssr at all.
+
+app.get('/', (req, res, next) => {
+  console.log('')
+  console.log(`req.url: ${req.url} handled by app.get(/)`)
+
+  serverRenderer({ store, persistor })(req, res, next)
+})
+
+// ! maxAge
+// maxAge should, and can safely be long.
+// As soon as there's a more updated file, its name would be different since the name is signed according to content.
+// Entering the app would use the new updated file,
+// but reloading or opening a new tab will use the old one in the current service-worker's manifest if there's another tab opened.
+// But while the service-worker will send the current listed files in spite of the reload,
+// it will notice the new release and create the 'waiting' key on the service-worker's registration obj.
+// I'm checking every reload if there's a waiting key on the reg, and if there is,
+// render a snackbar that lets the user install the new release if he wants to.
+//
+// * What does express.static actually do
+// I didn't read the 'express.static in depth' post and the express documentation is lacking,
+// but according to one answer in stack overflow, express.static doesn't know if a request is static or not;
+// It just responds to a request if it sees its name in the specified ('build') folder.
 app.use(
-  express.static(path.resolve(__dirname, '..', '..', 'build'), {
-    maxAge: 0,
+  express.static(path.join(__dirname, '..', '..', 'build'), {
+    maxAge: '1y',
   })
 )
 
-// Serve the built/ssr'd index.html for all other requests from our domain
-app.use('*', (req, res, next) => {
-  // An example of how the server can create some redux value of its own and send it to client
-  // Other redux values are initiated by the client using redux-persist
-  const { store } = configureStore()
-  store.dispatch(setMessage('Server'))
+app.get('*', (req, res, next) => {
+  console.log('')
+  console.log(`req.url: ${req.url} handled by app.get(*)`)
 
-  serverRenderer(store)(req, res, next)
+  serverRenderer({ store, persistor })(req, res, next)
 })
 
-// Either 'app' or 'router' can be use'd
 export default app
+//comment1

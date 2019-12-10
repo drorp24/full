@@ -41,8 +41,6 @@ const QueryResponse = ({
   entity,
   component,
 }) => {
-  console.log('QueryResponse. error: ', error)
-
   const online = useSelector(store => store.device.online)
   const userError = !online
     ? 'You are offline. Please refresh and try again'

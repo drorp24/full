@@ -1,6 +1,6 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React, { useRef } from 'react'
+import React /* , { useRef } */ from 'react'
 import { FixedSizeList } from 'react-window'
 
 import InfiniteLoader from 'react-window-infinite-loader'
@@ -71,7 +71,7 @@ const WindowedList = ({
           },
         })
 
-  const listRef = useRef()
+  // const listRef = useRef()
 
   return (
     <InfiniteLoader
@@ -91,7 +91,7 @@ const WindowedList = ({
                 <FixedSizeList
                   itemCount={itemCount}
                   onItemsRendered={onItemsRendered}
-                  ref={listRef}
+                  // ref={listRef}
                   height={height}
                   width={width}
                   itemSize={height / 2}

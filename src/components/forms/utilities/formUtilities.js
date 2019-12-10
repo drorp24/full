@@ -426,6 +426,7 @@ const NumberField = ({
       }}
       InputLabelProps={{
         className: classes.label,
+        shrink: !!value, // browser autofills values when the user backs to the /select page, but doesn't always trigger the event that makes MUI shrink the label
       }}
       name={name}
       value={value}
@@ -499,6 +500,7 @@ const AutosuggestField = ({
       }}
       InputLabelProps={{
         className: classes.label,
+        shrink: !!value,
       }}
       onChange={onChange}
       value={value}
@@ -547,6 +549,7 @@ const LocationField = ({
       }}
       InputLabelProps={{
         className: classes.label,
+        shrink: !!value,
       }}
       value={value}
       onChange={onChange}
