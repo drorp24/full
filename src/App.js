@@ -9,7 +9,7 @@ import { ThemeProvider } from '@material-ui/styles'
 import theme from './components/themed/theme'
 
 import ErrorBoundary from './components/utility/ErrorBoundary'
-import Loader from './components/utility/Loader'
+// import Loader from './components/utility/Loader'
 
 import Welcome from './components/app/Welcome'
 import Select from './components/app/Select'
@@ -51,8 +51,10 @@ class App extends Component {
             <Route path="/select" component={Select} />
             <Route path="/merchants">
               {this.props.values && this.props.values.quote ? (
+                // <Suspense fallback={Loader}>
                 <Merchants />
               ) : (
+                // </Suspense>
                 <Redirect to="/select" />
               )}
             </Route>

@@ -8,7 +8,7 @@ const Page = ({ title, icon, noAppBar, children }) => (
   <Div100vh>
     <Box pageVariant="content">
       {!noAppBar && <MyAppBar {...{ title, icon }} />}
-      <main style={{ width: '100%' }}>{children}</main>
+      <main style={{ width: '100%', height: '100%' }}>{children}</main>
       <SnackBar />
     </Box>
   </Div100vh>

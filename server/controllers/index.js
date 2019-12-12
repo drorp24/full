@@ -7,8 +7,6 @@ import { setMessage } from '../../src/redux/actions'
 
 import serverRenderer from '../middleware/renderer'
 
-console.log('entering app/server/controllers/index.js')
-
 const app = express()
 
 // ! app.use vs. app.get
@@ -62,9 +60,16 @@ store.dispatch(setMessage('Server'))
 // and pre-render the first page at build time.
 // If only for the fist page then I don't see the point in ssr at all.
 
+const logRequest = function(req, res, next) {
+  console.log('req.url: ', req.url)
+  next()
+}
+
+app.use(logRequest)
+
 app.get('/', (req, res, next) => {
-  console.log('')
   console.log(`req.url: ${req.url} handled by app.get(/)`)
+  console.log('')
 
   serverRenderer({ store, persistor })(req, res, next)
 })

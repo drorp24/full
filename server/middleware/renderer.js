@@ -2,15 +2,13 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
 import App from '../../src/App'
-import Loadable from 'react-loadable'
-import manifest from '../../build/asset-manifest.json'
+// import Loadable from 'react-loadable'
+// import manifest from '../../build/asset-manifest.json'
 
 import { Provider as ReduxProvider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
+// import { PersistGate } from 'redux-persist/integration/react'
 
 import { ServerStyleSheets } from '@material-ui/core/styles'
-
-console.log('entering app/server/middleware/renderer.js')
 
 const path = require('path')
 const fs = require('fs')
@@ -103,15 +101,23 @@ export default ({ store, persistor }) => (req, res, next) => {
     const css = sheets.toString()
     const reduxState = JSON.stringify(store.getState())
 
-    const extractAssets = (manifest, modules) => {
-      return Object.keys(manifest)
-        .filter(asset => modules.indexOf(asset.replace('.js', '')) > -1)
-        .map(k => manifest[k])
-    }
+    // const extractAssets = (manifest, modules) => {
+    //   return Object.keys(manifest)
+    //     .filter(asset => modules.indexOf(asset.replace('.js', '')) > -1)
+    //     .map(k => manifest[k])
+    // }
 
-    const extraChunks = extractAssets(manifest, modules).map(
-      c => `<script type="text/javascript" src="${c}"></script>`
-    )
+    // const extraChunks = extractAssets(manifest, modules).map(
+    //   c => `<script type="text/javascript" src="${c}"></script>`
+    // )
+
+    const browserDefaultsOverride = `
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+  }
+    `
 
     // return either a 301 redirect response, or
     // a populated index.html file with the manifest, iOs icons, service worker etc plus:
@@ -126,11 +132,19 @@ export default ({ store, persistor }) => (req, res, next) => {
       return res.send(
         htmlData
           .replace(
+            '</title>',
+            `</title><style id="browser-server-side">${browserDefaultsOverride}</style>`
+          )
+          .replace(
             '<style id="jss-server-side"></style>',
             `<style id="jss-server-side">${css}</style>`
           )
+          .replace(
+            /rel="stylesheet"/g,
+            'rel="preload" as="style" onload="this.rel=\'stylesheet\'"'
+          )
           .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
-          .replace('</body>', extraChunks.join('') + '</body>')
+          // .replace('</body>', extraChunks.join('') + '</body>')
           .replace('"__SERVER_REDUX_STATE__"', reduxState)
       )
     }

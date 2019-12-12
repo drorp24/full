@@ -3,8 +3,6 @@ import enforce from 'express-sslify'
 import Loadable from 'react-loadable'
 import indexController from './controllers/index'
 
-console.log('entering app/server/index.js')
-
 // in a local environment (only), each of the 3 web servers (CRA's HMR, server with ssr, server with no ssr) is assigned its own different port number.
 // That enables running locally a CRA server alongside a production-like server w/o having to kill processes with identical ports.
 // Graphql endpoints have to be assigned accordingly as well, to have each web client talk with its own separate graphql server.

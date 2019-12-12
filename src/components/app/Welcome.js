@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     width: '50%',
   },
   button: {
-    color: '#fff',
+    fontFamily: 'sans-serif !important',
   },
 }))
 
@@ -42,7 +42,6 @@ const useStyles = makeStyles(theme => ({
 
 const Welcome = () => {
   const classes = useStyles()
-  console.log('classes.welcome1: ', classes.welcome1)
 
   return (
     <main className={classes.welcomeContainer}>
@@ -60,6 +59,7 @@ const Welcome = () => {
           color="inherit"
           component={Link}
           to="/select"
+          className={classes.button}
         >
           Click to Start
         </Button>

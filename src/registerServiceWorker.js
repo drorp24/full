@@ -6,42 +6,49 @@ import { temporarilySetValue } from '../src/redux/actions'
 // This note is a collection of things I've learned the hard way. It should be taken with a grain of salt.
 // Though PWA is all the rage these days, CRA, Google web and Workbox (also google) docs ignore parts of the solution.
 //
-// * What defines a new release
-// A new release is represented by a new service-worker (s/w), which is not a new version of the service-worker.js code per se
-// but an updated manifest that has the updated signed names of the files that comprise the release
+// * What defines a "new release"
+// A new release is represented on the devtools application tab by a new, "waiting" (yellow) service-worker (s/w)
+// This is not a new version of the service-worker.js code but rather indicates that there is at least one updated file just fetched
+// that is not included in the list of files that have been cached by the "current" s/w.
+// (of course, a file name is changed if its content has been modified)
+//
+// * What does the API allow us to do with such a "release"
+// Down below I'm referring to a "new release" (which really means "at least one file has a modified content") as a "new s/w".
+// This is also how the navigator.serviceWorker API lets us handle such a "new release": its 'registration' obj gets a 'waiting' key as soon
+// as such a new release is available, and us developers don't have to worry about which file/s have been updated; we simply postMessage a
+// 'skipWaiting' message to the service worker, which takes care of "installing" the release.
 //
 // * When will it be detected
 // To detect a new release - while the user is already in the app running some current release - the browser needs to fetch from the n/w.
 // This happens when a page is reloaded or a new tab is entered.
-// Of course the browser fetches also when a user enters an app, but we're dealing with cases where user is in the midst of running a code
-// which is suddenly rendered obsolete by a newer one.
 //
-// Confusingly, the browser makes a distinciton b/w the newer s/w, which is *always* fetched from the n/w, to the other files, whose fetching
-// is controlled by the (signed) names of files in the manifest of the active s/w and the policy it uses ('cache first' or whatever).
+// Of course the browser fetches also when a user enters an app, but in this case, unless there's any other tab for the app which is open,
+// The browser / s/w would simply fetch the freshest files.
+// The challenge we're dealing with here is how to detect, notify the user and install, a more updated s/w
+// that has been discovered while opening another tab or reloading the page, when there *is* already an active s/w.
 //
-// To that end it's important that the s/w file itself (service-worker.js) is always returned from the server with maxAge: 0
-// or else the browser may be tempted to fetch the s/w from its own cache rather than n/w, preventing it from noticing there's a new release.
-// However the caching headers subject is not discussed enough in the docs; for instance, should *all* code files return maxAge 0,
-// or it doesn't matter as the browser ignores their cached versions on its own cache when a s/w is in control? Not clear.
+// * Is this challenge worthwhile the effort
+// In most apps probably no. But some will (bugs etc) and I wanted to learn how to do it properly.
+// Once I've discoeverd the recipe, it's very easy.
+// Plus, it's very PWAish and native-like to 'install' a new release.
 //
 // * How a new s/w behaves
 // When there is no service-worker already controlling the app by the time the user opens the app
-// then he simply gets the most up-to-date service-worker (s/w) according to the list in the manifest.
-// The updated s/w manifest will cause the cache (if existsed) to update itself by requesting new & updated files from the n/w and removing deleted ones.
+// then he simply gets the most up-to-date files.
 //
 // However when a user reloads the page for an app that is running with a service-worker already controlling it, while the server returns the
-// new s/w and manifest that has the updated list of code files, the updated s/w and manifest do not replace the current active one;
+// new s/w that has the updated list of code files, the updated s/w do not replace the current active one;
 // instead, they are recorded on a 'waiting' key on the registration object.
 // The newer s/w would remain in a waiting state until last tab is closed - or the waiting s/w "skips waiting", either manually (DevTools) or programmatically.
 // Until then, the user can reload the page and open tabs all he wants, he would still get the old code.
 // The user will never know a new release is pending unless we inform him of that.
 //
-// * Letting the user decide when to upgrade
+// * Automatically updating vs. letting the user decide
 // The above behavior is the default behavior of service workers.
 // It could technically be bypassed (how to do this is described in the redfin link below).
 // In this app however, a new s/w will never start activating automatically, and this is the approach recommended in CRA docs
 // and google's "web" docs (approach #3 in https://redfin.engineering/how-to-fix-the-refresh-button-when-using-service-workers-a8e27af6df68)
-// Instead, we will ask the user to permit the upgrade.
+// Instead, we will notify the user of the new release and let him decide if he would like to upgrade ('install').
 // Next sections describe how to notify the user, and how to make the new waiting s/w take control over the running app.
 //
 // * How to detect a new release is waiting
@@ -54,34 +61,31 @@ import { temporarilySetValue } from '../src/redux/actions'
 // the next best thing (and the common way of doing it) is to notify him as soon as we detect the new registration.waiting s/w.
 //
 // ? Listening to 'onupdatefound'
-// CRA docs recommend listening to the 'onupdatefound' event (and their notes below reflect that too)
+// CRA docs recommend listening to the 'onupdatefound' event
 // As far as I see, this event fires *once* only; the first time a new s/w is added.
-// While that state can last forever, nothing, not even a page reload will trigger that event again.
+// While the state itself can last forever, nothing, not even a page reload, will trigger that event again.
 // If user ignored or didn't understand the message, he would go on working with an obsolete release without realising that.
 //
-// ? One-off vs. periodic challenges
+// ? One-off state vs. periodic notification challenges
 // While the event is one-off, the nature of such notifications is *periodic*; we want to nag the user every once in a while.
-// This poses a challenge for Redux and another one for React - but nobody mentions it.
-// CRA docs "leave user notification as an excercise to the reader"...
+// The code that listens and/or periodically checks for such a state is obviously not in any specific component, but in some general place.
+// This calls for using Redux to have that state be seen by all compnents so that user gets the message;
+//
+// That creates a challenge, since, if we want the message component (typically SnackBar) to be declarative,
+// but at the same time have the nagging message periodic, we need to either have the message component poll the state every so often,
+// or alternatively have the message triggering party make the state period and/or fade it;
+// I chose the latter, since it is more React-declarativs and since I wanted the control
+// over the frequency be at the part that sends the message, not the messenger.
+//
+// Nobody mentions these challenges. Instead, CRA docs "leave user notification as an excercise to the reader"...
 //
 // ? Catching reg.waiting
 // To turn that one-off event into an ongoing check, I'm listening to 'onupdatefound' as well as poll the situation every page reload ('noticeWaitingSw'),
 // For such cases I also introduced self-removing (timed out) actions that occasionally record themselves on the redux side
 // and caught by a SnackBar element that resides on every page and displays the message to the user.
 //
-// * How to install the new release
-//
-// ? Install the new release for the user
-// If the 'registration' object which is available only as a return of a promise isn't not peculiar enough,
-// and the notion that it is the registration's s/w which has to "skipWaiting" (rather than some controller above s/w's) is not weird enough,
-// that s/w has to postMessage to the active s/w to kick it and replace it as the active s/w.
-// Since CRA implements Workbox that generates the service-worker code in CRA apps,
-// I am sending the message that Workbox's generated service-worker will respond to ({type: 'SKIP_WAITING'})
-// (No mention of that anywhere!)
-//
-// ? Await the control change to reload and fetch the new release
-// Since that process of changing control is asyc, we need the 'controllerchange' event to await that change of control
-// before we can finally reload the window, which will fetch the files listed in manifest of the newly active s/w.
+// * Installing a new release
+// Documented in 'Snackbar.js'
 
 const isLocalhost = Boolean(
   typeof window !== 'undefined' &&
@@ -120,12 +124,6 @@ export default function register(store) {
             'This web app is being served cache-first by a service ' +
               'worker. To learn more, visit https://goo.gl/SC7cgQ'
           )
-          navigator.serviceWorker.addEventListener(
-            'controllerchange',
-            function() {
-              window.location.reload()
-            }
-          )
         })
       } else {
         // Is not local host. Just register service worker
@@ -150,7 +148,9 @@ function registerValidSW(swUrl, store) {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              console.log('1. onupdatefound fired - notices the new waiting sw')
+              console.log(
+                '(1) onupdatefound fired - notices the new waiting sw (triggered by page load / entry)'
+              )
               temporarilySetValue('SET_DEVICE', 'newerSwWaiting', true, 30)(
                 store.dispatch
               )
@@ -184,6 +184,7 @@ function checkValidServiceWorker(swUrl, store) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {
+            console.log('>>> no service-worker found; reloading!')
             window.location.reload()
           })
         })
@@ -211,7 +212,9 @@ function noticeWaitingSw(store) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistration().then(reg => {
       if (reg && reg.waiting) {
-        console.log('2. noticeWaitingSw notices the new waiting sw')
+        console.log(
+          '(2) noticeWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
+        )
         temporarilySetValue('SET_DEVICE', 'newerSwWaiting', true, 30)(
           store.dispatch
         )
