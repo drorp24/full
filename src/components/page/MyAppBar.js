@@ -33,6 +33,7 @@ const MyAppBar = ({ title, icon }) => {
       width: '100%',
     },
     appBar: {
+      height: '100%',
       backgroundColor: ({ contextualMenu }) =>
         contextualMenu
           ? theme.palette.primary.contextual

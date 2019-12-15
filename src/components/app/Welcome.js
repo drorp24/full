@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/styles'
 import Button from '@material-ui/core/Button'
 import { Link } from 'react-router-dom'
+import Page from '../page/Page'
 
 import Logo from '../../images/Logo'
 
@@ -10,7 +11,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.primary.main,
     color: '#fff',
     width: '100%',
-    height: '100vh',
+    height: '100%',
   },
   welcomeSection: {
     display: 'flex',
@@ -44,27 +45,29 @@ const Welcome = () => {
   const classes = useStyles()
 
   return (
-    <main className={classes.welcomeContainer}>
-      <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
-        Welcome!
-      </div>
-      <div className={`${classes.welcome2} ${classes.welcomeSection}`}>
-        <div className={classes.welcomeImg}>
-          <Logo />
+    <Page noAppBar>
+      <main className={classes.welcomeContainer}>
+        <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
+          Welcome!
         </div>
-      </div>
-      <div className={`${classes.welcome3} ${classes.welcomeSection}`}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          component={Link}
-          to="/select"
-          className={classes.button}
-        >
-          Click to Start
-        </Button>
-      </div>
-    </main>
+        <div className={`${classes.welcome2} ${classes.welcomeSection}`}>
+          <div className={classes.welcomeImg}>
+            <Logo />
+          </div>
+        </div>
+        <div className={`${classes.welcome3} ${classes.welcomeSection}`}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            component={Link}
+            to="/select"
+            className={classes.button}
+          >
+            Click to Start
+          </Button>
+        </div>
+      </main>
+    </Page>
   )
 }
 
