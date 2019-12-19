@@ -1,5 +1,5 @@
 // import PageContent from './PageContent'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box } from '../themed/Box'
 import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
@@ -40,18 +40,27 @@ import SnackBar from './Snackbar'
 // The proper way to treat <main> as something semantic and apply the flex rule to its child where it is aimed
 // is to make its display: 'content,' rather than making its height and width 100%.
 //
-// The extra div with height: '100%' on the child div is required for AutoSizer
+// Its child with the height: '100%' is required for AutoSizer, that looks for explicit height.
 
-const EntirePageHeight = ({ children }) =>
-  process.env.REACT_APP_SERVER ? (
-    <div style={{ height: '100vh' }}>{children}</div>
+const EntirePageHeight = ({ server, children }) => {
+  console.log('EntirePageHeight called. server: ', server)
+  return server ? (
+    <div id="Server100vh" style={{ height: '100vh' }}>
+      {children}
+    </div>
   ) : (
-    <Div100vh>{children}</Div100vh>
+    <Div100vh id="Div100vh">{children}</Div100vh>
   )
+}
 
 const Page = ({ title, icon, noAppBar, children }) => {
+  const [server, setServer] = useState(true)
+  useEffect(() => {
+    setServer(false)
+  }, [])
+
   return (
-    <EntirePageHeight>
+    <EntirePageHeight {...{ server }}>
       <Box pageVariant="content">
         {!noAppBar && <MyAppBar {...{ title, icon }} />}
         <main style={{ display: 'contents' }}>
