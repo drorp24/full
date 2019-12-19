@@ -88,7 +88,7 @@ const Select = () => {
   }
 
   return (
-    <Page title="Get offers" icon="searchQuote">
+    <Page title="Find offers" icon="searchQuote" noBack>
       <FormContainer {...{ structure, show }} />
     </Page>
   )

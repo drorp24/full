@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
+import { makeStyles } from '@material-ui/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -10,12 +11,16 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 
 import { setA2hs } from '../../redux/actions'
 
+import iosShare from '../../assets/images/iosShare.png'
+import icon from '../../assets/images/apple-icon-120.png'
+
 export default function A2HSPrompt() {
   let nativeInstall = useContext(store => store.device.nativeInstall)
 
   const [show, setShow] = useState(false)
 
   const a2hs = useSelector(store => store.user.a2hs)
+  const ios = useSelector(store => store.device.ios)
   const { prompted, accepted } = a2hs
 
   const oneHour = 1000 * 60 * 60
@@ -89,29 +94,85 @@ export default function A2HSPrompt() {
   ])
 
   // Customize this as needed
-  const HomemadePrompt = ({ show }) => (
-    <Dialog
-      open={show}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">Add to homescreen</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Click 'Share' then 'Add to Homescreen' to get our service faster!
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleDismissed} color="primary">
-          Maybe next time
-        </Button>
-        <Button onClick={handleAccepted} color="primary" autoFocus>
-          OK
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
+  const HomemadePrompt = ({ show }) => {
+    const useStyles = makeStyles(theme => ({
+      background: {
+        backgroundColor: '#f8f8f8',
+      },
+      appMarketing: {
+        display: 'grid',
+        gridTemplateColumns: '8vh auto',
+        columnGap: '1em',
+        alignItems: 'center',
+        fontSize: '4.5vw',
+      },
+      url: {
+        color: '#888',
+        fontSize: '4vw',
+        fontWeight: '300',
+      },
+      instructions: {
+        fontSize: '4vw',
+        marginTop: '3vh',
+      },
+      appIcon: {
+        height: '13vw',
+        borderRadius: '7px',
+      },
+      iosIcon: {
+        width: '1.8em',
+      },
+    }))
+
+    const classes = useStyles()
+
+    return (
+      <Dialog
+        open={show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          // style={{ backgroundColor: '#f8f8f8' }}
+          id="alert-dialog-title"
+          className={classes.background}
+        >
+          Install Cryptonite
+        </DialogTitle>
+
+        <DialogContent className={classes.background}>
+          <div className={classes.appMarketing}>
+            <img src={icon} alt="icon" className={classes.appIcon}></img>
+            <div>
+              <div>Best Crypto Rates</div>
+              <div className={classes.url}>www.cryptonite.com</div>
+            </div>
+          </div>
+          <DialogContentText className={classes.instructions}>
+            <span>Click</span>
+            {ios && (
+              <span>
+                <img src={iosShare} alt="share" className={classes.iosIcon} />
+              </span>
+            )}
+            {!ios && <span> share </span>}
+            <span>
+              then 'Add to Homescreen' to get our service even faster!
+            </span>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className={classes.background}>
+          <Button onClick={handleDismissed} color="primary">
+            Maybe next time
+          </Button>
+          <Button onClick={handleAccepted} color="primary" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
 
   return <HomemadePrompt {...{ show }} />
 }

@@ -12,7 +12,7 @@ const OneStepper = ({ structure, show, ...rest }) => {
   const formValid = () => multiStepFormValidGeneric(structure, 0, form)
 
   const footer = () => (
-    <Grid container justify="flex-end">
+    <Grid container justify="center">
       <Fab
         color="primary"
         component={Link}

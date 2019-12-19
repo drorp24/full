@@ -1,4 +1,4 @@
-import React, { Component, Suspense, lazy } from 'react'
+import React, { Component } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setMessage, setCount } from './redux/actions'
@@ -47,14 +47,16 @@ class App extends Component {
         {/* ! ErrorBoundary must be beneath ThemeProvider */}
         <ErrorBoundary level="page">
           <Switch>
-            <Route exact path="/" component={Welcome} />
-            <Route path="/select" component={Select} />
+            <Route exact path="/">
+              <Welcome />
+            </Route>
+            <Route path="/select">
+              <Select />
+            </Route>
             <Route path="/merchants">
               {this.props.values && this.props.values.quote ? (
-                // <Suspense fallback={Loader}>
                 <Merchants />
               ) : (
-                // </Suspense>
                 <Redirect to="/select" />
               )}
             </Route>

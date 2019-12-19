@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
 
@@ -14,6 +15,7 @@ import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
 import ViewList from '@material-ui/icons/ViewList'
 import CloudOff from '@material-ui/icons/CloudOff'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import MySvg from '../utility/svg'
 import Div100vh from 'react-div-100vh'
 
@@ -26,10 +28,9 @@ import { inBrowser } from '../utility/detect'
 // Here, I'm passing the redux selector 'contextualMenu' so the background color is a function of whether the state is contextual or not.
 // In Merchant.js, 'state' is an object. But 'contextualMenu' is not.
 // Aparently, it's essential to pass an obj into useStyles or else MUI will log a (misleading) 'missing prop' error.
-const MyAppBar = ({ title, icon }) => {
+const MyAppBar = ({ title, icon = null, noBack }) => {
   const useStyles = makeStyles(theme => ({
     root: {
-      flexGrow: 0,
       width: '100%',
     },
     appBar: {
@@ -51,18 +52,33 @@ const MyAppBar = ({ title, icon }) => {
     },
     toolbar: {
       height: '100%',
+      display: 'grid',
+      gridTemplateColumns: '20% 60% 20%', // auto would leave the centerpart with no defined width, which prevents ellipsis
+      gridColumnGap: '10px',
     },
-    grow: {
-      flexGrow: 1,
+    pageIcon: {
+      display: 'none',
+      marginRight: '1rem',
     },
-    menuButton: {
-      marginLeft: -12,
-      marginRight: 20,
+    centerPart: {
+      display: 'flex',
+      // justifyContent: 'flex-start',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      flexWrap: 'nowrap',
+    },
+    name: {
+      fontWeight: '400',
+    },
+
+    backButton: {
       transform: ({ contextualMenu }) =>
         contextualMenu ? 'rotate(90deg)' : 'initial',
       transition: 'transform 0.3s',
     },
-    view: {},
+    viewMode: {
+      display: 'none',
+    },
   }))
 
   const name = useSelector(state => state.app.name)
@@ -86,11 +102,15 @@ const MyAppBar = ({ title, icon }) => {
   )
 
   const setViewToggle = useCallback(() => dispatch(toggleView()), [dispatch])
-  const iconButtonClicked = () => {
-    // Place here the menu logic
+
+  let history = useHistory()
+
+  const backButtonClicked = () => {
     if (contextualMenu) {
       setContextualMenu(false)
       setItemShouldClose(true)
+    } else {
+      history.goBack()
     }
   }
 
@@ -103,24 +123,33 @@ const MyAppBar = ({ title, icon }) => {
       <AppBar position="static" className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <IconButton
-            className={classes.menuButton}
+            className={classes.backButton}
             color="inherit"
-            onClick={iconButtonClicked}
+            onClick={backButtonClicked}
           >
-            {contextualMenu ? <Close /> : <MySvg icon={icon} />}
+            {contextualMenu ? (
+              <Close />
+            ) : (
+              <ArrowBackIcon
+                style={{ visibility: noBack ? 'hidden' : 'visible' }}
+              />
+            )}
           </IconButton>
-          <Typography
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.grow}
-          >
-            {name || title}
-          </Typography>
-          <CloudOff style={{ display: online ? 'none' : 'inline' }} />
+          <div className={classes.centerPart}>
+            <MySvg icon={icon} className={classes.pageIcon} />
+            <Typography
+              variant="h6"
+              color="inherit"
+              noWrap
+              className={classes.name}
+            >
+              {name || title}
+            </Typography>
+            <CloudOff style={{ display: online ? 'none' : 'inline' }} />
+          </div>
           <Link to={view === 'list' ? '/map' : '/merchants'} color="inherit">
             <IconButton
-              className={classes.view}
+              className={classes.viewMode}
               color="inherit"
               onClick={viewClicked}
             >

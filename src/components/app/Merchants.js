@@ -34,7 +34,7 @@ const Merchants = () => {
 
   return (
     <ApolloProviderClient>
-      <Page title="Offers" icon="quote">
+      <Page title="Select Offer" icon="quote">
         <Query
           query={merchantsQuery}
           variables={merchantsQueryVariables}

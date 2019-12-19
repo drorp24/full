@@ -80,7 +80,7 @@ const QueryResponse = ({
         <Messages
           title={!online ? 'No Connection' : 'Error'}
           array={[userError]}
-          kiy={!online ? null : error.graphQLErrors ? 'message' : null}
+          kiy={!online ? null : error.graphQLErrors.length ? 'message' : null}
         />
       )
     } else {

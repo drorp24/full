@@ -214,11 +214,9 @@ const Merchant = ({ loading, record, style }) => {
       transition: 'height 1s',
     },
     content: {
-      minHeight: '50%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      paddingBottom: 'unset',
     },
     contentText: {},
     closeActions: {
@@ -230,8 +228,15 @@ const Merchant = ({ loading, record, style }) => {
       paddingLeft: '0',
       justifyContent: 'flex-end',
     },
+    name: {
+      fontSize: '2.5vh',
+    },
+    address: {
+      fontSize: '2vh',
+    },
     price: {
-      fontWeight: '400',
+      fontSize: '2.2vh',
+      fontWeight: '500',
     },
 
     btn: {
@@ -283,11 +288,7 @@ const Merchant = ({ loading, record, style }) => {
     const [streetView, setStreetView] = useState(false)
     const [permissionGranted, setPermissionGranted] = useState(false)
 
-    const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${
-      record.location.coordinates[1]
-    },${record.location.coordinates[0]}&fov=90&key=${
-      process.env.REACT_APP_GOOGLE_API_KEY
-    }`
+    const imgUri = `https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${record.location.coordinates[1]},${record.location.coordinates[0]}&fov=90&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
 
     const price = record =>
       Number(
@@ -396,12 +397,14 @@ const Merchant = ({ loading, record, style }) => {
               gutterBottom
               variant="h5"
               component="h2"
+              className={classes.name}
             >
               {record.name}
             </Typography>
             <Typography
               style={{ ...ellipsis }}
               variant="body2"
+              className={classes.address}
               color="textSecondary"
               component="p"
               gutterBottom

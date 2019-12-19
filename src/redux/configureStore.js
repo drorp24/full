@@ -7,6 +7,13 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 
 // import logger from 'redux-logger'
 
+// ! redux-persist works in dev / local mode even with PersistGate commented
+// Though I commented PersistGate in in index.js for its interference with ssr,
+// in dev/local env, redux-persist does persist its values.
+// Probably because of the code below
+// This is actually very convenient in dev mode.
+// The price to pay is the KI that when I refresh with the merchant card open, AppBar remains contextual.
+
 // ! Persistence and Dehydration
 // Refreshing '/merchants' page only to get back to the '/select' page and see it blank after all the keying is a very poor UX.
 // Even more so if the page refresh happenned w/o the user's intention, by accidentally pulling the page, which will make it refresh.
@@ -41,7 +48,7 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: 'device',
+  blacklist: ['app', 'device'],
 }
 
 // ! Conditionally adding keys to an object

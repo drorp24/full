@@ -46,7 +46,7 @@ const Welcome = () => {
 
   return (
     <Page noAppBar>
-      <main className={classes.welcomeContainer}>
+      <div className={classes.welcomeContainer}>
         <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
           Welcome!
         </div>
@@ -66,7 +66,7 @@ const Welcome = () => {
             Click to Start
           </Button>
         </div>
-      </main>
+      </div>
     </Page>
   )
 }

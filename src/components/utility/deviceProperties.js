@@ -14,8 +14,9 @@ export const initiateDeviceProperties = store => {
 
   window.addEventListener('beforeinstallprompt', e => {
     // This event is fired by Chrome adroid and desktop to signal that app is qualified to be installed ('add to home screen / A2HS')
-    // The event is captured in the browserContext to be fired whenever the app wants to.
+    // The event is captured in redux to be fired whenever the app wants to.
     // The app can then use the chrome's native prompt (e.prompt()) if it wants to.
+    e.preventDefault() // The default we're preventing is to display a bar on android Chrome
     dispatch(setDevice({ nativeInstall: e }))
   })
 

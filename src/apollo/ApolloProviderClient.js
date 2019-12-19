@@ -153,7 +153,27 @@ const ApolloProviderClient = ({ children }) => {
     return () => {}
   }, [])
 
-  if (client === undefined) return <div>Loading...</div>
+  //! Quick loader
+  // When the time window for the loader/spinner is a fraction of a second,
+  // my attempt to include a component, any component (e.g., <Loader />) resulted in an empty screen.
+  // Probable reason: there's an overhead to mount a component
+  // Aparently, by the time React mounted the Loader component, the data has arrived and so the user saw an empty screen
+  // Animated svg had a similar fate - not showing anything.
+  // That's why instead of mounting a component and or animating I'm showing an inline text.
+  // Ugly. But as soon as Apollo integrates with React's Suspense I would anyway rewrite this.
+  if (client === undefined)
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <div>Loading.......</div>
+      </div>
+    )
   return <ApolloProvider client={client}>{children}</ApolloProvider>
 }
 
