@@ -136,10 +136,10 @@ const FormContext = React.createContext()
 // but useTheme does not generate className's.
 const useFormStyles = makeStyles(theme => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: '1',
+    display: 'grid',
+    gridTemplateRows: '15% 70% 15%',
     width: '100%',
+    height: '100%',
   },
   primary: {
     color: theme.palette.primary.main,

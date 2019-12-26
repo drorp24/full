@@ -22,13 +22,10 @@ const theme = createMuiTheme({
     secondary: green,
   },
   page: {
-    container: {
-      height: '100vh',
-    },
     content: {
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       alignItems: 'center',
       width: '100%',
       height: '100%',
@@ -36,13 +33,11 @@ const theme = createMuiTheme({
   },
   form: {
     header: {
-      height: '15%',
       padding: createdTheme.spacing(2),
       textAlign: 'center',
       color: createdTheme.palette.action.active,
     },
     body: {
-      height: '70%',
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
@@ -59,7 +54,6 @@ const theme = createMuiTheme({
       },
     },
     footer: {
-      height: '15%',
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
