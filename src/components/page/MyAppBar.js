@@ -17,7 +17,6 @@ import ViewList from '@material-ui/icons/ViewList'
 import CloudOff from '@material-ui/icons/CloudOff'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import MySvg from '../utility/svg'
-import Div100vh from 'react-div-100vh'
 
 import { inBrowser } from '../utility/detect'
 
@@ -54,7 +53,8 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
       height: '100%',
       display: 'grid',
       gridTemplateColumns: '20% 60% 20%', // auto would leave the centerpart with no defined width, which prevents ellipsis
-      gridColumnGap: '10px',
+      // gridColumnGap: '10px', // don't use it: it's not done symmetrically
+      padding: '0',
     },
     pageIcon: {
       display: 'none',
@@ -62,22 +62,24 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     },
     centerPart: {
       display: 'flex',
-      // justifyContent: 'flex-start',
-      justifyContent: 'space-evenly',
+      // justifyContent: 'flex-start', // title won't move when offline icon shows up
+      justifyContent: 'space-evenly', // title will move when offline icons shows up, but will be centered
       alignItems: 'center',
       flexWrap: 'nowrap',
     },
     name: {
       fontWeight: '400',
     },
-
     backButton: {
       transform: ({ contextualMenu }) =>
         contextualMenu ? 'rotate(90deg)' : 'initial',
       transition: 'transform 0.3s',
     },
     viewMode: {
-      display: 'none',
+      // visibility: 'hidden',
+    },
+    link: {
+      textAlign: 'center',
     },
   }))
 
@@ -85,7 +87,8 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   const view = useSelector(state => state.app.view)
   const contextualMenu = useSelector(state => state.app.contextual)
   const deviceIsOnline = useSelector(state => state.device.online)
-  const online = !inBrowser() || deviceIsOnline
+  const onServer = !inBrowser()
+  const online = deviceIsOnline || onServer
 
   const classes = useStyles({ contextualMenu })
 
@@ -119,46 +122,48 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   }
 
   return (
-    <Div100vh style={{ height: '10rvh' }} className={classes.root}>
-      <AppBar position="static" className={classes.appBar}>
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            className={classes.backButton}
+    <AppBar position="static" className={classes.appBar}>
+      <Toolbar className={classes.toolbar}>
+        <IconButton
+          className={classes.backButton}
+          color="inherit"
+          onClick={backButtonClicked}
+        >
+          {contextualMenu ? (
+            <Close />
+          ) : (
+            <ArrowBackIcon
+              style={{ visibility: noBack ? 'hidden' : 'visible' }}
+            />
+          )}
+        </IconButton>
+        <div className={classes.centerPart}>
+          <MySvg icon={icon} className={classes.pageIcon} />
+          <Typography
+            variant="h6"
             color="inherit"
-            onClick={backButtonClicked}
+            noWrap
+            className={classes.name}
           >
-            {contextualMenu ? (
-              <Close />
-            ) : (
-              <ArrowBackIcon
-                style={{ visibility: noBack ? 'hidden' : 'visible' }}
-              />
-            )}
+            {name || title}
+          </Typography>
+          <CloudOff style={{ display: online ? 'none' : 'inline' }} />
+        </div>
+        <Link
+          to={view === 'list' ? '/map' : '/merchants'}
+          color="inherit"
+          className={classes.link}
+        >
+          <IconButton
+            className={classes.viewMode}
+            color="inherit"
+            onClick={viewClicked}
+          >
+            {view === 'map' ? <ViewList /> : <Map />}
           </IconButton>
-          <div className={classes.centerPart}>
-            <MySvg icon={icon} className={classes.pageIcon} />
-            <Typography
-              variant="h6"
-              color="inherit"
-              noWrap
-              className={classes.name}
-            >
-              {name || title}
-            </Typography>
-            <CloudOff style={{ display: online ? 'none' : 'inline' }} />
-          </div>
-          <Link to={view === 'list' ? '/map' : '/merchants'} color="inherit">
-            <IconButton
-              className={classes.viewMode}
-              color="inherit"
-              onClick={viewClicked}
-            >
-              {view === 'map' ? <ViewList /> : <Map />}
-            </IconButton>
-          </Link>
-        </Toolbar>
-      </AppBar>
-    </Div100vh>
+        </Link>
+      </Toolbar>
+    </AppBar>
   )
 }
 
