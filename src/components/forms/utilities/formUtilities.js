@@ -137,7 +137,7 @@ const FormContext = React.createContext()
 const useFormStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '15% 70% 15%',
+    gridTemplateRows: '10% 65% 15%',
     width: '100%',
     height: '100%',
   },

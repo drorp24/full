@@ -6,8 +6,8 @@ import { address } from '../utility/geolocation'
 
 const structure = [
   {
-    title: 'What are you buying',
-    subtitle: 'Get the best offers',
+    title: 'What are you looking for',
+    // subtitle: 'Get the best offers',
     fields: [
       {
         name: 'quote',
@@ -20,7 +20,7 @@ const structure = [
           .length(3, 'Please enter the 3-letters code')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters'),
         required: true,
-        label: 'What are you paying with',
+        label: 'What currency are you paying with',
         helper: "The currency I'm paying with",
       },
       {
@@ -34,7 +34,7 @@ const structure = [
           .length(3, 'Please enter the 3-letters code')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters only'),
         required: true,
-        label: 'What are you looking for',
+        label: 'Which coin do you need',
         helper: "The currency I'm buying",
       },
       {
@@ -45,7 +45,7 @@ const structure = [
           // .min(10, 'Amount should be greater than 10')
           .typeError('Please fill in'),
         required: true,
-        label: 'How much do you need',
+        label: 'How much of that coin do you need',
         helper: 'The amount I need',
         clearable: true,
         // icon: baseSymbol,
@@ -62,19 +62,19 @@ const structure = [
       {
         name: 'delivery',
         type: 'switch',
-        value: true,
-        label: 'Delivery offers only',
+        value: false,
+        label: 'Do you require delivery',
         helper: 'Delivery offers only',
         required: true,
       },
-      {
-        name: 'lookaround',
-        type: 'switch',
-        value: true,
-        label: 'Nearby offers only',
-        helper: 'Nearby offers only',
-        required: true,
-      },
+      // {
+      //   name: 'lookaround',
+      //   type: 'switch',
+      //   value: true,
+      //   label: 'Nearby offers only',
+      //   helper: 'Nearby offers only',
+      //   required: true,
+      // },
     ],
   },
 ]

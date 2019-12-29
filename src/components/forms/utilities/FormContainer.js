@@ -260,7 +260,7 @@ const FormContainer = ({ structure, show }) => {
     const selected = base && quote
     const getting = amount ? `${String(amount)} ${base}` : base
     return (
-      <>
+      <MyTypography component="div" formVariant="typography.header">
         <MyTypography component="div" formVariant="typography.title">
           {selected ? getting : title}
         </MyTypography>
@@ -271,7 +271,7 @@ const FormContainer = ({ structure, show }) => {
             subtitle
           )}
         </MyTypography>
-      </>
+      </MyTypography>
     )
   }
 

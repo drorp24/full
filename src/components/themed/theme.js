@@ -61,6 +61,12 @@ const theme = createMuiTheme({
       alignItems: 'center',
     },
     typography: {
+      header: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '100%',
+      },
       title: {
         height: '50%',
         fontSize: '6vmin',
@@ -71,7 +77,6 @@ const theme = createMuiTheme({
         alignItems: 'center',
       },
       subtitle: {
-        height: '50%',
         fontSize: '4.5vmin',
         color: createdTheme.palette.text.secondary,
         whiteSpace: 'pre-line',
