@@ -81,7 +81,7 @@ export default function A2HSPrompt() {
         setShow(true)
       }
     }
-    setTimeout(prompt, 3000)
+    setTimeout(prompt, 10000)
   }, [
     a2hs,
     accepted,
@@ -157,9 +157,7 @@ export default function A2HSPrompt() {
               </span>
             )}
             {!ios && <span> share </span>}
-            <span>
-              then 'Add to Homescreen' to get our service even faster!
-            </span>
+            <span>then 'Add to Homescreen' to get our service faster!</span>
           </DialogContentText>
         </DialogContent>
         <DialogActions className={classes.background}>

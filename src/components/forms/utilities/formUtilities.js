@@ -137,7 +137,7 @@ const FormContext = React.createContext()
 const useFormStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '10% 65% 15%',
+    gridTemplateRows: '15% 65% 15%',
     width: '100%',
     height: '100%',
   },
@@ -366,13 +366,13 @@ const useSwitchStyles = makeStyles(theme => ({
 // This reaplaces the 'classNames' solution and is in my mind the most important feature of mui's v4
 // It's also the ultimate use case for CSS-in-JS:
 // the ability to define styling declaratively: as a function of state (rather than imperatively switching classes back and forth)
-const SwitchField = ({ name, value, helper, onChange }) => {
+const SwitchField = ({ name, value, label, onChange }) => {
   const classes = useSwitchStyles({ checked: value })
   const { root, switchLabel } = classes
 
   return (
     <Row>
-      <span className={switchLabel}>{helper}</span>
+      <span className={switchLabel}>{label}</span>
       <Switch
         color="primary"
         name={name}
