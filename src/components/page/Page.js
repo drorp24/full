@@ -75,10 +75,7 @@ import { inBrowser } from '../utility/detect'
 
 const Viewport = ({ children, percent, server }) => {
   const unit = server ? 'vh' : 'rvh'
-
-  console.log(`Viewport on the ${server ? 'server' : 'client'}`)
   const div100Style = { height: `${percent}${unit}`, width: '100%' }
-  console.log('div100Style: ', div100Style)
 
   return server ? (
     <div style={div100Style}>{children}</div>

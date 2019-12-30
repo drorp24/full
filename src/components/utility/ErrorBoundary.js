@@ -36,8 +36,17 @@ class ErrorBoundary extends React.Component {
         ></TextField>
       ) : (
         <Page title="Something went wrong">
-          <div style={{ height: '50%' }}>
-            We've been notified and taking care of this
+          <div
+            style={{
+              height: '50%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <h3>Oops, something went wrong...</h3>
+            <p>We've been notified and taking care of this</p>
           </div>
         </Page>
       )

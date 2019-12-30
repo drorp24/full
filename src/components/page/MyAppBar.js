@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useReducer } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
@@ -10,6 +10,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
 
 import Close from '@material-ui/icons/Close'
 import Map from '@material-ui/icons/Map'
@@ -17,8 +18,14 @@ import ViewList from '@material-ui/icons/ViewList'
 import CloudOff from '@material-ui/icons/CloudOff'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import MySvg from '../utility/svg'
+import MyDrawer from './MyDrawer'
 
 import { inBrowser } from '../utility/detect'
+
+//! Mystery: MyAppBar gets re-rendered whenever either of the form values gets updated
+// That's 3 times plus 1 for each location tracking attempt.
+// It makes no sense as none of MyAppBar's 8 hooks needs to change following those updates.
+// But that still happens, and Profile tab shows it clearly, without of course disclosing which of the hooks changed.
 
 // ! useStyles' argument must be an object
 // useStyles hook can receive a variable as an optional argument, which can then be used
@@ -75,9 +82,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
         contextualMenu ? 'rotate(90deg)' : 'initial',
       transition: 'transform 0.3s',
     },
-    viewMode: {
-      // visibility: 'hidden',
-    },
+    viewMode: {},
     link: {
       textAlign: 'center',
     },
@@ -108,17 +113,68 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
 
   let history = useHistory()
 
-  const backButtonClicked = () => {
-    if (contextualMenu) {
-      setContextualMenu(false)
-      setItemShouldClose(true)
-    } else {
-      history.goBack()
-    }
+  const closeClicked = () => {
+    setContextualMenu(false)
+    setItemShouldClose(true)
+  }
+
+  const backClicked = () => {
+    history.goBack()
   }
 
   const viewClicked = () => {
     setViewToggle()
+  }
+
+  //! Passing a reducer down to a child
+  // The Menu icon is part of the MyAppBar component;
+  // when it is clicked, it should affect MyDrawer's state so that MyDrawer will re-render;
+  // The menu items on the other hand are part of the MyDrawer component;
+  // when they are clicked, they should also affect MyDrawer's state in the same way to make it re-render (close in this case).
+  //
+  // MyDrawer has a property ('open') which, when changed, make it re-render, i.e., open or close.
+  // That state should be able to be managed by MyDrawer locally, and also be dictated by the parent.
+  // In addition, internal state changes should be reported up to the parent (to be able to toggle, in this case).
+  // All this means that MyDrawer's state needs to be controlled by its parent.
+  //
+  // Instead of usingState and sending the setWhatever as a prop to the child,
+  // it's preferrable to pass a dispatch function to the child, the one returned by calling useReducer.
+  //
+  // The main reason:
+  // if the state is anyway controlled by the parent, the logic to update it better be left to the parent only.
+  // Passing a reducer function means the child doesn't know the logic to do the update;
+  // instead, it merely sets up a 'type', specifying what should be done rather than how.
+  // The logic is right here, in 'drawerReducer':
+
+  function drawerReducer(state, { type }) {
+    switch (type) {
+      case 'open':
+        return true
+      case 'close':
+        return false
+      case 'toggle':
+        return !state
+      default:
+        throw new Error()
+    }
+  }
+
+  const [drawerState, drawerDispatch] = useReducer(drawerReducer, false)
+
+  const menuClicked = () => {
+    drawerDispatch({ type: 'toggle' })
+  }
+
+  let Icon, clickHandler
+  if (contextualMenu) {
+    Icon = Close
+    clickHandler = closeClicked
+  } else if (!noBack) {
+    Icon = ArrowBackIcon
+    clickHandler = backClicked
+  } else {
+    Icon = MenuIcon
+    clickHandler = menuClicked
   }
 
   return (
@@ -127,15 +183,10 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
         <IconButton
           className={classes.backButton}
           color="inherit"
-          onClick={backButtonClicked}
+          onClick={clickHandler}
+          disableRipple={true}
         >
-          {contextualMenu ? (
-            <Close />
-          ) : (
-            <ArrowBackIcon
-              style={{ visibility: noBack ? 'hidden' : 'visible' }}
-            />
-          )}
+          <Icon />
         </IconButton>
         <div className={classes.centerPart}>
           <MySvg icon={icon} className={classes.pageIcon} />
@@ -163,6 +214,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
           </IconButton>
         </Link>
       </Toolbar>
+      <MyDrawer {...{ drawerState, drawerDispatch }} />
     </AppBar>
   )
 }
