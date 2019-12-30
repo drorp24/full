@@ -14,28 +14,36 @@ import Help from '@material-ui/icons/Help'
 import ContactPhone from '@material-ui/icons/ContactPhone'
 
 import { ios } from '../utility/detect'
+import share from './share'
+
+const doNothing = () => {}
 
 // ! Passing components dynamically with an object
 const menu = [
   {
     icon: <Share />,
     text: 'Share us',
+    action: share,
   },
   {
     icon: <DarkMode />,
     text: 'Dark mode',
+    action: doNothing,
   },
   {
     icon: <Map />,
     text: 'Map view',
+    action: doNothing,
   },
   {
     icon: <ContactPhone />,
     text: 'Contact us',
+    action: doNothing,
   },
   {
     icon: <Help />,
     text: 'Help',
+    action: doNothing,
   },
 ]
 
@@ -103,8 +111,13 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       >
         <div className={classes.header}>Cryptonite</div>
         <List className={classes.list}>
-          {menu.map(({ icon, text }) => (
-            <ListItem button key={text} className={classes.listItem}>
+          {menu.map(({ icon, text, action }) => (
+            <ListItem
+              button
+              key={text}
+              className={classes.listItem}
+              onClick={action}
+            >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText disableTypography>{text}</ListItemText>
             </ListItem>
