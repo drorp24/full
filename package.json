@@ -32,6 +32,7 @@
     "autosuggest-highlight": "^3.1.1",
     "axios": "^0.18.0",
     "chart.js": "^2.7.3",
+    "clsx": "^1.0.4",
     "compression": "^1.7.4",
     "concurrently": "^4.1.0",
     "currency-flags": "https://github.com/transferwise/currency-flags.git",

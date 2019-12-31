@@ -8,6 +8,7 @@ const initialState = {
   nativeInstall: null,
   newerSwWaiting: null,
   contentCached: null,
+  appShared: null,
 }
 
 export default (state = initialState, action) => {

@@ -94,7 +94,7 @@ export const setDevice = payload => ({
 // saves the need to define here a new function for every new reducer / action
 // particulalry useful when value needs to be temporarily set, such as when a message should be displayed for a potentially reccurring event
 // to make 'temporarily' simple, 'setValue' accepts only one key-value pair and the value must be boolean
-export const setValue = (type, key, value) => ({
+export const setValue = ({ type, key, value }) => ({
   type,
   payload: { [key]: value },
 })
@@ -102,12 +102,22 @@ export const setValue = (type, key, value) => ({
 // ! self-removing value setting
 // Turns ongoing states into periodical events, whose frequency I can control
 // Useful to periodically remind user of states which by nature are ongoing.
-export const temporarilySetValue = (type, key, value, time = 10) => {
-  return dispatch => {
-    dispatch(setValue(type, key, value))
-    setTimeout(() => {
-      const negValue = !value
-      dispatch(setValue(type, key, negValue))
-    }, time * 1000)
-  }
+//
+// Unlike the other actions here, it returns a function of 'dispatch'
+// rather than directly returning an activity object
+// This form of action is accepted thanks to 'thunk' being included.
+// It is done that way since the activity's effect is async -
+// a second 'dispatch' is scheduled to take place a few seconds after the first one.
+export const temporarilySetValue = ({
+  type,
+  key,
+  value,
+  time = 10,
+  toggle = true,
+}) => dispatch => {
+  dispatch(setValue({ type, key, value }))
+  setTimeout(() => {
+    const resetValue = toggle ? !value : null
+    dispatch(setValue({ type, key, resetValue }))
+  }, time * 1000)
 }

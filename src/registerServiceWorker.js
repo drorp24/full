@@ -151,17 +151,22 @@ function registerValidSW(swUrl, store) {
               console.log(
                 '(1) onupdatefound fired - notices the new waiting sw (triggered by page load / entry)'
               )
-              temporarilySetValue('SET_DEVICE', 'newerSwWaiting', true, 30)(
-                store.dispatch
-              )
+              temporarilySetValue({
+                type: 'SET_DEVICE',
+                key: 'newerSwWaiting',
+                value: true,
+                time: 30,
+              })(store.dispatch)
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
               console.log('Content is cached for offline use.')
-              temporarilySetValue('SET_DEVICE', 'contentCached', true)(
-                store.dispatch
-              )
+              temporarilySetValue({
+                type: 'SET_DEVICE',
+                key: 'contentCached',
+                value: true,
+              })(store.dispatch)
             }
           }
         }
@@ -215,9 +220,12 @@ function noticeWaitingSw(store) {
         console.log(
           '(2) noticeWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
         )
-        temporarilySetValue('SET_DEVICE', 'newerSwWaiting', true, 30)(
-          store.dispatch
-        )
+        temporarilySetValue({
+          type: 'SET_DEVICE',
+          key: 'newerSwWaiting',
+          value: true,
+          time: 30,
+        })(store.dispatch)
       }
     })
   }

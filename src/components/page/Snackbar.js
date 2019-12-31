@@ -5,7 +5,9 @@ import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
+import defined from '../utility/defined'
+import MySvg from '../utility/svg'
+import clsx from 'clsx'
 
 // ! Informing user of events using snackbars
 //
@@ -22,9 +24,9 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
 // - both of which I made to recur every page reload and app visit.
 //
 // ! Use multi-variable state (only) when it makes sense
-// Many times, it's easier to let useState handle a scalar rather than an and use as many of them as needed,
+// Many times, it's easier to let useState handle a scalar rather than an object and use as many of them as needed,
 // otherwise, if you update only one variable at a time and don't know the value of (or don't want to update) the others,
-// you must either use the functional form of setState or useReducer or even useImmerReducer..
+// you must either use the functional form of setState or useReducer or even useImmerReducer.
 // 'message' however is one of those cases where it actually makes more sense to define a multi-variable (i.e., object) state.
 
 // ! Place configuration / unchanging function definitions outside the component
@@ -85,13 +87,19 @@ const messages = {
       'Connection is lost, but no worries: <br/><strong>you can use the app offline!</strong>',
     action: null,
     invoke: () => {},
+    icon: 'cloudOff',
+    level: 'warning',
+    duration: '10000',
   },
   onlineMsg: {
     type: 'online',
     text:
-      'Connection is on again! <br /><strong>Reload</strong> to see the latest offers.',
+      'Connection is on! <br /><strong>Reload</strong> to view latest offers',
     action: 'Reload',
     invoke: reload,
+    icon: 'cloudOn',
+    level: 'success',
+    duration: 10000,
   },
   newerSwWaitingMsg: {
     type: 'newerSwWaiting',
@@ -105,11 +113,29 @@ const messages = {
     action: '',
     invoke: () => {},
   },
+  appSharedMsg: {
+    type: 'appShared',
+    text: 'Thanks for sharing Cryptonite!',
+    action: '',
+    invoke: () => {},
+    icon: 'check',
+    level: 'success',
+    duration: 3000,
+  },
+  appNotSharedMsg: {
+    type: 'appNotShared',
+    text: 'This device does not support sharing',
+    action: '',
+    invoke: () => {},
+    icon: 'warning',
+    level: 'warning',
+    duration: 3000,
+  },
 }
 
 export default function MySnackbar() {
   const device = useSelector(store => store.device)
-  const { newerSwWaiting, contentCashed, online } = device
+  const { newerSwWaiting, contentCashed, online, appShared } = device
 
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState({
@@ -128,7 +154,7 @@ export default function MySnackbar() {
       fontSize: '1.5rem',
     },
     icon: {
-      marginRight: theme.spacing(1),
+      marginRight: theme.spacing(2),
       fontSize: '1.5rem',
     },
     message: {
@@ -138,6 +164,16 @@ export default function MySnackbar() {
     },
     action: {
       textTransform: 'uppercase',
+      color: '#90ee90',
+    },
+    success: {
+      color: '#90ee90',
+    },
+    warning: {
+      color: 'orange',
+    },
+    error: {
+      color: 'red',
     },
   }))
 
@@ -157,6 +193,8 @@ export default function MySnackbar() {
       onlineMsg,
       newerSwWaitingMsg,
       contentCashedMsg,
+      appSharedMsg,
+      appNotSharedMsg,
     } = messages
 
     if (!online) {
@@ -171,8 +209,14 @@ export default function MySnackbar() {
     } else if (contentCashed) {
       setOpen(true)
       setMessage(contentCashedMsg)
+    } else if (defined(appShared) && appShared) {
+      setOpen(true)
+      setMessage(appSharedMsg)
+    } else if (defined(appShared) && !appShared) {
+      setOpen(true)
+      setMessage(appNotSharedMsg)
     }
-  }, [contentCashed, newerSwWaiting, online, message])
+  }, [contentCashed, newerSwWaiting, online, message, appShared])
 
   return (
     <div>
@@ -182,7 +226,7 @@ export default function MySnackbar() {
           horizontal: 'left',
         }}
         open={open}
-        autoHideDuration={30000}
+        autoHideDuration={message.duration || 10000}
         onClose={handleClose}
         ContentProps={{
           'aria-describedby': 'message-id',
@@ -190,18 +234,19 @@ export default function MySnackbar() {
         }}
         message={
           <div id="message-id" className={classes.message}>
-            <InfoOutlinedIcon className={classes.icon} />
+            <MySvg
+              icon={message.icon || 'info'}
+              className={clsx(
+                classes[message.level || 'success'],
+                classes.icon
+              )}
+            />
             <span dangerouslySetInnerHTML={{ __html: message.text }} />
           </div>
         }
         action={[
           message.action && (
-            <Button
-              key="undo"
-              color="secondary"
-              size="small"
-              onClick={message.invoke}
-            >
+            <Button key="undo" size="small" onClick={message.invoke}>
               <span className={classes.action}>{message.action}</span>
             </Button>
           ),

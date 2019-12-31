@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
 import { makeStyles } from '@material-ui/styles'
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
@@ -16,42 +17,44 @@ import ContactPhone from '@material-ui/icons/ContactPhone'
 import { ios } from '../utility/detect'
 import share from './share'
 
-const doNothing = () => {}
-
-// ! Passing components dynamically with an object
-const menu = [
-  {
-    icon: <Share />,
-    text: 'Share us',
-    action: share,
-  },
-  {
-    icon: <DarkMode />,
-    text: 'Dark mode',
-    action: doNothing,
-  },
-  {
-    icon: <Map />,
-    text: 'Map view',
-    action: doNothing,
-  },
-  {
-    icon: <ContactPhone />,
-    text: 'Contact us',
-    action: doNothing,
-  },
-  {
-    icon: <Help />,
-    text: 'Help',
-    action: doNothing,
-  },
-]
-
 const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const [isIos, setIsIos] = useState()
   useEffect(() => {
     setIsIos(ios())
   }, [])
+
+  const dispatch = useDispatch()
+
+  const doNothing = () => {}
+
+  // ! Passing components dynamically with an object
+  const menu = [
+    {
+      icon: <Share />,
+      text: 'Share app',
+      action: share(dispatch),
+    },
+    {
+      icon: <DarkMode />,
+      text: 'Dark mode',
+      action: doNothing,
+    },
+    {
+      icon: <Map />,
+      text: 'Map view',
+      action: doNothing,
+    },
+    {
+      icon: <ContactPhone />,
+      text: 'Contact us',
+      action: doNothing,
+    },
+    {
+      icon: <Help />,
+      text: 'Help',
+      action: doNothing,
+    },
+  ]
 
   const drawer = action => event => {
     if (
