@@ -73,14 +73,18 @@ import { inBrowser } from '../utility/detect'
 // If it happens next time, I should look for the closest parent <div /> and make sure it comes with explicit height.
 // <Autosizer /> has quite many React components above it, but they are mostly HOCs, not rendering anything.
 
-const Viewport = ({ children, percent, server }) => {
+const Viewport = ({ children, percent, server, id }) => {
   const unit = server ? 'vh' : 'rvh'
   const div100Style = { height: `${percent}${unit}`, width: '100%' }
 
   return server ? (
-    <div style={div100Style}>{children}</div>
+    <div style={div100Style} id={id}>
+      {children}
+    </div>
   ) : (
-    <Div100vh style={div100Style}>{children}</Div100vh>
+    <Div100vh style={div100Style} id={id}>
+      {children}
+    </Div100vh>
   )
 }
 
@@ -91,13 +95,25 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const server = !inBrowser()
 
   return (
-    <Viewport percent={100} server={server}>
+    <Viewport
+      percent={100}
+      server={server}
+      id={'viewport' + (server ? 'Server' : 'Client')}
+    >
       <Box pageVariant="content">
         <Viewport percent={appBarHeightPercent} server={server}>
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
         </Viewport>
         <Viewport percent={mainHeightPercent} server={server}>
-          <main style={{ height: '100%' }}>{children}</main>
+          <main
+            style={{
+              height: '100%',
+              boxSizing: 'border-box',
+              border: '10px solid purple',
+            }}
+          >
+            {children}
+          </main>
         </Viewport>
         <SnackBar />
       </Box>

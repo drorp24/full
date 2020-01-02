@@ -36,8 +36,11 @@ const theme = createMuiTheme({
       padding: createdTheme.spacing(2),
       textAlign: 'center',
       color: createdTheme.palette.action.active,
+      border: '2px solid blue',
     },
     body: {
+      border: '2px solid orange',
+
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
@@ -54,6 +57,8 @@ const theme = createMuiTheme({
       },
     },
     footer: {
+      border: '2px solid darkgreen',
+
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',

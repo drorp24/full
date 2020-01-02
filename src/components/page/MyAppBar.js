@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react'
+import React, { useCallback, useReducer, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
@@ -177,6 +177,14 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     clickHandler = menuClicked
   }
 
+  const [height, setHeight] = useState()
+
+  useEffect(() => {
+    window.onresize = () => {
+      setHeight(document.getElementById('viewportClient').style.height)
+    }
+  }, [])
+
   return (
     <AppBar position="static" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
@@ -196,7 +204,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
             noWrap
             className={classes.name}
           >
-            {name || title}
+            {height || name || title}
           </Typography>
           <CloudOff style={{ display: online ? 'none' : 'inline' }} />
         </div>
