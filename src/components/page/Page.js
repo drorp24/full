@@ -95,16 +95,22 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const server = !inBrowser()
 
   return (
-    <Viewport
-      percent={100}
+    <div
+      style={{ height: '100vh', width: '100%' }}
       server={server}
       id={'viewport' + (server ? 'Server' : 'Client')}
     >
       <Box pageVariant="content">
-        <Viewport percent={appBarHeightPercent} server={server}>
+        <div
+          style={{ height: `${appBarHeightPercent}%`, width: '100%' }}
+          server={server}
+        >
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
-        </Viewport>
-        <Viewport percent={mainHeightPercent} server={server}>
+        </div>
+        <div
+          style={{ height: `${mainHeightPercent}%`, width: '100%' }}
+          server={server}
+        >
           <main
             style={{
               height: '100%',
@@ -114,10 +120,10 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
           >
             {children}
           </main>
-        </Viewport>
+        </div>
         <SnackBar />
       </Box>
-    </Viewport>
+    </div>
   )
 }
 
