@@ -137,10 +137,11 @@ const FormContext = React.createContext()
 const useFormStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '15% 60% 15%',
+    gridTemplateRows: '15% 70% 15%',
     width: '100%',
-    height: '100%',
+    height: '90%',
     boxSizing: 'border-box',
+    border: '5px solid limegreen',
   },
   primary: {
     color: theme.palette.primary.main,
