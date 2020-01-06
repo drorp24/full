@@ -104,6 +104,6 @@ const theme = createMuiTheme({
   },
 })
 
-window.theme = theme
+// if (typeof window !== 'undefined') window.theme = theme
 
 export default theme
