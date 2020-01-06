@@ -3,8 +3,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setForm } from '../../../redux/actions'
 import PropTypes from 'prop-types'
 import { produce } from 'immer'
+import clsx from 'clsx'
 
 import { makeStyles } from '@material-ui/styles'
+import { useTheme } from '@material-ui/core/styles'
 // import { FormHelperText } from '@material-ui/core'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField from '@material-ui/core/TextField'
@@ -139,7 +141,7 @@ const useFormStyles = makeStyles(theme => ({
     display: 'grid',
     gridTemplateRows: '15% 70% 15%',
     width: '100%',
-    height: '90%',
+    height: '100%',
     boxSizing: 'border-box',
     border: '5px solid limegreen',
   },
@@ -154,6 +156,9 @@ const useFormStyles = makeStyles(theme => ({
   },
   error: {
     borderBottomColor: `${theme.palette.error.main} !important`,
+  },
+  inputBase: {
+    paddingRight: theme.form.body.fields.inputBase.paddingRight,
   },
 }))
 
@@ -354,13 +359,11 @@ DisplayField.propTypes = {
 // which are not namespaced (e.g., 'root').]
 // It's also more convenient that the custom styles are next to the components
 const useSwitchStyles = makeStyles(theme => ({
-  root: {
-    transform: 'translate(12px)',
+  root: theme.form.body.fields.switch,
+  onOff: {
+    color: checked =>
+      checked ? theme.palette.action.active : theme.palette.action.disabled,
   },
-  switchLabel: ({ checked }) =>
-    !checked
-      ? theme.form.body.fields.label.unchecked
-      : theme.form.body.fields.label,
 }))
 
 // Using a prop ('checked') to create a prop-based dynamic style ('switchLabel')
@@ -369,21 +372,13 @@ const useSwitchStyles = makeStyles(theme => ({
 // It's also the ultimate use case for CSS-in-JS:
 // the ability to define styling declaratively: as a function of state (rather than imperatively switching classes back and forth)
 const SwitchField = ({ name, value, label, onChange }) => {
-  const classes = useSwitchStyles({ checked: value })
-  const { root, switchLabel } = classes
+  const classes = useSwitchStyles(value)
+  const { root, onOff } = classes
 
   return (
     <Row>
-      <span className={switchLabel}>{label}</span>
-      <Switch
-        color="primary"
-        name={name}
-        checked={value}
-        classes={{
-          root,
-        }}
-        onChange={onChange}
-      />
+      <span className={clsx(root, onOff)}>{label}</span>
+      <Switch color="primary" name={name} checked={value} onChange={onChange} />
     </Row>
   )
 }
@@ -403,6 +398,7 @@ const NumberField = ({
   const {
     values: { base },
   } = form
+  const theme = useTheme()
 
   return (
     <TextField
@@ -416,6 +412,10 @@ const NumberField = ({
           thousandSeparator: true,
           onValueChange: onChange,
           prefix: getSymbolFromCurrency(base),
+          style: {
+            height: theme.form.body.fields.input.height,
+            padding: theme.form.body.fields.input.padding,
+          },
         },
         // Typically with TextField, 'value' and 'onChange' are props of TextField,
         // that in turn passes them onto the inputComponent, but has to know the value too, as well as error and helpText passed in ...rest
@@ -432,6 +432,7 @@ const NumberField = ({
       }}
       name={name}
       value={value}
+      variant="outlined"
       {...rest}
     />
   )
@@ -494,11 +495,10 @@ const AutosuggestField = ({
           showAdornment(icon, value) && IconAdornment({ icon, form }),
         inputComponent: MuiAutosuggest,
         inputProps: {
-          // onBlur,
           entireList,
           quantity: 90,
         },
-        disableUnderline: true,
+        className: classes.inputBase,
       }}
       InputLabelProps={{
         className: classes.label,
@@ -507,6 +507,7 @@ const AutosuggestField = ({
       onChange={onChange}
       value={value}
       fullWidth={fullWidth}
+      variant="outlined"
       {...rest}
     />
   )
@@ -547,7 +548,7 @@ const LocationField = ({
           }),
           updateAddress,
         },
-        disableUnderline: true,
+        className: classes.inputBase,
       }}
       InputLabelProps={{
         className: classes.label,
@@ -557,6 +558,7 @@ const LocationField = ({
       onChange={onChange}
       fullWidth={fullWidth}
       label={label}
+      variant="outlined"
       {...rest}
     />
   )
@@ -588,6 +590,7 @@ const DefaultField = ({
       }}
       value={value}
       name={name}
+      // variant="outlined"
       onChange={onChange}
       {...rest}
     >

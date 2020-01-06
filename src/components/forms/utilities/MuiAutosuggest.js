@@ -78,6 +78,7 @@ function renderInputComponentPure({
           input: classes.input,
         },
         endAdornment: EndAdornment(),
+        disableUnderline: true,
       }}
       value={value}
       {...other}
@@ -194,7 +195,7 @@ const useStyles = makeStyles(theme => ({
   },
   suggestionsContainerOpen: {
     position: 'absolute',
-    zIndex: 1,
+    zIndex: 2,
     marginTop: theme.spacing(2),
     left: 0,
     right: 0,
@@ -209,6 +210,11 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     color: theme.palette.primary.main,
+    height: theme.form.body.fields.input.height,
+    padding: theme.form.body.fields.input.padding,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
 }))
 

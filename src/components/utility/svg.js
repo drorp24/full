@@ -10,6 +10,10 @@ const styles = {
     position: 'relative',
     top: '3px',
   },
+  search: {
+    width: '1.5em',
+    height: '1.5em',
+  },
 }
 
 const paths = {

@@ -33,7 +33,6 @@ const theme = createMuiTheme({
   },
   form: {
     header: {
-      padding: createdTheme.spacing(2),
       textAlign: 'center',
       color: createdTheme.palette.action.active,
       border: '2px solid blue',
@@ -41,7 +40,7 @@ const theme = createMuiTheme({
     body: {
       border: '2px solid orange',
 
-      padding: '2.5rem',
+      padding: '0 1em',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-evenly',
@@ -50,16 +49,27 @@ const theme = createMuiTheme({
         label: {
           color: createdTheme.palette.action.active,
           fontSize: '0.9em',
+          transform: 'translate(1em, 1em) scale(1)',
           unchecked: {
             color: createdTheme.palette.action.disabled,
           },
+        },
+        inputBase: {
+          paddingRight: '1em',
+        },
+        input: {
+          height: '2rem',
+          padding: '6px 1em 7px 1em',
+        },
+        switch: {
+          marginLeft: '1em',
+          fontSize: '0.9em',
         },
       },
     },
     footer: {
       border: '2px solid darkgreen',
 
-      padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -94,6 +104,6 @@ const theme = createMuiTheme({
   },
 })
 
-// window.theme = theme
+window.theme = theme
 
 export default theme

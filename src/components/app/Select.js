@@ -20,7 +20,7 @@ const structure = [
           .length(3, 'Please enter the 3-letters code')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters'),
         required: true,
-        label: 'What currency are you paying with',
+        label: 'Paying with',
         helper: "The currency I'm paying with",
       },
       {
@@ -34,7 +34,7 @@ const structure = [
           .length(3, 'Please enter the 3-letters code')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters only'),
         required: true,
-        label: 'Which coin do you need',
+        label: 'Buying coin',
         helper: "The currency I'm buying",
       },
       {
@@ -45,7 +45,7 @@ const structure = [
           // .min(10, 'Amount should be greater than 10')
           .typeError('Please fill in'),
         required: true,
-        label: 'How much of that coin do you need',
+        label: 'Amount required',
         helper: 'The amount I need',
         clearable: true,
         // icon: baseSymbol,
@@ -55,7 +55,7 @@ const structure = [
         type: 'location',
         value: address,
         fieldSchema: string().required('Please specify'),
-        label: 'Where to look for offers',
+        label: 'Search around',
         helper: 'Center the search here',
         clearable: true,
       },
@@ -63,7 +63,7 @@ const structure = [
         name: 'delivery',
         type: 'switch',
         value: false,
-        label: 'Do you require delivery',
+        label: 'Delivery required',
         helper: 'Delivery offers only',
         required: true,
       },
