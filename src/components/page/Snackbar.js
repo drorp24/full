@@ -131,11 +131,26 @@ const messages = {
     level: 'warning',
     duration: 3000,
   },
+  landscapeMsg: {
+    type: 'landscape',
+    text: 'We work best in portrait mode',
+    action: '',
+    invoke: () => {},
+    icon: 'warning',
+    level: 'warning',
+    duration: 3000,
+  },
 }
 
 export default function MySnackbar() {
   const device = useSelector(store => store.device)
-  const { newerSwWaiting, contentCashed, online, appShared } = device
+  const {
+    newerSwWaiting,
+    contentCashed,
+    online,
+    appShared,
+    orientation,
+  } = device
 
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState({
@@ -195,6 +210,7 @@ export default function MySnackbar() {
       contentCashedMsg,
       appSharedMsg,
       appNotSharedMsg,
+      landscapeMsg,
     } = messages
 
     if (!online) {
@@ -215,8 +231,11 @@ export default function MySnackbar() {
     } else if (defined(appShared) && !appShared) {
       setOpen(true)
       setMessage(appNotSharedMsg)
+    } else if (orientation === 'landscape') {
+      setOpen(true)
+      setMessage(landscapeMsg)
     }
-  }, [contentCashed, newerSwWaiting, online, message, appShared])
+  }, [contentCashed, newerSwWaiting, online, message, appShared, orientation])
 
   return (
     <div>

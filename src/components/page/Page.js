@@ -1,4 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { setValue } from '../../redux/actions'
+import { SET_DEVICE } from '../../redux/types'
+
 import { Box } from '../themed/Box'
 import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
@@ -75,7 +79,6 @@ import { makeStyles } from '@material-ui/styles'
 // <Autosizer /> has quite many React components above it, but they are mostly HOCs, not rendering anything.
 
 const Viewport = ({ children, percent, server, id }) => {
-  const unit = server ? 'vh' : 'rvh'
   const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
@@ -87,6 +90,8 @@ const Viewport = ({ children, percent, server, id }) => {
   }))
 
   const classes = useStyles(percent)
+
+  const unit = server ? 'vh' : 'rvh'
 
   return server ? (
     <div
@@ -113,6 +118,22 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   // TODO: maybe 'server' needs to be a state
   const server = !inBrowser()
 
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const setOrientation = orientation =>
+      dispatch(
+        setValue({
+          type: SET_DEVICE,
+          key: 'orientation',
+          value: orientation,
+        })
+      )
+    const mql = window.matchMedia('(orientation: landscape)')
+    mql.addListener(({ matches }) => {
+      setOrientation(matches ? 'landscape' : 'portrait')
+    })
+  }, [dispatch])
+
   return (
     <Viewport
       percent={100}
@@ -127,8 +148,6 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
           <main
             style={{
               height: '100%',
-              boxSizing: 'border-box',
-              border: '10px solid purple',
             }}
           >
             {children}

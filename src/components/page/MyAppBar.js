@@ -177,14 +177,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     clickHandler = menuClicked
   }
 
-  const [height, setHeight] = useState()
-
-  useEffect(() => {
-    window.onresize = () => {
-      setHeight(document.getElementById('viewportClient').style.height)
-    }
-  }, [])
-
   return (
     <AppBar position="static" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
@@ -204,7 +196,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
             noWrap
             className={classes.name}
           >
-            {height || name || title}
+            {name || title}
           </Typography>
           <CloudOff style={{ display: online ? 'none' : 'inline' }} />
         </div>

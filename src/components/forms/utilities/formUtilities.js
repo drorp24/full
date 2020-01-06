@@ -143,7 +143,6 @@ const useFormStyles = makeStyles(theme => ({
     width: '100%',
     height: '100%',
     boxSizing: 'border-box',
-    border: '5px solid limegreen',
   },
   primary: {
     color: theme.palette.primary.main,

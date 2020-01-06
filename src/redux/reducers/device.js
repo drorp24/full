@@ -9,6 +9,7 @@ const initialState = {
   newerSwWaiting: null,
   contentCached: null,
   appShared: null,
+  orientation: null,
 }
 
 export default (state = initialState, action) => {
