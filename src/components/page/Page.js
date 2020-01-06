@@ -4,14 +4,15 @@ import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
 import SnackBar from './Snackbar'
 import { inBrowser } from '../utility/detect'
+import { makeStyles } from '@material-ui/styles'
 
 // ! Viewport height
 // In the browser, '100vh' is frequently *not* the exact viewport's height. It includes the mobile browser chrome.
 // The actual viewport's height is window.innerHeight, which tends to change with scrolling, when browser chrome contracts and expands.
 // <Div100vh /> always keeps to the viewport's exact height, and as such guarantees native-like experience with no page slack.
 // But <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
-// Worst yet, <Div100vh /> when rendered on the server ignores the 'style' property and creates an heightless <div>.
-// So my own <Viewport /> does pass the 'style' property into the <div>, and renders a <Div100vh /> when on the client.
+// Worst yet, <Div100vh /> when rendered on the server ignores the 'style' property and creates an heightless <Viewport>.
+// So my own <Viewport /> does pass the 'style' property into the <Viewport>, and renders a <Div100vh /> when on the client.
 
 // ! Dynamic parent must be defined outside the scope of its children
 // Usually when a component is defined for the sake of one and only other component,
@@ -75,14 +76,32 @@ import { inBrowser } from '../utility/detect'
 
 const Viewport = ({ children, percent, server, id }) => {
   const unit = server ? 'vh' : 'rvh'
-  const div100Style = { height: `${percent}${unit}`, width: '100%' }
+  const useStyles = makeStyles(theme => ({
+    root: {
+      width: '100%',
+      '@media only screen and (orientation: landscape)': {
+        height: percent => `${percent}vw !important`,
+        width: percent => (percent === 100 ? '100vh' : '100%'),
+      },
+    },
+  }))
+
+  const classes = useStyles(percent)
 
   return server ? (
-    <div style={div100Style} id={id}>
+    <div
+      style={{ height: `${percent}${unit}` }}
+      className={classes.root}
+      id={id}
+    >
       {children}
     </div>
   ) : (
-    <Div100vh style={div100Style} id={id}>
+    <Div100vh
+      style={{ height: `${percent}${unit}` }}
+      className={classes.root}
+      id={id}
+    >
       {children}
     </Div100vh>
   )
@@ -95,22 +114,16 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const server = !inBrowser()
 
   return (
-    <div
-      style={{ height: '100vh', width: '100%' }}
+    <Viewport
+      percent={100}
       server={server}
       id={'viewport' + (server ? 'Server' : 'Client')}
     >
       <Box pageVariant="content">
-        <div
-          style={{ height: `${appBarHeightPercent}%`, width: '100%' }}
-          server={server}
-        >
+        <Viewport percent={appBarHeightPercent} server={server}>
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
-        </div>
-        <div
-          style={{ height: `${mainHeightPercent}%`, width: '100%' }}
-          server={server}
-        >
+        </Viewport>
+        <Viewport percent={mainHeightPercent} server={server}>
           <main
             style={{
               height: '100%',
@@ -120,10 +133,10 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
           >
             {children}
           </main>
-        </div>
+        </Viewport>
         <SnackBar />
       </Box>
-    </div>
+    </Viewport>
   )
 }
 
