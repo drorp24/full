@@ -133,12 +133,12 @@ const messages = {
   },
   landscapeMsg: {
     type: 'landscape',
-    text: 'We work best in portrait mode',
+    text: 'Please rotate back',
     action: '',
     invoke: () => {},
     icon: 'warning',
     level: 'warning',
-    duration: 3000,
+    duration: 30000,
   },
 }
 
@@ -234,8 +234,22 @@ export default function MySnackbar() {
     } else if (orientation === 'landscape') {
       setOpen(true)
       setMessage(landscapeMsg)
+    } else if (
+      orientation === 'portrait' &&
+      message.type === 'landscape' &&
+      open
+    ) {
+      setOpen(false)
     }
-  }, [contentCashed, newerSwWaiting, online, message, appShared, orientation])
+  }, [
+    contentCashed,
+    newerSwWaiting,
+    online,
+    message,
+    appShared,
+    orientation,
+    open,
+  ])
 
   return (
     <div>

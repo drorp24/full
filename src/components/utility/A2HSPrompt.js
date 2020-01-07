@@ -21,6 +21,7 @@ export default function A2HSPrompt() {
 
   const a2hs = useSelector(store => store.user.a2hs)
   const ios = useSelector(store => store.device.ios)
+  const orientation = useSelector(store => store.device.orientation)
   const { prompted, accepted } = a2hs
 
   const oneHour = 1000 * 60 * 60
@@ -60,8 +61,10 @@ export default function A2HSPrompt() {
   }
 
   useEffect(() => {
-    if (accepted || recently_prompted) {
-      console.log('a2hs accepted or recently prompted. Not asking again')
+    if (accepted || recently_prompted || orientation === 'landscape') {
+      console.log(
+        'a2hs accepted or recently prompted or device is in landscape. Not asking'
+      )
       return
     }
 

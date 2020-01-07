@@ -141,7 +141,7 @@ const useFormStyles = makeStyles(theme => ({
     display: 'grid',
     gridTemplateRows: '15% 70% 15%',
     width: '100%',
-    height: '100%',
+    height: '90%',
     boxSizing: 'border-box',
   },
   primary: {
