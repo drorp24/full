@@ -19,8 +19,10 @@ const OneStepper = ({ structure, show, ...rest }) => {
         to={`/${show.next}`}
         disabled={!formValid()}
         size="large"
+        variant="extended"
       >
         <MySvg icon="search" />
+        Find offers
       </Fab>
     </Grid>
   )

@@ -91,6 +91,7 @@ export default function A2HSPrompt() {
     dispatch,
     nativeInstall,
     now,
+    orientation,
     recently_prompted,
     recordAccepted,
     recordDismissed,

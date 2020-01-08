@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -133,10 +135,10 @@ const messages = {
   },
   landscapeMsg: {
     type: 'landscape',
-    text: 'Please rotate back',
+    text: 'For best display, please rotate',
     action: '',
     invoke: () => {},
-    icon: 'warning',
+    icon: 'rotate',
     level: 'warning',
     duration: 30000,
   },
@@ -160,9 +162,20 @@ export default function MySnackbar() {
     invoke: null,
   })
 
+  const { pathname } = useLocation()
+
   const useStyles = makeStyles(theme => ({
+    root: {
+      // hack to maintain full width when body auto rotates in response to device orientation change
+      width: ({ orientation }) =>
+        orientation === 'landscape' ? 'calc(100vh - 48px)' : 'unset',
+      // by MD rules, snackbars should show above FABs
+      bottom: pathname === '/select' ? '11%' : '8px',
+    },
     content: {
       flexWrap: 'nowrap',
+      width: ({ orientation }) =>
+        orientation === 'landscape' ? '100%' : 'unset',
     },
     close: {
       padding: theme.spacing(0.5),
@@ -192,7 +205,7 @@ export default function MySnackbar() {
     },
   }))
 
-  const classes = useStyles()
+  const classes = useStyles({ orientation })
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -258,6 +271,7 @@ export default function MySnackbar() {
           vertical: 'bottom',
           horizontal: 'left',
         }}
+        className={classes.root}
         open={open}
         autoHideDuration={message.duration || 10000}
         onClose={handleClose}

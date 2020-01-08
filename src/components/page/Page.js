@@ -10,14 +10,6 @@ import SnackBar from './Snackbar'
 import { inBrowser } from '../utility/detect'
 import { makeStyles } from '@material-ui/styles'
 
-// ! Viewport height
-// In the browser, '100vh' is frequently *not* the exact viewport's height. It includes the mobile browser chrome.
-// The actual viewport's height is window.innerHeight, which tends to change with scrolling, when browser chrome contracts and expands.
-// <Div100vh /> always keeps to the viewport's exact height, and as such guarantees native-like experience with no page slack.
-// But <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
-// Worst yet, <Div100vh /> when rendered on the server ignores the 'style' property and creates an heightless <Viewport>.
-// So my own <Viewport /> does pass the 'style' property into the <Viewport>, and renders a <Div100vh /> when on the client.
-
 // ! Dynamic parent must be defined outside the scope of its children
 // Usually when a component is defined for the sake of one and only other component,
 // it is simply defined inside that other component that needs it and used there.
@@ -39,30 +31,26 @@ import { makeStyles } from '@material-ui/styles'
 // When it was defined inside of Page I expected it to not be confusing its own children with Page's
 // (which Viewport is one of) but that wasn't the case.
 //
-// ! TODO: following note may have to be removed
-// In this version I replaced 'server' from being a state into just a constant.
-// If that works find, I have to remove the following section.
-// ! Forcing hydration to re-render in spite of identical tag and props
+// ! Viewport height is not (necessarily) 100vh
+// In the browser, '100vh' is frequently *not* the exact viewport's height. It includes the mobile browser chrome.
+// The actual viewport's height is window.innerHeight, which tends to contract and expand with scrolling in unexpected ways,
+// and different from browser to browser.
+// <Div100vh /> component uses windows.innerHeight instead of '100vh' and listens to window.resize.
+// As such, it always keeps to the viewport's exact height.
+// Keeping page dimensions to the exact ones of the mobile viewport prevents slacks and is crucial to maintaining native-like experience.
 //
-// * Div100vh is not active on the server
-// The need for the above condition stems from the fact that on the server, with no device or browser, Div100vh has no meaning
+// But <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
 // The server in this case has to generate an alternative <div style={{height: 100vh}} />
 // or else the first static page would not capture the entire screen's height and a FOUC would occur as soon as React takes over.
 //
-// * Forcing the client to replace it with a Div100vh
-// The <div style={{height: 100vh}} /> returned by the server saved the client from creating a FOUC.
-// But the client doesn't replace the server div with its own <Div100vh />.
-// That's because both the server's <div /> and the client's <Div100vh /> produce the same tag (div) with the same prop (style),
-// with that same prop having the very same key (height) with the very same value (in the first static page).
-//
-// I know hydration is supposed to add event callbacks regardless of equality, but I didn't want to take any chances,
-// as a page slack would ruin the mobile app effect which is crucial.
-//
-// It's not easy to see if the hydration did add the event listener, but I did notice it did *not*'t change the div's ID;
-// It didn't even change the ID when I populated the [server] state with the inBrowser() result;
-// It changed it only when I forced the [server] state to start with a 'true' value;
-// The browser then started with the (wrong) 'true' value then in useEffect changed it to 'false' and that change
-// finally forced a re-render, making the div change its ID, and me confident this time that the event listener has been added.
+// To solve this, I started by defining the 'server' as state, but no hydration occured by the the time client had to render <Page />
+// Maybe that's because what the server returns looks identical to what <Div100vh /> would have rendered:
+// Both have the same props, with the 'style' props having the very same key (height) with the very same value (in the first static page).
+// Luckily, once I changed server to simply be the result of a function call rather than a state, it all worked well:
+// server rendered a <div with height of 100vh, then client replaced it with a <Div100vh /> which renders the same div, only overrides
+// the 100vh height with the calculated window.innerHeight expressed in px and modifies that height whenever window.resize fires.
+// It's aparent that replacement took place by looking at the 'id' and 'height' of the div as accepted by the server ('network' tab)
+// as opposed to the different 'id' and 'height' of that div once client hydrated it.
 
 // ! <Autosizer/>'s closest ancestor must have explicit height
 // <main> tag below is added for screen readers (= to get Lighthouse 100 grade)
@@ -77,7 +65,32 @@ import { makeStyles } from '@material-ui/styles'
 // When <Autosizer />'s closest parent is left with no height, the merchants list becomes blank.
 // If it happens next time, I should look for the closest parent <div /> and make sure it comes with explicit height.
 // <Autosizer /> has quite many React components above it, but they are mostly HOCs, not rendering anything.
-
+//
+// ! Prevent distorted layout on orientation change
+//
+// There's no point in adapting an app to landscape layout if it provides no benefit that way.
+// When as app is not built for landscape orientation, as in this case,
+// the best way I've found to save the otherwise distorted layout is to simply rotate the display upon orientation change
+// and asking the user to rotate back via a snackbar.
+// (the orientation block web API is active in standalone mode only).
+//
+// At a minimum, <body /> tag should be rotated with its height set to '100vw' and its width set to '100vh'.
+// That is since when rotated, the height and width of the screen
+// confusingly reflect the *old* height and width in spite of the rotation
+// while the 'vh' and 'vw' units reflect the *new* height and width.
+// Rotation (= transform: rotate) angle should be -90 (= 270) deg since that's the direction right-handed people would rotate,
+// and transform-origin should be set to '50vh 50vh' in this direction.
+//
+// But that's not enough. Since the div implementing <Page /> has a hard-coded height,
+// that hard-coded height also needs to be modified to '100vw'.
+// (I changed the width as well but it doesn't seem to change anything and is probably not needed).
+//
+// The 3rd thing I had to do was to generate a SnackBar upon orientation change,
+// and hack that SnackBar's width to capture the entire width (minus gutters) when rotated,
+// and for that I informed redux of orientation change, so SnackBar can detect this and display the proper snackbar message.
+// Long duration plus reverse state make this snackbar keep showing until state is reversed,
+// so that snackbar won't go away until user rotates back into desired orientation.
+//
 const Viewport = ({ children, percent, server, id }) => {
   const useStyles = makeStyles(theme => ({
     root: {
