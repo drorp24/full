@@ -206,7 +206,7 @@ const Merchant = ({ loading, record, style }) => {
       transition: 'height 1s',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       borderRadius: ({ open }) => (open ? '0px' : '4px'),
     },
     media: {
@@ -215,6 +215,7 @@ const Merchant = ({ loading, record, style }) => {
     },
     content: {
       display: 'flex',
+      height: '50%',
       flexDirection: 'column',
       justifyContent: 'space-between',
     },
@@ -226,17 +227,19 @@ const Merchant = ({ loading, record, style }) => {
     openActions: {
       display: ({ open }) => (open ? 'flex' : 'none'),
       paddingLeft: '0',
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
     },
     name: {
-      fontSize: '2.5vh',
+      fontSize: ({ open }) => (open ? '7vw' : '2.5vh'),
+      fontWeight: ({ open }) => (open ? '300' : '400'),
     },
     address: {
       fontSize: '2vh',
+      marginBottom: '3vh',
     },
     price: {
-      fontSize: '2.2vh',
-      fontWeight: '500',
+      fontSize: ({ open }) => (open ? '5vw' : '2.2vh'),
+      fontWeight: ({ open }) => (open ? '300' : '400'),
     },
 
     btn: {
@@ -245,13 +248,14 @@ const Merchant = ({ loading, record, style }) => {
     fab: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       margin: theme.spacing(3),
+      marginRight: '0.3em',
       alignSelf: 'flex-end',
     },
 
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
-      top: standalone ? '35vh' : '30vh',
+      top: standalone ? '35vh' : '35vh',
       right: 0,
       margin: theme.spacing(3),
       marginTop: 0,
@@ -430,9 +434,15 @@ const Merchant = ({ loading, record, style }) => {
             </Button>
           </CardActions>
           <CardActions className={classes.openActions}>
-            <Zoom in timeout={{ enter: 1000 }}>
-              <Fab color="primary" aria-label="Add" className={classes.fab}>
+            <Zoom in timeout={{ enter: 2000 }}>
+              <Fab
+                variant="extended"
+                color="primary"
+                aria-label="Add"
+                className={classes.fab}
+              >
                 <ShoppingCart />
+                Order
               </Fab>
             </Zoom>
           </CardActions>

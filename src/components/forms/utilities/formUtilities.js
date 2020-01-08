@@ -139,7 +139,7 @@ const FormContext = React.createContext()
 const useFormStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '15% 70% 15%',
+    gridTemplateRows: '20% 65% 15%',
     width: '100%',
     height: '100%',
     boxSizing: 'border-box',
@@ -361,7 +361,7 @@ const useSwitchStyles = makeStyles(theme => ({
   root: theme.form.body.fields.switch,
   onOff: {
     color: checked =>
-      checked ? theme.palette.action.active : theme.palette.action.disabled,
+      checked ? theme.palette.primary.main : theme.palette.action.disabled,
   },
 }))
 

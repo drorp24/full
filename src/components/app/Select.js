@@ -6,7 +6,7 @@ import { address } from '../utility/geolocation'
 
 const structure = [
   {
-    title: 'What are you looking for',
+    title: 'What are you looking for?',
     // subtitle: 'Get the best offers',
     fields: [
       {
@@ -17,7 +17,7 @@ const structure = [
         fieldSchema: string()
           .required()
           .matches(/^[^0-9]+$/, 'Please use letters')
-          .length(3, 'Please enter the 3-letters code')
+          .length(3, 'Enter 3-letter code or select from the list')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters'),
         required: true,
         label: 'Paying with',
@@ -31,7 +31,7 @@ const structure = [
         fieldSchema: string()
           .required()
           .matches(/^[^0-9]+$/, 'Please use letters')
-          .length(3, 'Please enter the 3-letters code')
+          .length(3, 'Enter 3-letter code or select from the list')
           .matches(/^[A-Z]{3}$/, 'Please use CAPITAL letters only'),
         required: true,
         label: 'Buying coin',

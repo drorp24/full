@@ -80,7 +80,11 @@ function renderInputComponentPure({
         endAdornment: EndAdornment(),
         disableUnderline: true,
       }}
-      value={value}
+      value={
+        value && entireListObj && entireListObj[value]
+          ? entireListObj[value].display
+          : value
+      }
       {...other}
     />
   )

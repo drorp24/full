@@ -78,7 +78,6 @@ const theme = createMuiTheme({
         height: '100%',
       },
       title: {
-        height: '50%',
         fontSize: '6vmin',
         color: '#000000',
         display: 'flex',
@@ -86,8 +85,19 @@ const theme = createMuiTheme({
         justifyContent: 'center',
         alignItems: 'center',
       },
+      coinTitle: {
+        fontSize: '6vmin',
+        letterSpacing: '0.3em',
+        textTransform: 'uppercase',
+        color: '#000000',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
       subtitle: {
-        fontSize: '4.5vmin',
+        fontSize: '10vmin',
+        fontWeight: '300',
         color: createdTheme.palette.text.secondary,
         whiteSpace: 'pre-line',
         display: 'flex',

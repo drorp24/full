@@ -258,10 +258,20 @@ const FormContainer = ({ structure, show }) => {
     const { base, quote, amount } = form.values
     const quantity = amount || 1
     const selected = base && quote
-    const getting = amount ? `${String(amount)} ${base}` : base
+    const coin =
+      (
+        (selected &&
+          lists.coins &&
+          lists.coins.find(coin => coin.name === base)) ||
+        {}
+      ).display || base
+    const getting = amount ? `${String(amount)} ${coin}` : coin
     return (
       <MyTypography component="div" formVariant="typography.header">
-        <MyTypography component="div" formVariant="typography.title">
+        <MyTypography
+          component="div"
+          formVariant={selected ? 'typography.coinTitle' : 'typography.title'}
+        >
           {selected ? getting : title}
         </MyTypography>
         <MyTypography component="div" formVariant="typography.subtitle">

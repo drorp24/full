@@ -22,7 +22,7 @@ const OneStepper = ({ structure, show, ...rest }) => {
         variant="extended"
       >
         <MySvg icon="search" />
-        Find offers
+        Find
       </Fab>
     </Grid>
   )
