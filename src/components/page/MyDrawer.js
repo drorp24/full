@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { makeStyles } from '@material-ui/styles'
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
@@ -16,6 +16,7 @@ import ContactPhone from '@material-ui/icons/ContactPhone'
 
 import { ios } from '../utility/detect'
 import share from './share'
+import toggleMode from './toggleMode'
 
 const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const [isIos, setIsIos] = useState()
@@ -24,7 +25,7 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   }, [])
 
   const dispatch = useDispatch()
-
+  const mode = useSelector(store => store.device.mode)
   const doNothing = () => {}
 
   // ! Passing components dynamically with an object
@@ -36,8 +37,8 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
     },
     {
       icon: <DarkMode />,
-      text: 'Dark mode',
-      action: doNothing,
+      text: 'Toggle mode',
+      action: toggleMode({ mode, dispatch }),
     },
     {
       icon: <Map />,

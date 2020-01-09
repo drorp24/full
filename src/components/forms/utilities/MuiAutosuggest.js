@@ -204,6 +204,13 @@ const useStyles = makeStyles(theme => ({
     left: 0,
     right: 0,
   },
+  suggestionsContainer: {
+    maxWidth: '100%',
+    maxHeight: '60vh',
+    overflow: 'auto',
+    backgroundColor: theme.palette.background.extra.backgroundColor,
+    // borderRadius: '4px',
+  },
   suggestion: {
     display: 'block',
   },
@@ -322,15 +329,15 @@ const MuiAutosuggest = ({
         ref(isolatedScroll.component)
       }
     }
-    const suggestionsContainerStyle = {
-      maxWidth: '100%',
-      maxHeight: '40vh',
-      overflow: 'auto',
-    }
 
     return (
       <IsolatedScroll ref={callRef} {...restContainerProps}>
-        <Paper square {...containerProps} style={suggestionsContainerStyle}>
+        <Paper
+          square
+          elevation={5}
+          {...containerProps}
+          className={classes.suggestionsContainer}
+        >
           {children}
         </Paper>
       </IsolatedScroll>

@@ -217,7 +217,7 @@ const Merchant = ({ loading, record, style }) => {
       display: 'flex',
       height: '50%',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
     },
     contentText: {},
     closeActions: {

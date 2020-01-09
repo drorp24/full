@@ -9,6 +9,7 @@ import MyAppBar from './MyAppBar'
 import SnackBar from './Snackbar'
 import { inBrowser } from '../utility/detect'
 import { makeStyles } from '@material-ui/styles'
+import Paper from '@material-ui/core/Paper'
 
 // ! Dynamic parent must be defined outside the scope of its children
 // Usually when a component is defined for the sake of one and only other component,
@@ -148,27 +149,29 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   }, [dispatch])
 
   return (
-    <Viewport
-      percent={100}
-      server={server}
-      id={'viewport' + (server ? 'Server' : 'Client')}
-    >
-      <Box pageVariant="content">
-        <Viewport percent={appBarHeightPercent} server={server}>
-          {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
-        </Viewport>
-        <Viewport percent={mainHeightPercent} server={server}>
-          <main
-            style={{
-              height: '100%',
-            }}
-          >
-            {children}
-          </main>
-        </Viewport>
-        <SnackBar />
-      </Box>
-    </Viewport>
+    <Paper square>
+      <Viewport
+        percent={100}
+        server={server}
+        id={'viewport' + (server ? 'Server' : 'Client')}
+      >
+        <Box pageVariant="content">
+          <Viewport percent={appBarHeightPercent} server={server}>
+            {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
+          </Viewport>
+          <Viewport percent={mainHeightPercent} server={server}>
+            <main
+              style={{
+                height: '100%',
+              }}
+            >
+              {children}
+            </main>
+          </Viewport>
+          <SnackBar />
+        </Box>
+      </Viewport>
+    </Paper>
   )
 }
 

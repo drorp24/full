@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types'
 import getSymbolFromCurrency from 'currency-symbol-map'
 import NumberFormat from 'react-number-format'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import { makeStyles } from '@material-ui/styles'
 
 const LiveRates = ({ base, quote, quantity }) => {
   // This lazy form of useState is essential to avoid 429 responses (too many calls)
@@ -115,8 +116,15 @@ const LiveRates = ({ base, quote, quantity }) => {
   return <Price {...{ value, quantity, direction, quote }} />
 }
 
-const Price = ({ value, quantity, direction = 'up', quote }) =>
-  value ? (
+const useStyles = makeStyles(theme => ({
+  upDown: {
+    color: ({ direction }) => theme.form.header.liveRates[direction],
+  },
+}))
+
+const Price = ({ value, quantity, direction = 'up', quote }) => {
+  const classes = useStyles({ direction })
+  return value ? (
     <NumberFormat
       value={value * quantity}
       displayType={'text'}
@@ -124,11 +132,12 @@ const Price = ({ value, quantity, direction = 'up', quote }) =>
       decimalScale={2}
       fixedDecimalScale={true}
       prefix={getSymbolFromCurrency(quote)}
-      style={{ color: direction === 'up' ? 'green' : 'red' }}
+      className={classes.upDown}
     />
   ) : (
     <LinearProgress style={{ width: '100%' }} />
   )
+}
 
 LiveRates.propTypes = {
   base: PropTypes.string.isRequired,

@@ -20,6 +20,10 @@ const useStyles = makeStyles(theme => ({
   },
   welcome1: {
     height: '25%',
+    letterSpacing: '0.3em',
+    textTransform: 'uppercase',
+    fontSize: '5vw',
+    fontWeight: '300',
   },
   welcome2: {
     height: '50%',
@@ -48,7 +52,7 @@ const Welcome = () => {
     <Page noAppBar>
       <div className={classes.welcomeContainer}>
         <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
-          Welcome!
+          Cryptonite
         </div>
         <div className={`${classes.welcome2} ${classes.welcomeSection}`}>
           <div className={classes.welcomeImg}>

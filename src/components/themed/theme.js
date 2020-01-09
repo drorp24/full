@@ -1,114 +1,154 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
+import blue from '@material-ui/core/colors/blue'
+import red from '@material-ui/core/colors/red'
 
-// Can't think of any other way to customize the theme based on its own values
-// TODO: Surely I can just spread merge them rather than calling createMuiTheme twice
-// Anyway, the first one is for overrides (e.g., replacing primary color)
-// the second one is for additions
-const createdTheme = createMuiTheme({
-  typography: {
-    useNextVariants: true,
-  },
-})
-const theme = createMuiTheme({
-  typography: {
-    useNextVariants: true,
-  },
-  palette: {
-    primary: {
-      main: '#6200f2',
-      contextual: '#000',
-    },
-    secondary: green,
-  },
-  page: {
-    content: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      width: '100%',
-      height: '100%',
-    },
-  },
-  form: {
-    header: {
-      textAlign: 'center',
-      color: createdTheme.palette.action.active,
-    },
-    body: {
-      padding: '0 1em',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-evenly',
-      color: createdTheme.palette.text.secondary,
-      fields: {
-        label: {
-          color: createdTheme.palette.action.active,
-          fontSize: '0.9em',
-          transform: 'translate(1em, 1em) scale(1)',
-          unchecked: {
-            color: createdTheme.palette.action.disabled,
-          },
-        },
-        inputBase: {
-          paddingRight: '1em',
-        },
-        input: {
-          height: '2rem',
-          padding: '6px 1em 7px 1em',
-        },
-        switch: {
-          marginLeft: '1em',
-          fontSize: '0.9em',
+// ! MUI's 'light' and 'dark' keys have nothing to do with light/dark mode
+// Importing a color from MUI (as I did with 'blue') brings an object with 'light' and 'dark' keys which are each offset from the 'main' key
+// which represents the main color. I don't know what MUI does with these variations, but from my experience,
+// it has nothing to do with 'light' or 'dark' mode: when I changed theme.palette.type from 'light' to 'dark' and vice versa
+// MUI changed a lot of other values, but not the primary color; it got the same 'main' color in either mode.
+//
+// ! Customizing MUI's default theme requires calling createMuiTheme twice
+// It needs no explaining why I want to refer to the MUI default theme values when applicable rather than hard-code them.
+// Yet except for one stackoverflow post, I didn't find anyone discussing what seems to require calling createMuiTheme twice
+// Anyway, the answer to the single stackoverflow post was to do exactly what I did: call createMuyTheme twice.
+//
+// * The 1st call should be the one dealng with the mode
+// Only then can I use variables such as theme.palette.primary.main, knowing that that main color is already set according to the mode
+// There's no other way to not hard-code the color. I wonder if I'm missing anything because there was no discussion about the double call.
+//
+// * theme consumer should useMemo
+// Since theme calulcation is a complex function (let alone called twice) on the one hand,
+// and since it can be toggle many times back and forth on the other hand,
+// (and since it is a pure function, dependent on 2 discrete values)
+// caller of theme should useMemo, which would save the results of each of these 2 values.
+//
+// ! Use MUI's designated theme keys and refrain from unnecessary custom rules
+// Using MUI's theme keys rather than hard-code values is not enough;
+// When I used the 'active' theme color for form labels for instance, it didn't change when mode was changed to 'dark'.
+// That leads me to the first rule which is:
+// - Use the proper key designated by MUI for that use case, not just any theme key;
+// But when I looked for the right key designated by MUI for form label colors I didn't find any.
+// MUI just picks the regular/primary color for many elements such as form labels and others w/o specifying rules for them.
+// This makes absolute sense to me and leads to the 2nd rule which is even more important
+// - Unless absolutely required, do not apply any custom rules and let MUI decide how to style the element
+// I was overriding a lot of colors but then they didn't change back when the mode was changed from 'light' to 'dark' and vice versa.
+// Once I removed my rules, MUI styled those elements well; in fact it probably better adhered to the theme than what I did;
+// more importantly, it also replaced the colors according to the mode once i removed my own rules.
+//
+
+const theme = mode => {
+  const defaultTheme = createMuiTheme({
+    palette: {
+      type: mode,
+      primary: {
+        // main: '#6200f2',
+        // main: '#42A5F5',
+        // main: '#2962FF',
+        // main: '#82B1FF',
+        // main: '#448AFF',
+        main: mode === 'light' ? blue['A700'] : blue['A200'],
+      },
+      secondary: green,
+      background: {
+        extra: {
+          backgroundColor: mode === 'light' ? '#dadada' : '#888',
         },
       },
     },
-    footer: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
+  })
+  return createMuiTheme({
+    ...defaultTheme,
     typography: {
-      header: {
+      useNextVariants: true,
+    },
+    page: {
+      content: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
         height: '100%',
       },
-      title: {
-        fontSize: '6vmin',
-        color: '#000000',
+    },
+    form: {
+      header: {
+        textAlign: 'center',
+        liveRates: {
+          up: green['A200'],
+          down: red['500'],
+        },
+      },
+      body: {
+        padding: '0 1em',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        color: defaultTheme.palette.text.secondary,
+        fields: {
+          label: {
+            fontSize: '0.9em',
+            transform: 'translate(1em, 1em) scale(1)',
+          },
+          inputBase: {
+            paddingRight: '1em',
+          },
+          input: {
+            height: '2rem',
+            padding: '6px 1em 7px 1em',
+          },
+          switch: {
+            marginLeft: '1em',
+            fontSize: '0.9em',
+          },
+        },
+      },
+      footer: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
       },
-      coinTitle: {
-        fontSize: '6vmin',
-        letterSpacing: '0.3em',
-        textTransform: 'uppercase',
-        color: '#000000',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      subtitle: {
-        fontSize: '10vmin',
-        fontWeight: '300',
-        color: createdTheme.palette.text.secondary,
-        whiteSpace: 'pre-line',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+      typography: {
+        header: {
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          height: '100%',
+        },
+        title: {
+          fontSize: '6vmin',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        coinTitle: {
+          fontSize: '6vmin',
+          letterSpacing: '0.3em',
+          textTransform: 'uppercase',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        subtitle: {
+          fontSize: '10vmin',
+          fontWeight: '300',
+          color: defaultTheme.palette.text.secondary,
+          whiteSpace: 'pre-line',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
       },
     },
-  },
-})
+  })
+}
 
-// if (typeof window !== 'undefined') window.theme = theme
+if (typeof window !== 'undefined') window.theme = theme
 
 export default theme
