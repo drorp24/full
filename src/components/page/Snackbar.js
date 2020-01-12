@@ -91,7 +91,7 @@ const messages = {
     invoke: () => {},
     icon: 'cloudOff',
     level: 'warning',
-    duration: '10000',
+    duration: 10000,
   },
   onlineMsg: {
     type: 'online',

@@ -171,6 +171,12 @@ const Merchant = ({ loading, record, style }) => {
     setState({ open: !open })
   }
 
+  useEffect(() => {
+    window.onorientationchange = () => {
+      setState({ open: false })
+    }
+  }, [])
+
   const { standalone, online } = useSelector(store => store.device)
 
   // ! Challenges of card's height
@@ -230,15 +236,15 @@ const Merchant = ({ loading, record, style }) => {
       justifyContent: 'center',
     },
     name: {
-      fontSize: ({ open }) => (open ? '7vw' : '2.5vh'),
+      fontSize: ({ open }) => (open ? '1.5em' : '1.2em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
     },
     address: {
-      fontSize: '2vh',
+      fontSize: '0.9em',
       marginBottom: '3vh',
     },
     price: {
-      fontSize: ({ open }) => (open ? '5vw' : '2.2vh'),
+      fontSize: ({ open }) => (open ? '1.3em' : '1em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
     },
 
@@ -255,7 +261,7 @@ const Merchant = ({ loading, record, style }) => {
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
-      top: standalone ? '35vh' : '35vh',
+      top: standalone ? '35vh' : '30vh',
       right: 0,
       margin: theme.spacing(3),
       marginTop: 0,
