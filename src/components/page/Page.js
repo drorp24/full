@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setValue } from '../../redux/actions'
+import { setValue, setShouldClose } from '../../redux/actions'
 import { SET_DEVICE } from '../../redux/types'
 
 import { Box } from '../themed/Box'
@@ -134,7 +134,7 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
 
   const dispatch = useDispatch()
   useEffect(() => {
-    const setOrientation = orientation =>
+    const setOrientation = orientation => {
       dispatch(
         setValue({
           type: SET_DEVICE,
@@ -142,6 +142,8 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
           value: orientation,
         })
       )
+      dispatch(setShouldClose(orientation === 'landscape'))
+    }
     const mql = window.matchMedia('(orientation: landscape)')
     mql.addListener(({ matches }) => {
       setOrientation(matches ? 'landscape' : 'portrait')

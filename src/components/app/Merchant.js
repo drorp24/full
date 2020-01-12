@@ -171,12 +171,6 @@ const Merchant = ({ loading, record, style }) => {
     setState({ open: !open })
   }
 
-  useEffect(() => {
-    window.onorientationchange = () => {
-      setState({ open: false })
-    }
-  }, [])
-
   const { standalone, online } = useSelector(store => store.device)
 
   // ! Challenges of card's height

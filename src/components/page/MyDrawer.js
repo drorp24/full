@@ -9,10 +9,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 
 import Share from '@material-ui/icons/Share'
-import DarkMode from '@material-ui/icons/Brightness4'
 import Map from '@material-ui/icons/Map'
 import Help from '@material-ui/icons/Help'
 import ContactPhone from '@material-ui/icons/ContactPhone'
+import MySvg from '../utility/svg'
 
 import { ios } from '../utility/detect'
 import share from './share'
@@ -26,9 +26,20 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
 
   const dispatch = useDispatch()
   const mode = useSelector(store => store.device.mode)
+  const otherMode = mode === 'light' ? 'dark' : 'light'
   const doNothing = () => {}
 
   // ! Passing components dynamically with an object
+  // One way to pass a dynamic component is to have it in its JSX form as a value on some object's key
+  // (Another which I use often is to simply assign a capitalized named variable to it then use the variable as the component)
+  // used down below to pass a variable icon component (icon key)
+  // ! Svg for variable icons
+  // Specifically to icons, there's a better way to pass a dynamic icon, which is to use an svg icon
+  // benefits:
+  // - no need to import a component for every new item: with svg the icon is merely a name prop
+  // - the icon can be context-sensitive (example, 'svg: otherMode')
+  // - embedded rather than fetched (not as strong a reason, as chances are most MUI icons as svg,
+  //   plus webpack automatically converts < 10k png's into svgs and embeds them)
   const menu = [
     {
       icon: <Share />,
@@ -36,8 +47,8 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       action: share(dispatch),
     },
     {
-      icon: <DarkMode />,
-      text: 'Toggle mode',
+      svg: otherMode,
+      text: `${otherMode} mode`,
       action: toggleMode({ mode, dispatch }),
     },
     {
@@ -93,6 +104,9 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       height: '15%',
       fontSize: '1.15rem',
     },
+    listItemText: {
+      textTransform: 'capitalize',
+    },
   }))
 
   const classes = useStyles()
@@ -115,15 +129,22 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       >
         <div className={classes.header}>Cryptonite</div>
         <List className={classes.list}>
-          {menu.map(({ icon, text, action }) => (
+          {menu.map(({ icon, svg, text, action }) => (
             <ListItem
               button
               key={text}
               className={classes.listItem}
               onClick={action}
             >
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText disableTypography>{text}</ListItemText>
+              <ListItemIcon>
+                <>
+                  {icon}
+                  {svg && <MySvg icon={svg} />}
+                </>
+              </ListItemIcon>
+              <ListItemText className={classes.listItemText} disableTypography>
+                {text}
+              </ListItemText>
             </ListItem>
           ))}
         </List>

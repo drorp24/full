@@ -135,7 +135,7 @@ const messages = {
   },
   landscapeMsg: {
     type: 'landscape',
-    text: 'Please rotate to see better',
+    text: 'Please rotate for better view',
     action: '',
     invoke: () => {},
     icon: 'rotate',
