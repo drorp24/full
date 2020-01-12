@@ -80,76 +80,99 @@ import { requestDeviceMotion } from '../utility/permissions'
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
 
-const measureTopHeight = element => {
-  if (!element) return { element: null }
-  const top = Number(element.style.top.replace('px', ''))
-  const height = Number(element.style.height.replace('px', ''))
-  const y = element.getBoundingClientRect().y
-  return { element, top, height, y }
-}
+const measure = element => {
+  if (!element || !element.style) return { element: null }
 
-const restoreTopHeight = element => {
-  if (!element) return
-  const originalTop = element.getAttribute('data-top')
-  if (originalTop) element.style.top = originalTop
-  const originalHeight = element.getAttribute('data-height')
-  if (originalHeight) element.style.height = originalHeight
-}
+  const result = { element }
 
-const pushSiblingsAway = (previousSibling, currentSibling, nextSibling) => {
-  const setTopHeight = ({ element, top, newTop, height, newHeight }) => {
-    if (!element) return
-
-    const defined = property =>
-      typeof property !== 'undefined' && property !== null // we don't want to update DOM unnecessarily, but '0' is a value
-
-    if (defined(newTop)) {
-      element.setAttribute('data-top', `${top}px`)
-      element.style.top = `${newTop}px` // ! Never x.setAttribute('style', '...') as it would override other style properties
-    }
-    if (defined(newHeight)) {
-      element.setAttribute('data-height', `${height}px`)
-      element.style.height = `${newHeight}px`
-    }
+  for (let position of ['x', 'y']) {
+    result[position] = element.getBoundingClientRect()[position]
   }
 
+  for (let measure of ['top', 'left', 'height', 'width']) {
+    const styleMeasure = element.style[measure]
+    result[measure] = styleMeasure
+      ? Number(styleMeasure.replace('px', ''))
+      : null
+  }
+
+  return result
+}
+
+const shift = ({ element, shift, ...measures }) => {
+  if (!element) return
+
+  for (let [shifted, value] of Object.entries(shift)) {
+    if (value && measures[shifted]) {
+      element.setAttribute(`data-${shifted}`, `${measures[shifted]}px`)
+      element.style[shifted] = `${value}px`
+    }
+  }
+}
+
+const restore = element => {
+  if (!element) return
+
+  for (let measure of ['top', 'left', 'height', 'width']) {
+    const originalValue = element.getAttribute(`data-${measure}`)
+    if (originalValue) element.style[measure] = originalValue
+  }
+}
+
+const pushAway = (layout, previousSibling, currentSibling, nextSibling) => {
   // I'm assuming maximum 3 items in a viewport, otherwise this should be done in a loop
   const [previous, current, next] = [
     previousSibling,
     currentSibling,
     nextSibling,
-  ].map(measureTopHeight)
-
-  // * using 'window' is okay as long as any reference to it is made within a function or component that is performed only while on the client
-  const appBarHeight = window.innerHeight / 10
-
-  previous.newTop = Math.max(previous.top - current.y, 0)
-  if (previous.newTop === 0)
-    previous.newHeight = Math.max(previous.height - current.y, 0) // if there's no room to retreat, contract
-  current.newTop = current.top - current.y + appBarHeight
-  next.newTop = next.top + (window.innerHeight - next.y) + appBarHeight
+  ].map(measure)
 
   for (let item of [previous, current, next]) {
-    setTopHeight(item)
+    item.shift = {}
+  }
+
+  let shifted, position, dimension, offset, screenSize
+
+  if (layout === 'vertical') {
+    shifted = 'top'
+    position = 'y'
+    dimension = 'height'
+    offset = window.innerHeight / 10
+    screenSize = window.innerHeight
+  } else {
+    shifted = 'left'
+    position = 'x'
+    dimension = 'width'
+    offset = 0
+    screenSize = window.innerWidth
+  }
+
+  previous.shift[shifted] = Math.max(previous[shifted] - current[position], 0)
+  if (previous.shift[shifted] === 0)
+    previous.shift[dimension] = Math.max(
+      previous[dimension] - current[position],
+      0
+    )
+  current.shift[shifted] = current[shifted] - current[position] + offset
+  next.shift[shifted] = next[shifted] + (screenSize - next[position]) + offset
+
+  for (let item of [previous, current, next]) {
+    shift(item)
   }
 }
 
-const returnSiblingsToPlace = (
-  previousSibling,
-  currentSibling,
-  nextSibling
-) => {
+const returnToPlace = (previousSibling, currentSibling, nextSibling) => {
   for (let element of [previousSibling, currentSibling, nextSibling]) {
-    restoreTopHeight(element)
+    restore(element)
   }
 }
 
-const toggleSiblings = (open, listItemRef) => {
+const toggleSiblings = (open, listItemRef, layout) => {
   const { previousSibling, nextSibling } = listItemRef.current
   const currentSibling = listItemRef.current
   !open
-    ? pushSiblingsAway(previousSibling, currentSibling, nextSibling)
-    : returnSiblingsToPlace(previousSibling, currentSibling, nextSibling)
+    ? pushAway(layout, previousSibling, currentSibling, nextSibling)
+    : returnToPlace(previousSibling, currentSibling, nextSibling)
 }
 
 // couldnt for the life of me get the list's ref so am traversing to find it
@@ -195,9 +218,10 @@ const Merchant = ({ loading, record, style }) => {
   const useStyles = makeStyles(theme => ({
     listItem: {
       height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
+      width: ({ open }) => (open ? '100vw !important' : '100%'),
       padding: ({ open }) => (open ? 0 : theme.spacing(2)),
       zIndex: ({ open }) => (open ? 1 : 0),
-      transition: 'padding 1s, height 1s, top 1s',
+      transition: 'padding 1s, height 1s, width 1s, top 1s, left 1s',
       justifyContent: 'center',
     },
     card: {
@@ -304,6 +328,8 @@ const Merchant = ({ loading, record, style }) => {
         currency: record.quote.quote,
       })
 
+    const layout = useSelector(store => store.app.layout)
+
     const toggleCardState = useCallback(
       e => {
         // Clicking 'View' will trigger 'toggleCardState' twice if not for this line, misplacing the card
@@ -316,7 +342,7 @@ const Merchant = ({ loading, record, style }) => {
 
         toggleScrolling(open, listItemRef)
 
-        toggleSiblings(open, listItemRef)
+        toggleSiblings(open, listItemRef, layout)
 
         if (shouldClose) {
           resetShouldClose()

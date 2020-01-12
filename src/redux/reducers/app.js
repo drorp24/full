@@ -4,6 +4,7 @@ import {
   SHOULD_CLOSE,
   TOGGLE_VIEW,
   SET_POPULATED,
+  TOGGLE_LAYOUT,
 } from '../types'
 
 const initialState = {
@@ -11,6 +12,7 @@ const initialState = {
   name: null,
   shouldClose: false,
   view: 'list',
+  layout: 'vertical',
   populated: {
     state: false,
     currencies: false,
@@ -29,6 +31,11 @@ export default (state = initialState, action) => {
       return { ...state, shouldClose }
     case TOGGLE_VIEW:
       return { ...state, view: state.view === 'list' ? 'map' : 'list' }
+    case TOGGLE_LAYOUT:
+      return {
+        ...state,
+        layout: state.layout === 'horizontal' ? 'vertical' : 'horizontal',
+      }
     case SET_POPULATED:
       return { ...state, populated: { ...state.populated, [field]: true } }
     default:

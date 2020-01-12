@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { makeStyles } from '@material-ui/styles'
@@ -17,6 +17,7 @@ import MySvg from '../utility/svg'
 import { ios } from '../utility/detect'
 import share from './share'
 import toggleMode from './toggleMode'
+import { toggleLayout } from '../../redux/actions'
 
 const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const [isIos, setIsIos] = useState()
@@ -27,6 +28,8 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const dispatch = useDispatch()
   const mode = useSelector(store => store.device.mode)
   const otherMode = mode === 'light' ? 'dark' : 'light'
+  const layout = useSelector(store => store.app.layout)
+  const otherLayout = layout === 'vertical' ? 'horizontal' : 'vertical'
   const doNothing = () => {}
 
   // ! Passing components dynamically with an object
@@ -50,6 +53,11 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       svg: otherMode,
       text: `${otherMode} mode`,
       action: toggleMode({ mode, dispatch }),
+    },
+    {
+      svg: otherLayout,
+      text: `${otherLayout} mode`,
+      redux: toggleLayout(),
     },
     {
       icon: <Map />,
@@ -129,12 +137,18 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       >
         <div className={classes.header}>Cryptonite</div>
         <List className={classes.list}>
-          {menu.map(({ icon, svg, text, action }) => (
+          {menu.map(({ icon, svg, text, action, redux }) => (
             <ListItem
               button
               key={text}
               className={classes.listItem}
-              onClick={action}
+              onClick={
+                redux
+                  ? () => {
+                      dispatch(redux)
+                    }
+                  : action
+              }
             >
               <ListItemIcon>
                 <>

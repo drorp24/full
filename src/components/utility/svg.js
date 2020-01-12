@@ -61,6 +61,13 @@ const paths = {
     'M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z',
   light:
     'M7 11H1v2h6v-2zm2.17-3.24L7.05 5.64 5.64 7.05l2.12 2.12 1.41-1.41zM13 1h-2v6h2V1zm5.36 6.05l-1.41-1.41-2.12 2.12 1.41 1.41 2.12-2.12zM17 11v2h6v-2h-6zm-5-2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm2.83 7.24l2.12 2.12 1.41-1.41-2.12-2.12-1.41 1.41zm-9.19.71l1.41 1.41 2.12-2.12-1.41-1.41-2.12 2.12zM11 23h2v-6h-2v6z',
+  horizontal:
+    'M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z',
+}
+
+const polygons = {
+  vertical:
+    '13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01',
 }
 
 const MySvg = ({ icon, className }) => {
@@ -71,7 +78,8 @@ const MySvg = ({ icon, className }) => {
       className={className}
     >
       <svg>
-        <path d={paths[icon]} />
+        {paths[icon] && <path d={paths[icon]} />}
+        {polygons[icon] && <polygon points={polygons[icon]} />}
       </svg>
     </SvgIcon>
   )

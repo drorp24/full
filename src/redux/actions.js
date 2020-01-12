@@ -8,6 +8,7 @@ import {
   SET_CONTEXTUAL,
   SHOULD_CLOSE,
   TOGGLE_VIEW,
+  TOGGLE_LAYOUT,
   SET_POPULATED,
   SET_A2HS,
   SET_DEVICE,
@@ -72,6 +73,10 @@ export const setShouldClose = shouldClose => ({
 
 export const toggleView = () => ({
   type: TOGGLE_VIEW,
+})
+
+export const toggleLayout = () => ({
+  type: TOGGLE_LAYOUT,
 })
 
 export const setPopulated = field => ({

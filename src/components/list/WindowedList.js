@@ -1,6 +1,7 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React /* , { useRef } */ from 'react'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import { FixedSizeList } from 'react-window'
 
 import InfiniteLoader from 'react-window-infinite-loader'
@@ -82,6 +83,8 @@ const WindowedList = ({
 
   const classes = useStyles()
 
+  const layout = useSelector(store => store.app.layout)
+
   return (
     <InfiniteLoader
       itemCount={itemCount}
@@ -96,6 +99,7 @@ const WindowedList = ({
           {/* To fix this 'display: contents' makes Page include its child 'FixedSizeList' in the flexbox rather than 'AutoSizer' itself */}
           <AutoSizer style={{ display: 'contents' }}>
             {({ height, width }) => {
+              console.log('height, width: ', height, width)
               return (
                 <FixedSizeList
                   itemCount={itemCount}
@@ -103,8 +107,9 @@ const WindowedList = ({
                   // ref={listRef}
                   height={height}
                   width={width}
-                  itemSize={height / 2}
+                  itemSize={height / 1.8}
                   className={classes.list}
+                  layout={layout}
                 >
                   {Item}
                 </FixedSizeList>
