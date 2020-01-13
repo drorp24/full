@@ -8,17 +8,16 @@ import { makeStyles } from '@material-ui/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
+// import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
 import Close from '@material-ui/icons/Close'
-import Map from '@material-ui/icons/Map'
-import ViewList from '@material-ui/icons/ViewList'
 import CloudOff from '@material-ui/icons/CloudOff'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import MySvg from '../utility/svg'
 import MyDrawer from './MyDrawer'
+import toggleMode from './toggleMode'
 
 import { inBrowser } from '../utility/detect'
 
@@ -43,8 +42,8 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
       height: '100%',
       backgroundColor: ({ contextualMenu }) =>
         contextualMenu
-          ? theme.palette.primary.contextual
-          : 'theme.palette.primary.main',
+          ? theme.palette.background.contextual
+          : theme.palette.primary.main,
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
       // hence isn't good for the first (and only in my case) page: it makes 100vh longer than the viewport actual height
@@ -89,11 +88,13 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   }))
 
   const name = useSelector(state => state.app.name)
-  const view = useSelector(state => state.app.view)
+  // const view = useSelector(state => state.app.view)
   const contextualMenu = useSelector(state => state.app.contextual)
   const deviceIsOnline = useSelector(state => state.device.online)
   const onServer = !inBrowser()
   const online = deviceIsOnline || onServer
+  const mode = useSelector(store => store.device.mode)
+  const otherMode = mode === 'light' ? 'dark' : 'light'
 
   const classes = useStyles({ contextualMenu })
 
@@ -109,7 +110,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     [dispatch]
   )
 
-  const setViewToggle = useCallback(() => dispatch(toggleView()), [dispatch])
+  // const setViewToggle = useCallback(() => dispatch(toggleView()), [dispatch])
 
   let history = useHistory()
 
@@ -122,9 +123,9 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     history.goBack()
   }
 
-  const viewClicked = () => {
-    setViewToggle()
-  }
+  // const viewClicked = () => {
+  //   setViewToggle()
+  // }
 
   //! Passing a reducer down to a child
   // The Menu icon is part of the MyAppBar component;
@@ -200,19 +201,21 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
           </Typography>
           <CloudOff style={{ display: online ? 'none' : 'inline' }} />
         </div>
-        <Link
+        {/* <Link
           to={view === 'list' ? '/map' : '/merchants'}
           color="inherit"
           className={classes.link}
-        >
+        > */}
+        {!contextualMenu && (
           <IconButton
             className={classes.viewMode}
             color="inherit"
-            onClick={viewClicked}
+            onClick={toggleMode({ mode, dispatch })}
           >
-            {view === 'map' ? <ViewList /> : <Map />}
+            <MySvg icon={otherMode} />
           </IconButton>
-        </Link>
+        )}
+        {/* </Link> */}
       </Toolbar>
       <MyDrawer {...{ drawerState, drawerDispatch }} />
     </AppBar>

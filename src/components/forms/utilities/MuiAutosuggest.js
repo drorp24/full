@@ -208,7 +208,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: '100%',
     maxHeight: '60vh',
     overflow: 'auto',
-    backgroundColor: theme.palette.background.extra.backgroundColor,
+    backgroundColor: theme.palette.background.extra,
     // borderRadius: '4px',
   },
   suggestion: {

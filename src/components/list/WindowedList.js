@@ -77,7 +77,7 @@ const WindowedList = ({
 
   const useStyles = makeStyles(theme => ({
     list: {
-      backgroundColor: theme.palette.background.extra.backgroundColor,
+      backgroundColor: theme.palette.background.extra,
     },
   }))
 

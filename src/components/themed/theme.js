@@ -52,9 +52,8 @@ const theme = mode => {
       },
       secondary: green,
       background: {
-        extra: {
-          backgroundColor: mode === 'light' ? '#dadada' : '#888',
-        },
+        extra: mode === 'light' ? '#dadada' : '#888',
+        contextual: mode === 'light' ? '#424242' : '#424242',
       },
     },
   })
