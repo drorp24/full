@@ -29,4 +29,13 @@ export const initiateDeviceProperties = store => {
     console.log('Offline. e: ', e)
     dispatch(setDevice({ online: false }))
   })
+
+  window.addEventListener('orientationchange', e => {
+    dispatch(
+      setDevice({
+        orientation:
+          window.screen.orientation.angle === 0 ? 'portrait' : 'landscape',
+      })
+    )
+  })
 }

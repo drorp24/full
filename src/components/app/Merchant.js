@@ -76,6 +76,7 @@ import Zoom from '@material-ui/core/Zoom'
 import Loader from '../utility/Loader'
 import { ellipsis } from '../themed/Box'
 import { requestDeviceMotion } from '../utility/permissions'
+import blue from '@material-ui/core/colors/blue'
 
 // makeStyles accepts a 'theme' argument and returns another function that optionally accepts the component's props (or anything really)
 // this is by far the best way to define styling rules in a dynamic way, i.e., as a function of some changing props (Requires MUI v4)
@@ -195,6 +196,7 @@ const Merchant = ({ loading, record, style }) => {
   }
 
   const { standalone, online } = useSelector(store => store.device)
+  const { mode } = useSelector(store => store.device)
 
   // ! Challenges of card's height
   //
@@ -254,20 +256,21 @@ const Merchant = ({ loading, record, style }) => {
       justifyContent: 'center',
     },
     name: {
-      fontSize: ({ open }) => (open ? '1.5em' : '1.2em'),
+      fontSize: ({ open }) => (open ? '1.5em' : '1em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
     },
     address: {
-      fontSize: '0.9em',
-      marginBottom: '3vh',
+      fontSize: '0.8em',
+      marginBottom: '1vh',
     },
     price: {
-      fontSize: ({ open }) => (open ? '1.3em' : '1em'),
+      fontSize: ({ open }) => (open ? '1.3em' : '0.9em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
     },
 
     btn: {
       paddingLeft: '0',
+      color: mode === 'dark' ? blue['A100'] : theme.palette.primary.main,
     },
     fab: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),

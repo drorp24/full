@@ -5,6 +5,8 @@ import {
   TOGGLE_VIEW,
   SET_POPULATED,
   TOGGLE_LAYOUT,
+  TOGGLE_KEY,
+  SET_APP_BAR,
 } from '../types'
 
 const initialState = {
@@ -13,6 +15,7 @@ const initialState = {
   shouldClose: false,
   view: 'list',
   layout: 'vertical',
+  longAppBar: true,
   populated: {
     state: false,
     currencies: false,
@@ -21,10 +24,19 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  const { type, app, contextual, name, shouldClose, field } = action // last 3 are mutually exclusive but I can still destructure them
+  const {
+    type,
+    contextual,
+    name,
+    shouldClose,
+    field,
+    payload,
+    key,
+    forward,
+  } = action // last 3 are mutually exclusive but I can still destructure them
   switch (type) {
     case SET_APP:
-      return app // 'app' has the entire selector, while 'contextual' and 'shouldClose' are parts of that selector hence the difference
+      return { ...state, ...payload }
     case SET_CONTEXTUAL:
       return { ...state, contextual, name }
     case SHOULD_CLOSE:
@@ -38,6 +50,10 @@ export default (state = initialState, action) => {
       }
     case SET_POPULATED:
       return { ...state, populated: { ...state.populated, [field]: true } }
+    case TOGGLE_KEY:
+      return { ...state, [key]: !state[key] }
+    case SET_APP_BAR:
+      return { ...state, longAppBar: !forward }
     default:
       return state
   }

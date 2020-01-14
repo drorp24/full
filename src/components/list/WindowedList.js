@@ -1,7 +1,8 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { forwardRef, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setAppBar } from '../../redux/actions'
 import { FixedSizeList } from 'react-window'
 
 import InfiniteLoader from 'react-window-infinite-loader'
@@ -25,7 +26,6 @@ const WindowedList = ({
     const itemLoaded = isItemLoaded(index)
     const loading = !itemLoaded
     const record = itemLoaded ? records[index] : null
-    // const classes = useItemStyles()
 
     return <Component {...{ loading, record, index, style }} />
   }
@@ -85,6 +85,36 @@ const WindowedList = ({
 
   const layout = useSelector(store => store.app.layout)
 
+  // ! How I optimized shrinking the AppBar upon scrolling
+  // - The awkward 'setAppBar' that accepts the boolean value of whether forward or not
+  //   was done in order to prevent having to know here the current value of 'longAppBar' because it would mean using useSelector
+  //   which, in turn, would cause a re-render every time its value is dispatched, resulting in an endless loop.
+  //
+  // - But that wasn't enough. To save hundreds of very frequent dispatches from occuring with every 'onWheel' event,
+  //   a local state holds the current value of the forward, and the dispatch is called only if the use changed scrolling direction.
+  //   Initially I was tempted to use useState for that, but then the setState made the entire WindowedList component re-render endlessly.
+  //   useState is good for remembering states across renders, but here the component stays so a simple assignment of a local variable was enought  .
+  //
+  // - Lastly, I added the 'if (forward)' to prevent dispatching anything when user scrolls backwards.
+  //   The reason: any change in the AppBar's height (as incurred by the user changing scrolling direction) re-renders the WindowedList,
+  //   since AutoSizer sees a new height (that is evident by looking at the merchant cards expanding to capture 1 / 1.8 of the screen's new height)
+  //   this makes the scrolling janky, particulalry in the backwards direction.
+
+  let forward = false
+  const dispatch = useDispatch()
+  function handleOnWheel({ deltaX, deltaY }) {
+    const newForward = layout === 'vertical' ? deltaY > 0 : deltaX > 0
+    if (forward !== newForward) {
+      forward = newForward
+      console.log('forward: ', forward)
+      if (forward) dispatch(setAppBar(newForward))
+    }
+  }
+
+  const outerElementType = forwardRef((props, ref) => (
+    <div ref={ref} onWheel={handleOnWheel} {...props} />
+  ))
+
   return (
     <InfiniteLoader
       itemCount={itemCount}
@@ -110,6 +140,7 @@ const WindowedList = ({
                   itemSize={height / 1.8}
                   className={classes.list}
                   layout={layout}
+                  outerElementType={outerElementType}
                 >
                   {Item}
                 </FixedSizeList>

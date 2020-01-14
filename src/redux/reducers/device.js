@@ -19,7 +19,7 @@ const initialState = {
   newerSwWaiting: null,
   contentCached: null,
   appShared: null,
-  orientation: null,
+  orientation: 'portrait',
   mode: 'light',
 }
 

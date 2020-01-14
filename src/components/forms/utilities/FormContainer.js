@@ -11,9 +11,7 @@ import DotsMobileStepper from './DotsMobileStepper'
 import OneStepper from './OneStepper'
 import { createFormStateFromStructure } from '../../forms/utilities/formUtilities'
 import { getLocationAndAddress } from '../../utility/geolocation'
-import LiveRates from '../../websocket/LiveRates'
-import { MyTypography } from '../../themed/Box'
-import { coinbaseProducts, getCoins, getCurrencies } from './lists'
+import { getCoins, getCurrencies } from './lists'
 import { empty } from '../../utility/empty'
 
 const FormContainer = ({ structure, show }) => {
@@ -251,44 +249,9 @@ const FormContainer = ({ structure, show }) => {
     locateUser(5)
   }, [dispatch])
 
-  const header = form => {
-    if (!form.values) return <div />
-
-    const { title, subtitle } = structure[0]
-    const { base, quote, amount } = form.values
-    const quantity = amount || 1
-    const selected = base && quote
-    const coin =
-      (
-        (selected &&
-          lists.coins &&
-          lists.coins.find(coin => coin.name === base)) ||
-        {}
-      ).display || base
-    const getting = amount ? `${String(amount)} ${coin}` : coin
-    return (
-      <MyTypography component="div" formVariant="typography.header">
-        <MyTypography
-          component="div"
-          formVariant={selected ? 'typography.coinTitle' : 'typography.title'}
-        >
-          {selected ? getting : title}
-        </MyTypography>
-        <MyTypography component="div" formVariant="typography.subtitle">
-          {selected && coinbaseProducts.includes(`${base}-${quote}`) ? (
-            <LiveRates {...{ base, quote, quantity }} />
-          ) : (
-            subtitle
-          )}
-        </MyTypography>
-      </MyTypography>
-    )
-  }
-
   const properties = {
     structure,
     show,
-    header,
   }
 
   // ! ssr road block

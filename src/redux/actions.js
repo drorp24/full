@@ -55,11 +55,6 @@ export const setList = ({ name, list, quote }) => ({
   quote,
 })
 
-export const setApp = app => ({
-  type: SET_APP,
-  app,
-})
-
 export const setContextual = ({ contextual, name }) => ({
   type: SET_CONTEXTUAL,
   contextual,
@@ -89,16 +84,26 @@ export const setA2hs = a2hs => ({
   a2hs,
 })
 
+export const setApp = payload => ({
+  type: SET_APP,
+  payload,
+})
+
 export const setDevice = payload => ({
   type: SET_DEVICE,
   payload,
+})
+
+export const setAppBar = forward => ({
+  type: 'SET_APP_BAR',
+  forward,
 })
 
 // ! generic setting
 // Will work with any reducer that accepts {type, payload} (e.g., device.js)
 // saves the need to define here a new function for every new reducer / action
 // particulalry useful when value needs to be temporarily set, such as when a message should be displayed for a potentially reccurring event
-// to make 'temporarily' simple, 'setValue' accepts only one key-value pair and the value must be boolean
+// to make 'temporarily' simple, 'setValue' accepts only one key-value pair and the value better be boolean
 export const setValue = ({ type, key, value }) => ({
   type,
   payload: { [key]: value },
@@ -126,3 +131,9 @@ export const temporarilySetValue = ({
     dispatch(setValue({ type, key, resetValue }))
   }, time * 1000)
 }
+
+// Will work with any single-level boolean if its reducer supports 'TOGGLE_KEY' (currently: 'app')
+export const toggleKey = key => ({
+  type: 'TOGGLE_KEY',
+  key,
+})

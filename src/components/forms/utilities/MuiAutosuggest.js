@@ -220,7 +220,6 @@ const useStyles = makeStyles(theme => ({
     listStyleType: 'none',
   },
   input: {
-    color: theme.palette.primary.main,
     height: theme.form.body.fields.input.height,
     padding: theme.form.body.fields.input.padding,
     overflow: 'hidden',

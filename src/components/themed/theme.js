@@ -37,6 +37,16 @@ import red from '@material-ui/core/colors/red'
 // Once I removed my rules, MUI styled those elements well; in fact it probably better adhered to the theme than what I did;
 // more importantly, it also replaced the colors according to the mode once i removed my own rules.
 //
+// ! Refrain from over-using 'system' variants like 'formVariant' and 'pageVariant'
+// When I read about MUI's design system and variants I initially played with it myself,
+// creating some components like <Box /> and <MyTypography />
+// with their very own 'variants' like 'formVariants' and 'pageVariants';
+// Later I understood that this is actually a very bad idea.
+//s
+// What this does is to put the styling away in a remote file again ('theme.js' in this case)
+// rather than include them in the same file as the component they style, which is one of css-in-js benefits, that is more in line with
+// concepts such as componentization and shadow-dom. Worse yet, it polutes the 'theme' with component-specific styling rules rather
+// then leave the theme for only the, well theme stuff such as the brand colors, spacing etc.
 
 const theme = mode => {
   const defaultTheme = createMuiTheme({
@@ -48,7 +58,7 @@ const theme = mode => {
         // main: '#2962FF',
         // main: '#82B1FF',
         // main: '#448AFF',
-        main: mode === 'light' ? blue['A700'] : blue['A200'],
+        main: mode === 'light' ? blue['A700'] : blue['A700'],
       },
       secondary: green,
       background: {
@@ -62,26 +72,16 @@ const theme = mode => {
     typography: {
       useNextVariants: true,
     },
-    page: {
-      content: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
-      },
-    },
     form: {
       header: {
         textAlign: 'center',
         liveRates: {
           up: green['A200'],
-          down: red['500'],
+          down: red['A400'],
         },
       },
       body: {
-        padding: '0 1em',
+        padding: '2em 1em',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-evenly',
@@ -115,7 +115,6 @@ const theme = mode => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          height: '100%',
         },
         title: {
           fontSize: '6vmin',
@@ -123,6 +122,7 @@ const theme = mode => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
+          color: defaultTheme.palette.primary.contrastText,
         },
         coinTitle: {
           fontSize: '6vmin',
@@ -132,16 +132,17 @@ const theme = mode => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
+          color: defaultTheme.palette.primary.contrastText,
         },
         subtitle: {
           fontSize: '10vmin',
           fontWeight: '300',
-          color: defaultTheme.palette.text.secondary,
           whiteSpace: 'pre-line',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
+          color: defaultTheme.palette.text.primary,
         },
       },
     },

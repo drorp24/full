@@ -1,7 +1,7 @@
-import React, { useCallback, useReducer, useEffect, useState } from 'react'
+import React, { useCallback, useReducer, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { setContextual, setShouldClose, toggleView } from '../../redux/actions'
+import { setContextual, setShouldClose } from '../../redux/actions'
 
 import { makeStyles } from '@material-ui/styles'
 
@@ -33,17 +33,27 @@ import { inBrowser } from '../utility/detect'
 // Here, I'm passing the redux selector 'contextualMenu' so the background color is a function of whether the state is contextual or not.
 // In Merchant.js, 'state' is an object. But 'contextualMenu' is not.
 // Aparently, it's essential to pass an obj into useStyles or else MUI will log a (misleading) 'missing prop' error.
+//
 const MyAppBar = ({ title, icon = null, noBack }) => {
+  const onServer = !inBrowser()
+  const { name, contextual, longAppBar } = useSelector(state => state.app)
+  const { online, mode, orientation } = useSelector(state => state.device)
+  const includeLiveHeader = /* orientation === 'portrait' && */ longAppBar
+  const otherMode = mode === 'light' ? 'dark' : 'light'
+
   const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
     },
     appBar: {
       height: '100%',
-      backgroundColor: ({ contextualMenu }) =>
-        contextualMenu
-          ? theme.palette.background.contextual
-          : theme.palette.primary.main,
+      display: 'grid',
+      gridTemplateRows: '50% 50%',
+      backgroundColor: contextual
+        ? theme.palette.background.contextual
+        : theme.palette.primary.main,
+      ...(includeLiveHeader && { boxShadow: 'none' }),
+      transition: 'box-shadow 1s 2s',
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
       // hence isn't good for the first (and only in my case) page: it makes 100vh longer than the viewport actual height
@@ -77,26 +87,18 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
       fontWeight: '400',
     },
     backButton: {
-      transform: ({ contextualMenu }) =>
-        contextualMenu ? 'rotate(90deg)' : 'initial',
+      transform: contextual ? 'rotate(90deg)' : 'initial',
       transition: 'transform 0.3s',
     },
-    viewMode: {},
-    link: {
-      textAlign: 'center',
+    extended: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   }))
 
-  const name = useSelector(state => state.app.name)
-  // const view = useSelector(state => state.app.view)
-  const contextualMenu = useSelector(state => state.app.contextual)
-  const deviceIsOnline = useSelector(state => state.device.online)
-  const onServer = !inBrowser()
-  const online = deviceIsOnline || onServer
-  const mode = useSelector(store => store.device.mode)
-  const otherMode = mode === 'light' ? 'dark' : 'light'
-
-  const classes = useStyles({ contextualMenu })
+  const classes = useStyles()
 
   const dispatch = useDispatch()
 
@@ -110,8 +112,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     [dispatch]
   )
 
-  // const setViewToggle = useCallback(() => dispatch(toggleView()), [dispatch])
-
   let history = useHistory()
 
   const closeClicked = () => {
@@ -122,10 +122,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   const backClicked = () => {
     history.goBack()
   }
-
-  // const viewClicked = () => {
-  //   setViewToggle()
-  // }
 
   //! Passing a reducer down to a child
   // The Menu icon is part of the MyAppBar component;
@@ -167,7 +163,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   }
 
   let Icon, clickHandler
-  if (contextualMenu) {
+  if (contextual) {
     Icon = Close
     clickHandler = closeClicked
   } else if (!noBack) {
@@ -177,6 +173,10 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     Icon = MenuIcon
     clickHandler = menuClicked
   }
+
+  useEffect(() => {
+    console.log('MyAppBar is being called')
+  })
 
   return (
     <AppBar position="static" className={classes.appBar}>
@@ -199,14 +199,12 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
           >
             {name || title}
           </Typography>
-          <CloudOff style={{ display: online ? 'none' : 'inline' }} />
+          <CloudOff
+            style={{ display: online || onServer ? 'none' : 'inline' }}
+          />
         </div>
-        {/* <Link
-          to={view === 'list' ? '/map' : '/merchants'}
-          color="inherit"
-          className={classes.link}
-        > */}
-        {!contextualMenu && (
+
+        {!contextual && (
           <IconButton
             className={classes.viewMode}
             color="inherit"
@@ -215,7 +213,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
             <MySvg icon={otherMode} />
           </IconButton>
         )}
-        {/* </Link> */}
       </Toolbar>
       <MyDrawer {...{ drawerState, drawerDispatch }} />
     </AppBar>

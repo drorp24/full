@@ -139,19 +139,16 @@ const FormContext = React.createContext()
 const useFormStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '20% 65% 15%',
+    gridTemplateRows: '80% 20%',
     width: '100%',
     height: '100%',
     boxSizing: 'border-box',
   },
-  primary: {
-    color: theme.palette.primary.main,
-  },
+  primary: {},
   label: theme.form.body.fields.label,
   phone: {
     background: 'inherit',
     borderBottom: '1px solid rgba(0, 0, 0, 0.42) !important',
-    color: theme.palette.primary.main,
   },
   error: {
     borderBottomColor: `${theme.palette.error.main} !important`,
@@ -174,7 +171,7 @@ const Fields = ({ structure, step }) =>
 // Nowadays I'd probably split the contexts so that only EveryField passes it
 // or better yet, let each field get only the value it needs by accessing redux directly rather than getting it from a context.
 // Luckily, React doesn't really re-renders the entire Form DOM element, only what's actually changed.
-export const Form = ({ structure, show, step, header, footer }) => {
+export const Form = ({ structure, show, step, footer }) => {
   const classes = useFormStyles()
   const form = useSelector(store => store.form)
   const dispatch = useDispatch()
@@ -183,7 +180,6 @@ export const Form = ({ structure, show, step, header, footer }) => {
   return (
     <FormContext.Provider value={{ structure, step, show, form, updateForm }}>
       <form autoComplete="off" className={classes.root}>
-        <Box formVariant="header">{header && header(form)}</Box>
         <Box formVariant="body" formColor="body.color">
           <Fields {...{ structure, step }} />
         </Box>
@@ -361,7 +357,7 @@ const useSwitchStyles = makeStyles(theme => ({
   root: theme.form.body.fields.switch,
   onOff: {
     color: checked =>
-      checked ? theme.palette.primary.main : theme.palette.action.disabled,
+      checked ? theme.palette.action.active : theme.palette.action.disabled,
   },
 }))
 

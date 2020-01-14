@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { setValue, setShouldClose } from '../../redux/actions'
-import { SET_DEVICE } from '../../redux/types'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import { Box } from '../themed/Box'
 import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
 import SnackBar from './Snackbar'
 import { inBrowser } from '../utility/detect'
 import { makeStyles } from '@material-ui/styles'
 import Paper from '@material-ui/core/Paper'
+import LiveHeader from '../forms/utilities/LiveHeader'
 
 // ! Dynamic parent must be defined outside the scope of its children
 // Usually when a component is defined for the sake of one and only other component,
@@ -33,25 +31,41 @@ import Paper from '@material-ui/core/Paper'
 // (which Viewport is one of) but that wasn't the case.
 //
 // ! Viewport height is not (necessarily) 100vh
+// * Why fix this
+// Keeping page dimensions to the exact ones of the mobile viewport prevents slacks when scrolling;
+// This is crucial to maintaining native-like experience.
 // In the browser, '100vh' is frequently *not* the exact viewport's height. It includes the mobile browser chrome.
-// The actual viewport's height is window.innerHeight, which tends to contract and expand with scrolling in unexpected ways,
-// and different from browser to browser.
+// The actual viewport's height is window.innerHeight, which tends to change back and forth in unexpected ways when user scrolls.
+// That contraction and expandsion is different from browser to browser.
+//
+// * <Div100vh /> to the rescue
 // <Div100vh /> component uses windows.innerHeight instead of '100vh' and listens to window.resize.
 // As such, it always keeps to the viewport's exact height.
-// Keeping page dimensions to the exact ones of the mobile viewport prevents slacks and is crucial to maintaining native-like experience.
+// It does come with 2 caveats though, which as usual I had to learn the hard way.
 //
-// But <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
+// * 1st caveat: <Div100vh /> doesn't work on the server
+// <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
 // The server in this case has to generate an alternative <div style={{height: 100vh}} />
 // or else the first static page would not capture the entire screen's height and a FOUC would occur as soon as React takes over.
 //
 // To solve this, I started by defining the 'server' as state, but no hydration occured by the the time client had to render <Page />
 // Maybe that's because what the server returns looks identical to what <Div100vh /> would have rendered:
 // Both have the same props, with the 'style' props having the very same key (height) with the very same value (in the first static page).
+//
 // Luckily, once I changed server to simply be the result of a function call rather than a state, it all worked well:
-// server rendered a <div with height of 100vh, then client replaced it with a <Div100vh /> which renders the same div, only overrides
+// server rendered a <div /> with height of 100vh, then client replaced it with a <Div100vh /> which renders the same div, only overrides
 // the 100vh height with the calculated window.innerHeight expressed in px and modifies that height whenever window.resize fires.
 // It's aparent that replacement took place by looking at the 'id' and 'height' of the div as accepted by the server ('network' tab)
 // as opposed to the different 'id' and 'height' of that div once client hydrated it.
+//
+// * 2nd caveat: <Div100vh /> does not re-render when 'rvh' prop gets changed
+// Originally I used the 'rvh' style properties to define the heights of the sub-components.
+// But while they (probably) respond well to changes in window.innerHeight, they don't respond to changes in their values.
+// So when I introduced the changing height with scrolling, the height didn't change.
+// I then ditched the use of <Div100vh /> with 'rvh' units for the sub-components, defining their heights with percentages instead.
+// If indeed <Div100vh /> with 'rvh' listens to and modified with 'resize' events then it's anyway a bad idea to use
+// <Div100vh /> more than once in a page. 'grid' would seem the classic way to divide a component but it doesn't transition,
+// so I've used height percentages instead, and 'height' transitions beautifully.
 
 // ! <Autosizer/>'s closest ancestor must have explicit height
 // <main> tag below is added for screen readers (= to get Lighthouse 100 grade)
@@ -92,86 +106,89 @@ import Paper from '@material-ui/core/Paper'
 // Long duration plus reverse state make this snackbar keep showing until state is reversed,
 // so that snackbar won't go away until user rotates back into desired orientation.
 //
-const Viewport = ({ children, percent, server, id }) => {
+const Viewport = ({ children, noAppBar }) => {
+  const server = !inBrowser()
   const useStyles = makeStyles(theme => ({
-    root: {
+    viewport: {
       width: '100%',
       '@media only screen and (orientation: landscape)': {
-        height: percent => `${percent}vw !important`,
-        width: percent => (percent === 100 ? '100vh' : '100%'),
+        height: '100vw !important',
       },
     },
   }))
 
-  const classes = useStyles(percent)
-
-  const unit = server ? 'vh' : 'rvh'
+  const classes = useStyles()
 
   return server ? (
     <div
-      style={{ height: `${percent}${unit}` }}
-      className={classes.root}
-      id={id}
+      style={{ height: '100vh' }}
+      className={classes.viewport}
+      id="viewportServer"
     >
       {children}
     </div>
   ) : (
-    <Div100vh
-      style={{ height: `${percent}${unit}` }}
-      className={classes.root}
-      id={id}
-    >
+    <Div100vh className={classes.viewport} id="viewportClient">
       {children}
     </Div100vh>
   )
 }
 
 const Page = ({ title, icon, noAppBar, noBack, children }) => {
-  const appBarHeightPercent = noAppBar ? 0 : 10
-  const mainHeightPercent = 100 - appBarHeightPercent
-  // TODO: maybe 'server' needs to be a state
-  const server = !inBrowser()
+  const { longAppBar } = useSelector(store => store.app)
+  const { orientation } = useSelector(store => store.device)
+  const includeLiveHeader =
+    /* orientation === 'portrait' && */ !noAppBar && longAppBar
 
-  const dispatch = useDispatch()
+  const appBarHeightPercent = noAppBar ? 0 : 10
+  const liveHeaderHeightPercent = includeLiveHeader ? 20 : 0
+  const mainHeightPercent = 100 - appBarHeightPercent - liveHeaderHeightPercent
+
+  const [displayLiveHeader, setDisplayLiveHeader] = useState(includeLiveHeader)
   useEffect(() => {
-    const setOrientation = orientation => {
-      dispatch(
-        setValue({
-          type: SET_DEVICE,
-          key: 'orientation',
-          value: orientation,
-        })
-      )
-      dispatch(setShouldClose(orientation === 'landscape'))
+    if (!includeLiveHeader) {
+      setTimeout(() => {
+        setDisplayLiveHeader(false)
+      }, 3000)
     }
-    const mql = window.matchMedia('(orientation: landscape)')
-    mql.addListener(({ matches }) => {
-      setOrientation(matches ? 'landscape' : 'portrait')
-    })
-  }, [dispatch])
+  }, [includeLiveHeader])
+
+  const useStyles = makeStyles(theme => ({
+    appBar: {
+      height: `${appBarHeightPercent}%`,
+    },
+    liveHeader: {
+      height: `${liveHeaderHeightPercent}%`,
+      transition: 'height 1.5s',
+      backgroundColor: theme.palette.primary.main,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...(includeLiveHeader && {
+        boxShadow:
+          '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);',
+      }),
+    },
+    main: {
+      height: `${mainHeightPercent}%`,
+    },
+  }))
+  const classes = useStyles()
 
   return (
     <Paper square>
-      <Viewport
-        percent={100}
-        server={server}
-        id={'viewport' + (server ? 'Server' : 'Client')}
-      >
-        <Box pageVariant="content">
-          <Viewport percent={appBarHeightPercent} server={server}>
-            {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
-          </Viewport>
-          <Viewport percent={mainHeightPercent} server={server}>
-            <main
-              style={{
-                height: '100%',
-              }}
-            >
-              {children}
-            </main>
-          </Viewport>
-          <SnackBar />
-        </Box>
+      <Viewport {...{ noAppBar }}>
+        <div className={classes.appBar}>
+          {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
+        </div>
+        <div className={classes.liveHeader}>
+          {displayLiveHeader && <LiveHeader />}
+        </div>
+        <div className={classes.main}>
+          <main style={{ height: '100%' }}>{children}</main>
+        </div>
+        <SnackBar />
       </Viewport>
     </Paper>
   )
