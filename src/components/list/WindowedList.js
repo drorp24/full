@@ -116,7 +116,7 @@ const WindowedList = ({
       itemCount={itemCount}
       isItemLoaded={isItemLoaded}
       loadMoreItems={loadMoreItems}
-      threshold={1} // value of s1 will make 'loading...' appear thus checking inifite loading works ok. Should be removed eventually.
+      // threshold={1} // value of s1 will make 'loading...' appear thus checking inifite loading works ok. Should be removed eventually.
     >
       {({ onItemsRendered, ref }) => (
         <>
