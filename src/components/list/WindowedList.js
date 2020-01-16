@@ -108,7 +108,7 @@ const WindowedList = ({
   }
 
   const outerElementType = forwardRef((props, ref) => (
-    <div ref={ref} onWheel={handleOnWheel} {...props} />
+    <div ref={ref} /* onWheel={handleOnWheel} */ {...props} />
   ))
 
   return (
@@ -125,7 +125,6 @@ const WindowedList = ({
           {/* To fix this 'display: contents' makes Page include its child 'FixedSizeList' in the flexbox rather than 'AutoSizer' itself */}
           <AutoSizer style={{ display: 'contents' }}>
             {({ height, width }) => {
-              console.log('height, width: ', height, width)
               return (
                 <FixedSizeList
                   itemCount={itemCount}
