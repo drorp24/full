@@ -1,5 +1,5 @@
 import React, { useCallback, useReducer, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
 
@@ -8,7 +8,6 @@ import { makeStyles } from '@material-ui/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-// import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
@@ -36,9 +35,8 @@ import { inBrowser } from '../utility/detect'
 //
 const MyAppBar = ({ title, icon = null, noBack }) => {
   const onServer = !inBrowser()
-  const { name, contextual, longAppBar } = useSelector(state => state.app)
-  const { online, mode, orientation } = useSelector(state => state.device)
-  const includeLiveHeader = /* orientation === 'portrait' && */ longAppBar
+  const { name, contextual } = useSelector(state => state.app)
+  const { online, mode } = useSelector(store => store.device)
   const otherMode = mode === 'light' ? 'dark' : 'light'
 
   const useStyles = makeStyles(theme => ({
@@ -47,13 +45,8 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     },
     appBar: {
       height: '100%',
-      display: 'grid',
-      gridTemplateRows: '50% 50%',
-      backgroundColor: contextual
-        ? theme.palette.background.contextual
-        : theme.palette.primary.main,
-      ...(includeLiveHeader && { boxShadow: 'none' }),
-      transition: 'box-shadow 1s 2s',
+      boxShadow: 'inherit',
+
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
       // hence isn't good for the first (and only in my case) page: it makes 100vh longer than the viewport actual height
@@ -69,7 +62,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
       height: '100%',
       display: 'grid',
       gridTemplateColumns: '20% 60% 20%', // auto would leave the centerpart with no defined width, which prevents ellipsis
-      // gridColumnGap: '10px', // don't use it: it's not done symmetrically
       padding: '0',
     },
     pageIcon: {
@@ -78,7 +70,6 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     },
     centerPart: {
       display: 'flex',
-      // justifyContent: 'flex-start', // title won't move when offline icon shows up
       justifyContent: 'space-evenly', // title will move when offline icons shows up, but will be centered
       alignItems: 'center',
       flexWrap: 'nowrap',
@@ -158,25 +149,36 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
 
   const [drawerState, drawerDispatch] = useReducer(drawerReducer, false)
 
+  const doNothing = () => {}
+  const ShowNothing = () => <></>
+  const svgIcon = icon => () => <MySvg {...{ icon }} />
   const menuClicked = () => {
     drawerDispatch({ type: 'toggle' })
   }
 
-  let Icon, clickHandler
+  let LeftIcon, leftClickHandler
   if (contextual) {
-    Icon = Close
-    clickHandler = closeClicked
+    LeftIcon = Close
+    leftClickHandler = closeClicked
   } else if (!noBack) {
-    Icon = ArrowBackIcon
-    clickHandler = backClicked
+    LeftIcon = ArrowBackIcon
+    leftClickHandler = backClicked
   } else {
-    Icon = MenuIcon
-    clickHandler = menuClicked
+    LeftIcon = MenuIcon
+    leftClickHandler = menuClicked
   }
 
-  useEffect(() => {
-    console.log('MyAppBar is being called')
-  })
+  let RightIcon, rightClickHandler
+  if (contextual) {
+    RightIcon = ShowNothing
+    rightClickHandler = doNothing
+  } else if (noBack) {
+    RightIcon = svgIcon(otherMode)
+    rightClickHandler = toggleMode({ mode, dispatch })
+  } else {
+    RightIcon = svgIcon('more')
+    rightClickHandler = menuClicked
+  }
 
   return (
     <AppBar position="static" className={classes.appBar}>
@@ -184,10 +186,10 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
         <IconButton
           className={classes.backButton}
           color="inherit"
-          onClick={clickHandler}
+          onClick={leftClickHandler}
           disableRipple={true}
         >
-          <Icon />
+          <LeftIcon />
         </IconButton>
         <div className={classes.centerPart}>
           <MySvg icon={icon} className={classes.pageIcon} />
@@ -204,15 +206,9 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
           />
         </div>
 
-        {!contextual && (
-          <IconButton
-            className={classes.viewMode}
-            color="inherit"
-            onClick={toggleMode({ mode, dispatch })}
-          >
-            <MySvg icon={otherMode} />
-          </IconButton>
-        )}
+        <IconButton color="inherit" onClick={rightClickHandler}>
+          <RightIcon />
+        </IconButton>
       </Toolbar>
       <MyDrawer {...{ drawerState, drawerDispatch }} />
     </AppBar>

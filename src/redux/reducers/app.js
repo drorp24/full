@@ -6,7 +6,6 @@ import {
   SET_POPULATED,
   TOGGLE_LAYOUT,
   TOGGLE_KEY,
-  SET_APP_BAR,
 } from '../types'
 
 const initialState = {
@@ -15,7 +14,7 @@ const initialState = {
   shouldClose: false,
   view: 'list',
   layout: 'vertical',
-  longAppBar: true,
+  scrolling: null,
   populated: {
     state: false,
     currencies: false,
@@ -24,16 +23,7 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  const {
-    type,
-    contextual,
-    name,
-    shouldClose,
-    field,
-    payload,
-    key,
-    forward,
-  } = action // last 3 are mutually exclusive but I can still destructure them
+  const { type, contextual, name, shouldClose, field, payload, key } = action // last 3 are mutually exclusive but I can still destructure them
   switch (type) {
     case SET_APP:
       return { ...state, ...payload }
@@ -52,8 +42,6 @@ export default (state = initialState, action) => {
       return { ...state, populated: { ...state.populated, [field]: true } }
     case TOGGLE_KEY:
       return { ...state, [key]: !state[key] }
-    case SET_APP_BAR:
-      return { ...state, longAppBar: !forward }
     default:
       return state
   }

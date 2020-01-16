@@ -94,11 +94,6 @@ export const setDevice = payload => ({
   payload,
 })
 
-export const setAppBar = forward => ({
-  type: 'SET_APP_BAR',
-  forward,
-})
-
 // ! generic setting
 // Will work with any reducer that accepts {type, payload} (e.g., device.js)
 // saves the need to define here a new function for every new reducer / action

@@ -1,5 +1,5 @@
 import { ios, online, standalone } from './detect'
-import { setDevice } from '../../redux/actions'
+import { setDevice, setShouldClose } from '../../redux/actions'
 
 export const initiateDeviceProperties = store => {
   const { dispatch } = store
@@ -31,11 +31,9 @@ export const initiateDeviceProperties = store => {
   })
 
   window.addEventListener('orientationchange', e => {
-    dispatch(
-      setDevice({
-        orientation:
-          window.screen.orientation.angle === 0 ? 'portrait' : 'landscape',
-      })
-    )
+    const orientation =
+      window.screen.orientation.angle === 0 ? 'portrait' : 'landscape'
+    dispatch(setDevice({ orientation }))
+    if (orientation === 'landscape') dispatch(setShouldClose(true))
   })
 }

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import Div100vh from 'react-div-100vh'
@@ -135,27 +136,32 @@ const Viewport = ({ children, noAppBar }) => {
 }
 
 const Page = ({ title, icon, noAppBar, noBack, children }) => {
-  const { longAppBar } = useSelector(store => store.app)
-  const { orientation } = useSelector(store => store.device)
+  const { scrolling, layout, contextual } = useSelector(store => store.app)
+  const { pathname } = useLocation()
+
   const includeLiveHeader =
-    /* orientation === 'portrait' && */ !noAppBar && longAppBar
+    !noAppBar &&
+    (pathname === '/select' ||
+      (pathname === '/merchants' &&
+        !scrolling &&
+        !contextual &&
+        layout === 'vertical'))
 
   const appBarHeightPercent = noAppBar ? 0 : 10
   const liveHeaderHeightPercent = includeLiveHeader ? 20 : 0
   const mainHeightPercent = 100 - appBarHeightPercent - liveHeaderHeightPercent
 
-  const [displayLiveHeader, setDisplayLiveHeader] = useState(includeLiveHeader)
-  useEffect(() => {
-    if (!includeLiveHeader) {
-      setTimeout(() => {
-        setDisplayLiveHeader(false)
-      }, 3000)
-    }
-  }, [includeLiveHeader])
+  const boxShadow =
+    '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)'
 
   const useStyles = makeStyles(theme => ({
     appBar: {
       height: `${appBarHeightPercent}%`,
+      backgroundColor: contextual
+        ? theme.palette.background.contextual
+        : theme.palette.primary.main,
+      boxShadow: includeLiveHeader ? 'none' : boxShadow,
+      transition: 'box-shadow 1s 2s',
     },
     liveHeader: {
       height: `${liveHeaderHeightPercent}%`,
@@ -166,9 +172,9 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
       justifyContent: 'center',
       alignItems: 'center',
       ...(includeLiveHeader && {
-        boxShadow:
-          '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);',
+        boxShadow,
       }),
+      overflow: 'hidden',
     },
     main: {
       height: `${mainHeightPercent}%`,
@@ -183,7 +189,7 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
         </div>
         <div className={classes.liveHeader}>
-          {displayLiveHeader && <LiveHeader />}
+          <LiveHeader />
         </div>
         <div className={classes.main}>
           <main style={{ height: '100%' }}>{children}</main>

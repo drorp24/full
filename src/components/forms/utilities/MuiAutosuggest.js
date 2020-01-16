@@ -144,7 +144,7 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
     <MenuItem
       selected={isHighlighted}
       component="div"
-      style={{ fontSize: '0.9rem' }}
+      style={{ fontSize: '0.9rem', borderBottom: '1px solid rgba(0,0,0,0.1)' }}
     >
       <MyGrid container justify="space-between" wrap="nowrap">
         <MyGrid
@@ -200,7 +200,7 @@ const useStyles = makeStyles(theme => ({
   suggestionsContainerOpen: {
     position: 'absolute',
     zIndex: 2,
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(3),
     left: 0,
     right: 0,
   },
@@ -208,8 +208,8 @@ const useStyles = makeStyles(theme => ({
     maxWidth: '100%',
     maxHeight: '60vh',
     overflow: 'auto',
-    backgroundColor: theme.palette.background.extra,
-    // borderRadius: '4px',
+    backgroundColor: theme.palette.background.selectBox,
+    borderRadius: '4px',
   },
   suggestion: {
     display: 'block',

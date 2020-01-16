@@ -62,13 +62,28 @@ const theme = mode => {
       },
       secondary: green,
       background: {
-        extra: mode === 'light' ? '#dadada' : '#888',
+        extra: mode === 'light' ? 'rgba(0, 0, 0, 0.25)' : 'none',
+        selectBox: mode === 'light' ? '#dadada' : '#888',
         contextual: mode === 'light' ? '#424242' : '#424242',
       },
     },
   })
-  return createMuiTheme({
+  const returnedTheme = createMuiTheme({
     ...defaultTheme,
+    overrides: {
+      MuiFab: {
+        root: {
+          fontSize: '1.2rem',
+        },
+      },
+      MuiSvgIcon: {
+        root: {
+          marginRight: '0.2rem',
+          width: '1.2em',
+          height: '1.2em',
+        },
+      },
+    },
     typography: {
       useNextVariants: true,
     },
@@ -124,16 +139,6 @@ const theme = mode => {
           alignItems: 'center',
           color: defaultTheme.palette.primary.contrastText,
         },
-        coinTitle: {
-          fontSize: '6vmin',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: defaultTheme.palette.primary.contrastText,
-        },
         subtitle: {
           fontSize: '10vmin',
           fontWeight: '300',
@@ -147,8 +152,9 @@ const theme = mode => {
       },
     },
   })
-}
 
-if (typeof window !== 'undefined') window.theme = theme
+  if (typeof window !== 'undefined') window.theme = returnedTheme
+  return returnedTheme
+}
 
 export default theme

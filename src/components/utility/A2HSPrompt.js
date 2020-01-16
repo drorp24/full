@@ -99,28 +99,34 @@ export default function A2HSPrompt() {
 
   // Customize this as needed
   const HomemadePrompt = ({ show }) => {
+    const overrideToMatchIcon = {
+      backgroundColor: '#f8f8f8',
+      color: '#555',
+    }
     const useStyles = makeStyles(theme => ({
       background: {
-        backgroundColor: '#f8f8f8',
+        backgroundColor: overrideToMatchIcon.backgroundColor,
+        color: overrideToMatchIcon.color,
       },
       appMarketing: {
         display: 'grid',
-        gridTemplateColumns: '8vh auto',
+        gridTemplateColumns: '8vmax auto',
         columnGap: '1em',
         alignItems: 'center',
-        fontSize: '4.5vw',
+        fontSize: '4.5vmin',
       },
       url: {
         color: '#888',
-        fontSize: '4vw',
+        fontSize: '4vmin',
         fontWeight: '300',
       },
       instructions: {
-        fontSize: '4vw',
-        marginTop: '3vh',
+        fontSize: '4vmin',
+        marginTop: '3vmax',
+        color: overrideToMatchIcon.color,
       },
       appIcon: {
-        height: '13vw',
+        height: '13vmin',
         borderRadius: '7px',
       },
       iosIcon: {
@@ -137,11 +143,7 @@ export default function A2HSPrompt() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle
-          // style={{ backgroundColor: '#f8f8f8' }}
-          id="alert-dialog-title"
-          className={classes.background}
-        >
+        <DialogTitle id="alert-dialog-title" className={classes.background}>
           Install Cryptonite
         </DialogTitle>
 

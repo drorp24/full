@@ -1,8 +1,8 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React, { forwardRef, useState } from 'react'
+import React, { forwardRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setAppBar } from '../../redux/actions'
+import { setValue } from '../../redux/actions'
 import { FixedSizeList } from 'react-window'
 
 import InfiniteLoader from 'react-window-infinite-loader'
@@ -85,29 +85,25 @@ const WindowedList = ({
 
   const layout = useSelector(store => store.app.layout)
 
-  // ! How I optimized shrinking the AppBar upon scrolling
-  // - The awkward 'setAppBar' that accepts the boolean value of whether forward or not
-  //   was done in order to prevent having to know here the current value of 'longAppBar' because it would mean using useSelector
-  //   which, in turn, would cause a re-render every time its value is dispatched, resulting in an endless loop.
+  // ! When useState should *not* be used
+  //   To save hundreds of very frequent dispatches from occuring with every 'onWheel' event,
+  //   a local state holds the current value of the forward, and the dispatch is called only if the user changed scrolling direction.
   //
-  // - But that wasn't enough. To save hundreds of very frequent dispatches from occuring with every 'onWheel' event,
-  //   a local state holds the current value of the forward, and the dispatch is called only if the use changed scrolling direction.
-  //   Initially I was tempted to use useState for that, but then the setState made the entire WindowedList component re-render endlessly.
-  //   useState is good for remembering states across renders, but here the component stays so a simple assignment of a local variable was enought  .
-  //
-  // - Lastly, I added the 'if (forward)' to prevent dispatching anything when user scrolls backwards.
-  //   The reason: any change in the AppBar's height (as incurred by the user changing scrolling direction) re-renders the WindowedList,
-  //   since AutoSizer sees a new height (that is evident by looking at the merchant cards expanding to capture 1 / 1.8 of the screen's new height)
-  //   this makes the scrolling janky, particulalry in the backwards direction.
+  //   Had I used useState an endless re-render would have occurred,
+  //   since any modification done to that state would instantly call that component again.
+  //   So I used a local variable instead.
 
-  let forward = false
   const dispatch = useDispatch()
+  let direction = null
   function handleOnWheel({ deltaX, deltaY }) {
-    const newForward = layout === 'vertical' ? deltaY > 0 : deltaX > 0
-    if (forward !== newForward) {
-      forward = newForward
-      console.log('forward: ', forward)
-      if (forward) dispatch(setAppBar(newForward))
+    const delta = layout === 'vertical' ? deltaY : deltaX
+    if (delta === 0) return
+    const newDirection = delta > 0 ? 'forward' : 'backward'
+    if (newDirection !== direction) {
+      direction = newDirection
+      dispatch(
+        setValue({ type: 'SET_APP', key: 'scrolling', value: newDirection })
+      )
     }
   }
 

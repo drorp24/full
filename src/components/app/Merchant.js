@@ -34,6 +34,24 @@
 //      react-window doesn't let you control the rendering of the list items;
 //      it will only let you define a list item and pass its render definition as an argument.
 //
+// !   Known Issues
+// *   2nd card
+//     When the 2nd card is clicked with the LiveHeader on, it doesn't shift right after the AppBar, and the 1st card doesn't get contracted.
+//     It looks like it does, but then pushed away by the the 1st card, which should have been pushed away and contracted to 0 height.
+//     console.logs prove  that the <li>s have been properly pushed away, before something else changed the values.
+//     That might be a result of the LiveHeader getting contracted, since this happens only when LiveHeader is on, or a result of the
+//     scrolling event I added recently.
+//     Mitigation: don't ever click on the 2nd card when LiveHeader is on.
+//
+// *  dark mode
+//    When dark mode is set with the list somewhat scrolled, there is a re-render of the list (which is ok) that sometimes shifts the first card
+//    so you see a blank page; upon scrolling this gets settled.
+//    Mitigation: change to dark mode when list is not scrolled.
+//
+// *  Layout mode
+//    When layout is changed with the list somewhat scrolled, the same thing happens as above.
+//    Same mitigation: changelayout when list is not scrolled.
+//
 // !  Challenges of communicating b/w two components
 //
 // *  Informing AppBar
@@ -104,7 +122,7 @@ const shift = ({ element, shift, ...measures }) => {
   if (!element) return
 
   for (let [shifted, value] of Object.entries(shift)) {
-    if (value && measures[shifted]) {
+    if (value !== null && measures[shifted]) {
       element.setAttribute(`data-${shifted}`, `${measures[shifted]}px`)
       element.style[shifted] = `${value}px`
     }
@@ -154,7 +172,11 @@ const pushAway = (layout, previousSibling, currentSibling, nextSibling) => {
       previous[dimension] - current[position],
       0
     )
-  current.shift[shifted] = current[shifted] - current[position] + offset
+  current.shift[shifted] = Math.max(
+    current[shifted] - current[position] + offset,
+    0
+  )
+
   next.shift[shifted] = next[shifted] + (screenSize - next[position]) + offset
 
   for (let item of [previous, current, next]) {
@@ -244,6 +266,7 @@ const Merchant = ({ loading, record, style }) => {
       height: '50%',
       flexDirection: 'column',
       justifyContent: 'space-around',
+      backgroundColor: mode === 'dark' ? 'rgba(0, 0, 0, 0.3)' : 'inherit',
     },
     contentText: {},
     closeActions: {
@@ -258,6 +281,7 @@ const Merchant = ({ loading, record, style }) => {
     name: {
       fontSize: ({ open }) => (open ? '1.5em' : '1em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
+      transition: 'font-size 1s',
     },
     address: {
       fontSize: '0.8em',
@@ -274,9 +298,6 @@ const Merchant = ({ loading, record, style }) => {
     },
     fab: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
-      margin: theme.spacing(3),
-      marginRight: '0.3em',
-      alignSelf: 'flex-end',
     },
 
     threeSixty: {
@@ -331,7 +352,7 @@ const Merchant = ({ loading, record, style }) => {
         currency: record.quote.quote,
       })
 
-    const layout = useSelector(store => store.app.layout)
+    const { layout } = useSelector(store => store.app)
 
     const toggleCardState = useCallback(
       e => {
@@ -355,7 +376,7 @@ const Merchant = ({ loading, record, style }) => {
           setContextualMenu({ contextual: true, name: record.name })
         }
       },
-      [listItemRef, record.name]
+      [layout, listItemRef, record.name]
     )
 
     const toggleStreetView = useCallback(
