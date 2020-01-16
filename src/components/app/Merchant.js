@@ -138,7 +138,7 @@ const restore = element => {
   }
 }
 
-const pushAway = (layout, previousSibling, currentSibling, nextSibling) => {
+const pushAway = ({ layout, previousSibling, currentSibling, nextSibling }) => {
   // I'm assuming maximum 3 items in a viewport, otherwise this should be done in a loop
   const [previous, current, next] = [
     previousSibling,
@@ -156,7 +156,7 @@ const pushAway = (layout, previousSibling, currentSibling, nextSibling) => {
     shifted = 'top'
     position = 'y'
     dimension = 'height'
-    offset = window.innerHeight / 10
+    offset = document.getElementsByTagName('main')[0].getBoundingClientRect().y
     screenSize = window.innerHeight
   } else {
     shifted = 'left'
@@ -166,16 +166,13 @@ const pushAway = (layout, previousSibling, currentSibling, nextSibling) => {
     screenSize = window.innerWidth
   }
 
-  previous.shift[shifted] = Math.max(previous[shifted] - current[position], 0)
-  if (previous.shift[shifted] === 0)
+  previous.shift[shifted] = previous[shifted] - current[position]
+  if (previous.shift[shifted] <= 0)
     previous.shift[dimension] = Math.max(
       previous[dimension] - current[position],
       0
     )
-  current.shift[shifted] = Math.max(
-    current[shifted] - current[position] + offset,
-    0
-  )
+  current.shift[shifted] = current[shifted] - current[position] + offset
 
   next.shift[shifted] = next[shifted] + (screenSize - next[position]) + offset
 
@@ -194,7 +191,7 @@ const toggleSiblings = (open, listItemRef, layout) => {
   const { previousSibling, nextSibling } = listItemRef.current
   const currentSibling = listItemRef.current
   !open
-    ? pushAway(layout, previousSibling, currentSibling, nextSibling)
+    ? pushAway({ layout, previousSibling, currentSibling, nextSibling })
     : returnToPlace(previousSibling, currentSibling, nextSibling)
 }
 
@@ -241,7 +238,7 @@ const Merchant = ({ loading, record, style }) => {
   //   and got 50% of the height when 'content' managed with 50% of the card's height (when the browser was in standalone, chromeless mode).
   const useStyles = makeStyles(theme => ({
     listItem: {
-      height: ({ open }) => (open ? window.innerHeight * 0.9 : '100%'),
+      height: '100%',
       width: ({ open }) => (open ? '100vw !important' : '100%'),
       padding: ({ open }) => (open ? 0 : theme.spacing(2)),
       zIndex: ({ open }) => (open ? 1 : 0),
@@ -303,7 +300,7 @@ const Merchant = ({ loading, record, style }) => {
     threeSixty: {
       visibility: ({ open }) => (open ? 'visible' : 'hidden'),
       position: 'absolute',
-      top: standalone ? '35vh' : '30vh',
+      top: standalone ? '40%' : '35%',
       right: 0,
       margin: theme.spacing(3),
       marginTop: 0,

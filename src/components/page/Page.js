@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -144,8 +144,13 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
     (pathname === '/select' ||
       (pathname === '/merchants' &&
         !scrolling &&
-        !contextual &&
+        // !contextual &&
         layout === 'vertical'))
+
+  useEffect(() => {
+    console.log('Page gets re-rendered')
+    console.log('includeLiveHeader: ', includeLiveHeader)
+  })
 
   const appBarHeightPercent = noAppBar ? 0 : 10
   const liveHeaderHeightPercent = includeLiveHeader ? 20 : 0

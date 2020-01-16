@@ -1,6 +1,6 @@
 // An entirely generic windowed, and infinite loaded, list
 // See comment on QueryResponse.js
-import React, { forwardRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setValue } from '../../redux/actions'
 import { FixedSizeList } from 'react-window'
@@ -73,8 +73,6 @@ const WindowedList = ({
           },
         })
 
-  // const listRef = useRef()
-
   const useStyles = makeStyles(theme => ({
     list: {
       backgroundColor: theme.palette.background.extra,
@@ -93,30 +91,36 @@ const WindowedList = ({
   //   since any modification done to that state would instantly call that component again.
   //   So I used a local variable instead.
 
+  // Skip first reported scroll because it's fired befire user actually scrolls
   const dispatch = useDispatch()
-  let direction = null
-  function handleOnWheel({ deltaX, deltaY }) {
-    const delta = layout === 'vertical' ? deltaY : deltaX
-    if (delta === 0) return
-    const newDirection = delta > 0 ? 'forward' : 'backward'
-    if (newDirection !== direction) {
-      direction = newDirection
-      dispatch(
-        setValue({ type: 'SET_APP', key: 'scrolling', value: newDirection })
-      )
+  let scrollReport = 0
+  function handleScroll({ scrollDirection }) {
+    if (scrollReport < 2) {
+      scrollReport += 1
+      if (scrollReport === 2)
+        dispatch(
+          setValue({
+            type: 'SET_APP',
+            key: 'scrolling',
+            value: scrollDirection,
+          })
+        )
     }
   }
 
-  const outerElementType = forwardRef((props, ref) => (
-    <div ref={ref} /* onWheel={handleOnWheel} */ {...props} />
-  ))
+  const listRef = useRef()
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.id = 'merchantsList'
+    }
+  })
 
   return (
     <InfiniteLoader
       itemCount={itemCount}
       isItemLoaded={isItemLoaded}
       loadMoreItems={loadMoreItems}
-      // threshold={1} // value of s1 will make 'loading...' appear thus checking inifite loading works ok. Should be removed eventually.
+      threshold={1} // value of s1 will make 'loading...' appear thus checking inifite loading works ok. Should be removed eventually.
     >
       {({ onItemsRendered, ref }) => (
         <>
@@ -129,13 +133,13 @@ const WindowedList = ({
                 <FixedSizeList
                   itemCount={itemCount}
                   onItemsRendered={onItemsRendered}
-                  // ref={listRef}
+                  innerRef={listRef}
                   height={height}
                   width={width}
                   itemSize={height / 1.8}
                   className={classes.list}
                   layout={layout}
-                  outerElementType={outerElementType}
+                  onScroll={handleScroll}
                 >
                   {Item}
                 </FixedSizeList>
