@@ -146,13 +146,10 @@ const messages = {
 
 export default function MySnackbar() {
   const device = useSelector(store => store.device)
-  const {
-    newerSwWaiting,
-    contentCashed,
-    online,
-    appShared,
-    orientation,
-  } = device
+  const { newerSwWaiting, contentCashed, online, appShared } = device
+  const orientation = window.matchMedia('(orientation: portrait)').matches
+    ? 'portrait'
+    : 'landscape'
 
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState({
@@ -166,16 +163,24 @@ export default function MySnackbar() {
 
   const useStyles = makeStyles(theme => ({
     root: {
-      // hack to maintain full width when body auto rotates in response to device orientation change
-      width: ({ orientation }) =>
-        orientation === 'landscape' ? 'calc(100vh - 48px)' : 'unset',
-      // by MD rules, snackbars should show above FABs
+      // This hack ensures full width when device rotates since MUI use px for snackbar margins ($#!)
+      '@media only screen and (orientation: landscape)': {
+        width: 'calc(100vh - 48px)',
+      },
+      '@media only screen and (orientation: portrait)': {
+        width: 'unset',
+      },
+
+      // This ensures snackbars would show above bottom FAB (MD rules)
       bottom: pathname === '/select' ? '11%' : '8px',
     },
     content: {
-      flexWrap: 'nowrap',
-      width: ({ orientation }) =>
-        orientation === 'landscape' ? '100%' : 'unset',
+      '@media only screen and (orientation: landscape)': {
+        width: '100%',
+      },
+      '@media only screen and (orientation: portrait)': {
+        width: 'unset',
+      },
     },
     close: {
       padding: theme.spacing(0.5),
@@ -205,7 +210,7 @@ export default function MySnackbar() {
     },
   }))
 
-  const classes = useStyles({ orientation })
+  const classes = useStyles()
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -260,8 +265,8 @@ export default function MySnackbar() {
     online,
     message,
     appShared,
-    orientation,
     open,
+    orientation,
   ])
 
   return (

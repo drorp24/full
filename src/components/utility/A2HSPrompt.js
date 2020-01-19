@@ -21,7 +21,8 @@ export default function A2HSPrompt() {
 
   const a2hs = useSelector(store => store.user.a2hs)
   const ios = useSelector(store => store.device.ios)
-  const orientation = useSelector(store => store.device.orientation)
+  const landscape = window.matchMedia('(orientation: lanscape)').matches
+
   const { prompted, accepted } = a2hs
 
   const oneHour = 1000 * 60 * 60
@@ -61,7 +62,7 @@ export default function A2HSPrompt() {
   }
 
   useEffect(() => {
-    if (accepted || recently_prompted || orientation === 'landscape') {
+    if (accepted || recently_prompted || landscape) {
       console.log(
         'a2hs accepted or recently prompted or device is in landscape. Not asking'
       )
@@ -89,9 +90,9 @@ export default function A2HSPrompt() {
     a2hs,
     accepted,
     dispatch,
+    landscape,
     nativeInstall,
     now,
-    orientation,
     recently_prompted,
     recordAccepted,
     recordDismissed,

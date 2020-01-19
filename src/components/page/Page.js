@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -63,57 +63,70 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 // Originally I used the 'rvh' style properties to define the heights of the sub-components.
 // But while they (probably) respond well to changes in window.innerHeight, they don't respond to changes in their values.
 // So when I introduced the changing height with scrolling, the height didn't change.
-// I then ditched the use of <Div100vh /> with 'rvh' units for the sub-components, defining their heights with percentages instead.
+// I then ditched the sub-components' <Div100vh /> in favour of heights expressed as percentages of their parent.
 // If indeed <Div100vh /> with 'rvh' listens to and modified with 'resize' events then it's anyway a bad idea to use
 // <Div100vh /> more than once in a page. 'grid' would seem the classic way to divide a component but it doesn't transition,
 // so I've used height percentages instead, and 'height' transitions beautifully.
+//
+// * 3rd caveat: <Div100vh /> doesn't handle orientation change well
+// Details in the next section.
 
-// ! <Autosizer/>'s closest ancestor must have explicit height
-// <main> tag below is added for screen readers (= to get Lighthouse 100 grade)
-// But then it becomes an immediate child of Box, which being a flexbox defines rules for its immediate children
-// The proper way to treat any tag such as <main> as something semantic and apply the flex rule to its child where it belongs
-// is to make its display: 'content,' rather than making its height and width 100%.
-//
-// In this particular case however, I left main with 'height: 100%' since downstream <AutoSizer />
-// requires its closest ancestor div to have *explicit* height,
-// according to which it calculates the height and width of each item it provides to FixedSizeList's render prop function.
-//
-// When <Autosizer />'s closest parent is left with no height, the merchants list becomes blank.
-// If it happens next time, I should look for the closest parent <div /> and make sure it comes with explicit height.
-// <Autosizer /> has quite many React components above it, but they are mostly HOCs, not rendering anything.
-//
 // ! Prevent distorted layout on orientation change
-//
-// There's no point in adapting an app to landscape layout if it provides no benefit that way.
-// When as app is not built for landscape orientation, as in this case,
-// the best way I've found to save the otherwise distorted layout is to simply rotate the display upon orientation change
-// and asking the user to rotate back via a snackbar.
+// * Why auto-rotate
+// There's no point in adapting an app to landscape layout if it provides no real benefit that way.
+// So when an app is not made for landscape orientation, as in this case,
+// the best way I can think of to save the otherwise distorted layout is to auto rotate the display upon orientation change
+// and ask the user to rotate back via a snackbar.
 // (the orientation block web API is active in standalone mode only).
 //
-// At a minimum, <body /> tag should be rotated with its height set to '100vw' and its width set to '100vh'.
-// That is since when rotated, the height and width of the screen
-// confusingly reflect the *old* height and width in spite of the rotation
-// while the 'vh' and 'vw' units reflect the *new* height and width.
-// Rotation (= transform: rotate) angle should be -90 (= 270) deg since that's the direction right-handed people would rotate,
-// and transform-origin should be set to '50vh 50vh' in this direction.
+// * Calculating yet another height
+// That auto rotation I'm doing requires the <body /> tag to auto rotate 90 degrees (actualy -90, to fit right-handed people),
+// and for the content (<Viewport />) to confusingly set its height to about '100vw' and its width to about '100vh'.
+// That's since, while the units 'vw' and 'vh' adapt to the new orientation, 'height' and 'width' properties do not!
 //
-// But that's not enough. Since the div implementing <Page /> has a hard-coded height,
-// that hard-coded height also needs to be modified to '100vw'.
-// (I changed the width as well but it doesn't seem to change anything and is probably not needed).
+// However, '100vw' would not cover the entire screen, leaving 2 huge and very ugly blank white areas,
+// ruining the mobile app experience.
+// Attempting to solve this I discovered that:
 //
-// The 3rd thing I had to do was to generate a SnackBar upon orientation change,
-// and hack that SnackBar's width to capture the entire width (minus gutters) when rotated,
-// and for that I informed redux of orientation change, so SnackBar can detect this and display the proper snackbar message.
-// Long duration plus reverse state make this snackbar keep showing until state is reversed,
-// so that snackbar won't go away until user rotates back into desired orientation.
+// - Once rotated to landscape, the full end-to-end width is neither 100vw nor window.innerWidth.
+//   It's actually window.screen.availHeight on iOS Safari! but window.screen.availWidth on Chrome!
+// - If that's not bad enough, both browsers don't actually allocate that entire end-to-end space.
+//   at least in iPhone Xr, where the notch area seems out of reach.
+//   The height that would cover the maximum area (everything but the notch) is the average b/w the avail<x> and innerWidth.
 //
-const Viewport = ({ children, noAppBar }) => {
+// * Side note: CSS variables
+// Initially I thought to use the oportunity to play with CSS variables for that, but I couldn't since they don't
+// have access to window properties. This problem, together with the fact I had to discover that the hard way as there was no
+// warning given from either ESLint or the browser, the need to use calc() and max() instead of plain code,
+// let alone use var() to refer to variables (!) all prove that CSS variables are really not a good idea when you have
+// a real programming language like JS.
+
+// ! <Autosizer/>'s closest ancestor must have explicit height
+// <main> tag is added merely to get the Lighthouse's 100 grade (it's for screen readers).
+// It's peculiar {{style: '100%}} is since it's actually <Autosizer />'s actual immediate container ancestor,
+// and <Autosizer /> requires its closest ancestor div to have *explicit* height,
+// according to which it calculates the height of each item in the FixedSizeList.
+// It's very hard to notice that, as there are a bunch of components in between the two, but these are all HOCs.
+
+//
+const Viewport = ({ children }) => {
   const server = !inBrowser()
+
+  const {
+    screen: { availHeight, availWidth },
+    innerWidth,
+  } = window
+
+  const end2EndHeight = Math.max(availHeight, availWidth)
+  const realAvailableHeight = innerWidth + (end2EndHeight - innerWidth) / 2
+
   const useStyles = makeStyles(theme => ({
     viewport: {
+      boxSizing: 'border-box',
+      border: '5px solid red',
       width: '100%',
       '@media only screen and (orientation: landscape)': {
-        height: '100vw !important',
+        height: `${realAvailableHeight}px !important`,
         width: '100vh !important',
       },
     },
