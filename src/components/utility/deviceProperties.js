@@ -30,10 +30,21 @@ export const initiateDeviceProperties = store => {
     dispatch(setDevice({ online: false }))
   })
 
-  window.addEventListener('orientationchange', e => {
-    const orientation =
-      window.screen.orientation.angle === 0 ? 'portrait' : 'landscape'
+  // window.addEventListener('orientationchange', e => {
+  //   const orientation = window.matchMedia('(orientation: portrait)').matches
+  //     ? 'portrait'
+  //     : 'landscape'
+  //   dispatch(setDevice({ orientation }))
+  //   if (orientation === 'landscape') dispatch(setShouldClose(true))
+  // })
+
+  const mql = window.matchMedia('(orientation: portrait)')
+
+  function handleOrientationChange(e) {
+    const orientation = e.matches ? 'portrait' : 'landscape'
     dispatch(setDevice({ orientation }))
     if (orientation === 'landscape') dispatch(setShouldClose(true))
-  })
+  }
+
+  mql.addListener(handleOrientationChange)
 }

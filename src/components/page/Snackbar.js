@@ -101,7 +101,7 @@ const messages = {
     invoke: reload,
     icon: 'cloudOn',
     level: 'success',
-    duration: 10000,
+    duration: 15000,
   },
   newerSwWaitingMsg: {
     type: 'newerSwWaiting',
@@ -135,7 +135,7 @@ const messages = {
   },
   landscapeMsg: {
     type: 'landscape',
-    text: 'Please rotate for better view',
+    text: 'Please rotate!',
     action: '',
     invoke: () => {},
     icon: 'rotate',

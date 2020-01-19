@@ -114,6 +114,7 @@ const Viewport = ({ children, noAppBar }) => {
       width: '100%',
       '@media only screen and (orientation: landscape)': {
         height: '100vw !important',
+        width: '100vh !important',
       },
     },
   }))
@@ -139,6 +140,14 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const { scrolling, layout, contextual } = useSelector(store => store.app)
   const { pathname } = useLocation()
 
+  // * Why is contextual commented
+  // Originally I wanted LiveHeader to disappear if it is still on when a merchant card gets expanded
+  // But when the card expands to 90% (here), it doesn't work well with what it should do in parallel (in Merchant.js)
+  // which is to shift its previous card away; previous card doesn't get shifted and the expanded card remains stuck
+  // in the middle of the page.
+  // Guess this is the price for doing imperative stuff.
+  // Simply gave up shrinking LiveHeader upon expansion, and left this comment to remember.
+
   const includeLiveHeader =
     !noAppBar &&
     (pathname === '/select' ||
@@ -146,11 +155,6 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
         !scrolling &&
         // !contextual &&
         layout === 'vertical'))
-
-  useEffect(() => {
-    console.log('Page gets re-rendered')
-    console.log('includeLiveHeader: ', includeLiveHeader)
-  })
 
   const appBarHeightPercent = noAppBar ? 0 : 10
   const liveHeaderHeightPercent = includeLiveHeader ? 20 : 0

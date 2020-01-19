@@ -138,8 +138,23 @@ const restore = element => {
   }
 }
 
+// * How pushAway works
+// 'react-window' supports go to slide but with no animation. It also won't animate the card's previous and next siblings,
+// which is the hollier-than-the-pope way to do it.
+// The price I'm paying for animating the siblings as well is the imperativeness of the code below.
+//
+// To animate the card expansion itself, plus the previous and next cards "making room" for the expanding card,
+// I'm modifying the 'shifted' (i.e., 'top' if list is vertical or 'left' if it is horizontal) prop of the card in the list
+// and making the property transition to create the movement.
+// Reducing 'height' ensures movement when 2nd card is clicked, as 'top' won't move much or at all in that case.
+// 'offset' is where the headers end and the list starts; it's a fixed position on the page (that changes when LiveHeader dispaears)
+// where I want the card's top to be.
+// Had I not used it, the card's top would be on the page's top, as I'm using 'getBoundingClientRect' which is the delta from the page's top.
+//
+// I'm assuming 3 viewable cards per page, which is a fair assumption, but since I'm animating only the nearest siblings,
+// one can catch the upper card not moving if the card clicked is close enough to the page bottom.
+
 const pushAway = ({ layout, previousSibling, currentSibling, nextSibling }) => {
-  // I'm assuming maximum 3 items in a viewport, otherwise this should be done in a loop
   const [previous, current, next] = [
     previousSibling,
     currentSibling,

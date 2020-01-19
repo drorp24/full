@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     height: '25%',
     letterSpacing: '0.3em',
     textTransform: 'uppercase',
-    fontSize: '5vw',
+    fontSize: '5vmin',
     fontWeight: '300',
   },
   welcome2: {
