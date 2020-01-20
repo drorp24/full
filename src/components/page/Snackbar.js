@@ -146,9 +146,12 @@ const messages = {
 export default function MySnackbar() {
   const device = useSelector(store => store.device)
   const { newerSwWaiting, contentCashed, online, appShared } = device
-  const orientation = window.matchMedia('(orientation: portrait)').matches
-    ? 'portrait'
-    : 'landscape'
+  const orientation =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(orientation: portrait)').matches
+        ? 'portrait'
+        : 'landscape'
+      : 'portrait'
 
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState({
