@@ -142,7 +142,7 @@ export default function A2HSPrompt() {
 
     return (
       <Dialog
-        open={true}
+        open={show}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
