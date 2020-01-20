@@ -229,8 +229,9 @@ const Merchant = ({ loading, record, style }) => {
     setState({ open: !open })
   }
 
-  const { standalone, online } = useSelector(store => store.device)
-  const { mode } = useSelector(store => store.device)
+  const { standalone, online, mode } = useSelector(store => store.device)
+  const { layout } = useSelector(store => store.app)
+  const bigCard = open || layout === 'horizontal'
 
   // ! Challenges of card's height
   //
@@ -277,10 +278,14 @@ const Merchant = ({ loading, record, style }) => {
       display: 'flex',
       height: '50%',
       flexDirection: 'column',
-      justifyContent: 'space-around',
+      justifyContent: ({ open }) => (open ? 'space-between' : 'space-around'),
       backgroundColor: mode === 'dark' ? 'rgba(0, 0, 0, 0.3)' : 'inherit',
     },
-    contentText: {},
+    contentText: {
+      display: bigCard ? 'grid' : 'block',
+      gridTemplateRows: bigCard ? '22% 18% 60%' : 'unset',
+      height: bigCard ? '25vh' : 'unset',
+    },
     closeActions: {
       display: ({ open }) => (open ? 'none' : 'block'),
       paddingLeft: '0',
@@ -288,18 +293,22 @@ const Merchant = ({ loading, record, style }) => {
     openActions: {
       display: ({ open }) => (open ? 'flex' : 'none'),
       paddingLeft: '0',
+      paddingBottom: ({ open }) => (open ? '5vh' : 'unset'),
       justifyContent: 'center',
     },
     name: {
       fontSize: ({ open }) => (open ? '1.5em' : '1em'),
-      fontWeight: ({ open }) => (open ? '300' : '400'),
+      fontWeight: '400',
       transition: 'font-size 1s',
+      textTransform: 'capitalize',
     },
     address: {
       fontSize: '0.8em',
-      marginBottom: '1vh',
     },
     price: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
       fontSize: ({ open }) => (open ? '1.3em' : '0.9em'),
       fontWeight: ({ open }) => (open ? '300' : '400'),
     },
@@ -496,7 +505,7 @@ const Merchant = ({ loading, record, style }) => {
             </Button>
           </CardActions>
           <CardActions className={classes.openActions}>
-            <Zoom in timeout={{ enter: 2000 }}>
+            <Zoom in timeout={{ enter: 1000 }}>
               <Fab
                 variant="extended"
                 color="primary"

@@ -19,11 +19,9 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   welcome1: {
+    fontFamily: '"Rancho", cursive',
     height: '25%',
-    letterSpacing: '0.3em',
-    textTransform: 'uppercase',
-    fontSize: '5vmin',
-    fontWeight: '300',
+    fontSize: '12vmin',
   },
   welcome2: {
     height: '50%',

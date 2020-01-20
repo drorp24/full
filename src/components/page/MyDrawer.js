@@ -29,7 +29,7 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const mode = useSelector(store => store.device.mode)
   const otherMode = mode === 'light' ? 'dark' : 'light'
   const layout = useSelector(store => store.app.layout)
-  const otherLayout = layout === 'vertical' ? 'horizontal' : 'vertical'
+  const otherLayout = layout === 'vertical' ? 'horizontally' : 'vertically'
   const doNothing = () => {}
 
   // ! Passing components dynamically with an object
@@ -56,7 +56,7 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
     },
     {
       svg: otherLayout,
-      text: `${otherLayout} mode`,
+      text: `Slide ${otherLayout}`,
       redux: toggleLayout(),
     },
     {
@@ -95,8 +95,9 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       gridTemplateRows: '10% auto',
     },
     header: {
+      fontFamily: 'Rancho, cursive',
       paddingLeft: '1.5rem',
-      fontSize: '1.5em',
+      fontSize: '10vw',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',

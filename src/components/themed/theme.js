@@ -1,7 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
 import blue from '@material-ui/core/colors/blue'
-import red from '@material-ui/core/colors/red'
+import orange from '@material-ui/core/colors/orange'
 
 // ! MUI's 'light' and 'dark' keys have nothing to do with light/dark mode
 // Importing a color from MUI (as I did with 'blue') brings an object with 'light' and 'dark' keys which are each offset from the 'main' key
@@ -92,7 +92,7 @@ const theme = mode => {
         textAlign: 'center',
         liveRates: {
           up: green['A200'],
-          down: red['A400'],
+          down: orange['300'],
         },
       },
       body: {
@@ -132,7 +132,8 @@ const theme = mode => {
           justifyContent: 'center',
         },
         title: {
-          fontSize: '6vmin',
+          fontFamily: '"Rancho", cursive',
+          fontSize: '12vmin',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -140,6 +141,7 @@ const theme = mode => {
           color: defaultTheme.palette.primary.contrastText,
         },
         subtitle: {
+          fontFamily: '"Rancho", cursive',
           fontSize: '10vmin',
           fontWeight: '300',
           whiteSpace: 'pre-line',

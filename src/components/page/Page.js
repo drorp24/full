@@ -125,15 +125,13 @@ const Viewport = ({ children }) => {
   }, [orientation])
 
   useEffect(() => {
-    setTimeout(calculateHeight, 250)
+    setTimeout(calculateHeight, 150)
   }, [calculateHeight])
 
   const useStyles = makeStyles(theme => ({
     viewport: {
-      boxSizing: 'border-box',
-      border: '5px solid red',
       width: '100%',
-      transition: 'height 1s',
+      transition: 'height 0.5s',
       '@media (orientation: landscape)': {
         height: `${landscapeHeight} !important`,
         width: '100vh !important',

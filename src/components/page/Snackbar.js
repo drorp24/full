@@ -154,6 +154,7 @@ export default function MySnackbar() {
       : 'portrait'
 
   const [open, setOpen] = useState(false)
+
   const [message, setMessage] = useState({
     type: null,
     text: null,
@@ -254,22 +255,10 @@ export default function MySnackbar() {
     } else if (orientation === 'landscape') {
       setOpen(true)
       setMessage(landscapeMsg)
-    } else if (
-      orientation === 'portrait' &&
-      message.type === 'landscape' &&
-      open
-    ) {
+    } else if (orientation === 'portrait' && message.type === 'landscape') {
       setOpen(false)
     }
-  }, [
-    contentCashed,
-    newerSwWaiting,
-    online,
-    message,
-    appShared,
-    open,
-    orientation,
-  ])
+  }, [contentCashed, newerSwWaiting, online, message, appShared, orientation])
 
   return (
     <div>
