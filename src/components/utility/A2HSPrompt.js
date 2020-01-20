@@ -19,9 +19,9 @@ export default function A2HSPrompt() {
 
   const [show, setShow] = useState(false)
 
-  const a2hs = useSelector(store => store.user.a2hs)
-  const ios = useSelector(store => store.device.ios)
-  const landscape = window.matchMedia('(orientation: lanscape)').matches
+  const { a2hs } = useSelector(store => store.user)
+  const { ios, orientation } = useSelector(store => store.device)
+  const landscape = orientation === 'landscape'
 
   const { prompted, accepted } = a2hs
 
@@ -62,7 +62,7 @@ export default function A2HSPrompt() {
   }
 
   useEffect(() => {
-    if (accepted || recently_prompted || landscape) {
+    if (accepted || recently_prompted) {
       console.log(
         'a2hs accepted or recently prompted or device is in landscape. Not asking'
       )
@@ -105,6 +105,9 @@ export default function A2HSPrompt() {
       color: '#555',
     }
     const useStyles = makeStyles(theme => ({
+      container: {
+        width: landscape ? '100vh' : 'unset',
+      },
       background: {
         backgroundColor: overrideToMatchIcon.backgroundColor,
         color: overrideToMatchIcon.color,
@@ -139,10 +142,11 @@ export default function A2HSPrompt() {
 
     return (
       <Dialog
-        open={show}
+        open={true}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        className={classes.container}
       >
         <DialogTitle id="alert-dialog-title" className={classes.background}>
           Install Cryptonite
