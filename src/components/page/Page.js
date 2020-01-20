@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -89,17 +89,15 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 // Attempting to solve this I discovered that:
 //
 // - Once rotated to landscape, the full end-to-end width is neither 100vw nor window.innerWidth.
-//   It's actually window.screen.availHeight on iOS Safari! but window.screen.availWidth on Chrome!
-// - If that's not bad enough, both browsers don't actually allocate that entire end-to-end space.
-//   at least in iPhone Xr, where the notch area seems out of reach.
-//   The height that would cover the maximum area (everything but the notch) is the average b/w the avail<x> and innerWidth.
+//   It's window.screen.availHeight on iOS Safari! and window.screen.availWidth on Chrome!
+// - Both browsers don't allocate that entire end-to-end space, at least in iPhone Xr, where the notch area seems out of reach.
+//   The height that would cover everything but the notch is actually the average b/w the avail<x> and innerWidth.
 //
 // * Side note: CSS variables
 // Initially I thought to use the oportunity to play with CSS variables for that, but I couldn't since they don't
 // have access to window properties. This problem, together with the fact I had to discover that the hard way as there was no
 // warning given from either ESLint or the browser, the need to use calc() and max() instead of plain code,
-// let alone use var() to refer to variables (!) all prove that CSS variables are really not a good idea when you have
-// a real programming language like JS.
+// let alone use var() to refer to variables all prove that CSS variables are really not a good idea in 2020.
 
 // ! <Autosizer/>'s closest ancestor must have explicit height
 // <main> tag is added merely to get the Lighthouse's 100 grade (it's for screen readers).
@@ -111,19 +109,27 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 //
 const Viewport = ({ children }) => {
   const server = !inBrowser()
+  const { orientation } = useSelector(store => store.device)
+  const [landscapeHeight, setLandscapeHeight] = useState('100vw') // if fetched from server or re-loaded when in landscape
 
-  let realAvailableHeight
-  if (typeof window !== 'undefined') {
-    const {
-      screen: { availHeight, availWidth },
-      innerWidth,
-    } = window
+  useEffect(() => {
+    console.log('Viewport rendered. orientation: ', orientation)
+    if (orientation === 'landscape') {
+      const {
+        screen: { availHeight, availWidth },
+        innerWidth,
+      } = window
 
-    const end2EndHeight = Math.max(availHeight, availWidth)
-    realAvailableHeight = `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
-  } else {
-    realAvailableHeight = '100vw'
-  }
+      const end2EndHeight = Math.max(availHeight, availWidth)
+      setLandscapeHeight(`${innerWidth + (end2EndHeight - innerWidth) / 2}px`)
+      console.log(
+        'landscapeHeight calculated: ',
+        `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
+      )
+    } else {
+      console.log('orientation is portrait; not overriding height')
+    }
+  }, [orientation])
 
   const useStyles = makeStyles(theme => ({
     viewport: {
@@ -131,7 +137,7 @@ const Viewport = ({ children }) => {
       border: '5px solid red',
       width: '100%',
       '@media only screen and (orientation: landscape)': {
-        height: `${realAvailableHeight} !important`,
+        height: `${landscapeHeight} !important`,
         width: '100vh !important',
       },
     },
