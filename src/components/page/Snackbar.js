@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import defined from '../utility/defined'
 import MySvg from '../utility/svg'
 import clsx from 'clsx'
 
@@ -243,10 +242,10 @@ export default function MySnackbar() {
     } else if (contentCashed) {
       setOpen(true)
       setMessage(contentCashedMsg)
-    } else if (defined(appShared) && appShared) {
+    } else if (appShared) {
       setOpen(true)
       setMessage(appSharedMsg)
-    } else if (defined(appShared) && !appShared) {
+    } else if (appShared === false) {
       setOpen(true)
       setMessage(appNotSharedMsg)
     } else if (orientation === 'landscape') {

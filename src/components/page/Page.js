@@ -112,13 +112,18 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 const Viewport = ({ children }) => {
   const server = !inBrowser()
 
-  const {
-    screen: { availHeight, availWidth },
-    innerWidth,
-  } = window
+  let realAvailableHeight
+  if (typeof window !== 'undefined') {
+    const {
+      screen: { availHeight, availWidth },
+      innerWidth,
+    } = window
 
-  const end2EndHeight = Math.max(availHeight, availWidth)
-  const realAvailableHeight = innerWidth + (end2EndHeight - innerWidth) / 2
+    const end2EndHeight = Math.max(availHeight, availWidth)
+    realAvailableHeight = `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
+  } else {
+    realAvailableHeight = '100vw'
+  }
 
   const useStyles = makeStyles(theme => ({
     viewport: {
@@ -126,7 +131,7 @@ const Viewport = ({ children }) => {
       border: '5px solid red',
       width: '100%',
       '@media only screen and (orientation: landscape)': {
-        height: `${realAvailableHeight}px !important`,
+        height: `${realAvailableHeight} !important`,
         width: '100vh !important',
       },
     },
