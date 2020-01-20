@@ -115,17 +115,25 @@ const Viewport = ({ children }) => {
   useEffect(() => {
     console.log('Viewport rendered. orientation: ', orientation)
     if (orientation === 'landscape') {
-      const {
-        screen: { availHeight, availWidth },
-        innerWidth,
-      } = window
+      const calculateHeight = () => {
+        const {
+          screen: { availHeight, availWidth },
+          innerWidth,
+        } = window
 
-      const end2EndHeight = Math.max(availHeight, availWidth)
-      setLandscapeHeight(`${innerWidth + (end2EndHeight - innerWidth) / 2}px`)
-      console.log(
-        'landscapeHeight calculated: ',
-        `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
-      )
+        console.log(
+          'calculateHeight called. innerWidth, availHeight: ',
+          innerWidth,
+          availHeight
+        )
+
+        const end2EndHeight = Math.max(availHeight, availWidth)
+        const height = `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
+        console.log('height calculated this time: ', height)
+        setLandscapeHeight(height)
+      }
+      calculateHeight()
+      setTimeout(calculateHeight, 500)
     } else {
       console.log('orientation is portrait; not overriding height')
     }
