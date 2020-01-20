@@ -166,10 +166,10 @@ export default function MySnackbar() {
   const useStyles = makeStyles(theme => ({
     root: {
       // This hack ensures full width when device rotates since MUI use px for snackbar margins ($#!)
-      '@media only screen and (orientation: landscape)': {
+      '@media (orientation: landscape)': {
         width: 'calc(100vh - 48px)',
       },
-      '@media only screen and (orientation: portrait)': {
+      '@media (orientation: portrait)': {
         width: 'unset',
       },
 
@@ -177,10 +177,10 @@ export default function MySnackbar() {
       bottom: pathname === '/select' ? '11%' : '8px',
     },
     content: {
-      '@media only screen and (orientation: landscape)': {
+      '@media (orientation: landscape)': {
         width: '100%',
       },
-      '@media only screen and (orientation: portrait)': {
+      '@media (orientation: portrait)': {
         width: 'unset',
       },
     },

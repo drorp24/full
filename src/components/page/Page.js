@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -111,40 +111,30 @@ const Viewport = ({ children }) => {
   const server = !inBrowser()
   const { orientation } = useSelector(store => store.device)
   const [landscapeHeight, setLandscapeHeight] = useState('100vw') // if fetched from server or re-loaded when in landscape
-
-  useEffect(() => {
-    console.log('Viewport rendered. orientation: ', orientation)
+  const calculateHeight = useCallback(() => {
     if (orientation === 'landscape') {
-      const calculateHeight = () => {
-        const {
-          screen: { availHeight, availWidth },
-          innerWidth,
-        } = window
+      const {
+        screen: { availHeight, availWidth },
+        innerWidth,
+      } = window
 
-        console.log(
-          'calculateHeight called. innerWidth, availHeight: ',
-          innerWidth,
-          availHeight
-        )
-
-        const end2EndHeight = Math.max(availHeight, availWidth)
-        const height = `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
-        console.log('height calculated this time: ', height)
-        setLandscapeHeight(height)
-      }
-      calculateHeight()
-      setTimeout(calculateHeight, 500)
-    } else {
-      console.log('orientation is portrait; not overriding height')
+      const end2EndHeight = Math.max(availHeight, availWidth)
+      const height = `${innerWidth + (end2EndHeight - innerWidth) / 2}px`
+      setLandscapeHeight(height)
     }
   }, [orientation])
+
+  useEffect(() => {
+    setTimeout(calculateHeight, 250)
+  }, [calculateHeight])
 
   const useStyles = makeStyles(theme => ({
     viewport: {
       boxSizing: 'border-box',
       border: '5px solid red',
       width: '100%',
-      '@media only screen and (orientation: landscape)': {
+      transition: 'height 1s',
+      '@media (orientation: landscape)': {
         height: `${landscapeHeight} !important`,
         width: '100vh !important',
       },
