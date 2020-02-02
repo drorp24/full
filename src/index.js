@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 
 import App from './App'
-import registerServiceWorker from './registerServiceWorker'
+import * as serviceWorker from './serviceWorker'
 import Loadable from 'react-loadable'
 
 import { Provider as ReduxProvider } from 'react-redux'
@@ -93,5 +93,8 @@ window.onload = () => {
 // Passing 'store' into registerServiceWorker enables it to access 'dispatch' with store.dispatch requiring no hook or old-fashioned connect.
 //
 // 'initiateDeviceProperties' even manages to dispatch a thunk.
-registerServiceWorker(store)
+
+// TODO: for config, see 'serviceWorker.js'. After that, serviceWorker should accept only 'config' as argument.
+const config = {}
+serviceWorker.register({ store, config })
 initiateDeviceProperties(store)

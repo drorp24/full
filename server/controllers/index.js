@@ -74,6 +74,15 @@ app.get('/', (req, res, next) => {
   serverRenderer({ store, persistor })(req, res, next)
 })
 
+// TODO: remove eventually. Here only to guard against not finding start url ('./') in the cache
+// TODO: a. I know it's not happenning and b. even with '/select' reload the sw does'nt work so it's not that.
+// TODO: remove the 'index.html' route from App.js as well
+app.get('/index.html', (req, res, next) => {
+  console.log(`req.url: ${req.url} handled by app.get(/index.html)`)
+  console.log('')
+
+  serverRenderer({ store, persistor })(req, res, next)
+})
 // ! maxAge
 // maxAge should, and can safely be long.
 // As soon as there's a more updated file, its name would be different since the name is signed according to content.

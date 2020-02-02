@@ -53,6 +53,9 @@ function App({ values }) {
           <Route exact path="/">
             <Welcome />
           </Route>
+          <Route path="/index.html">
+            <Welcome />
+          </Route>
           <Route path="/select">
             <Select />
           </Route>

@@ -80,7 +80,7 @@ import { temporarilySetValue } from '../src/redux/actions'
 // Nobody mentions these challenges. Instead, CRA docs "leave user notification as an excercise to the reader"...
 //
 // ? Catching reg.waiting
-// To turn that one-off event into an ongoing check, I'm listening to 'onupdatefound' as well as poll the situation every page reload ('noticeWaitingSw'),
+// To turn that one-off event into an ongoing check, I'm listening to 'onupdatefound' as well as poll the situation every page reload ('detectWaitingSw'),
 // For such cases I also introduced self-removing (timed out) actions that occasionally record themselves on the redux side
 // and caught by a SnackBar element that resides on every page and displays the message to the user.
 //
@@ -99,10 +99,10 @@ const isLocalhost = Boolean(
       ))
 )
 
-export default function register(store) {
+export function register({ store, config }) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
-    const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
+    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href)
     if (publicUrl.origin !== window.location.origin) {
       // Our service worker won't work if PUBLIC_URL is on a different origin
       // from what our page is served on. This might happen if a CDN is used to
@@ -115,58 +115,108 @@ export default function register(store) {
 
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, store)
+        checkValidServiceWorker({ swUrl, store, config })
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
         navigator.serviceWorker.ready.then(() => {
           console.log(
             'This web app is being served cache-first by a service ' +
-              'worker. To learn more, visit https://goo.gl/SC7cgQ'
+              'worker. To learn more, visit https://bit.ly/CRA-PWA'
           )
         })
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl, store)
+        registerValidSW({ swUrl, store, config })
       }
     })
 
-    noticeWaitingSw(store)
+    // TODO: pass 'detectWaitingSw' as callback within config
+    // called with every call to register (= with every page load)
+    // since that's when we want to detect if there's a new sw in a waiting status
+    detectWaitingSw(store)
   }
 }
 
-function registerValidSW(swUrl, store) {
+function detectWaitingSw(store) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg && reg.waiting) {
+        console.log(
+          '(2) detectWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
+        )
+        temporarilySetValue({
+          type: 'SET_DEVICE',
+          key: 'newerSwWaiting',
+          value: true,
+          time: 30,
+        })(store.dispatch)
+      }
+    })
+  }
+}
+
+function registerValidSW({ swUrl, store, config }) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
       registration.onupdatefound = () => {
+        console.log('registration.onupdatefound')
+
         const installingWorker = registration.installing
+        if (installingWorker == null) {
+          return
+        }
         installingWorker.onstatechange = () => {
+          console.log('installingWorker.onstatechange')
+
           if (installingWorker.state === 'installed') {
+            console.log('registration.installing.state === installed')
+
             if (navigator.serviceWorker.controller) {
-              // At this point, the old content will have been purged and
-              // the fresh content will have been added to the cache.
-              // It's the perfect time to display a "New content is
-              // available; please refresh." message in your web app.
               console.log(
-                '(1) onupdatefound fired - notices the new waiting sw (triggered by page load / entry)'
+                'navigator.serviceWorker.controller => content fetched and waiting'
               )
+              console.log('navigator.serviceWorker: ', navigator.serviceWorker)
+
+              // At this point, the updated precached content has been fetched,
+              // but the previous service worker will still serve the older
+              // content until all client tabs are closed.
+              // This is the time to inform the user and suggest him to install the new s/w.
+
               temporarilySetValue({
                 type: 'SET_DEVICE',
                 key: 'newerSwWaiting',
                 value: true,
                 time: 30,
               })(store.dispatch)
+
+              // TODO: replace the code above with the callback (and kill 'store' as argument)
+              if (config && config.onUpdate) {
+                config.onUpdate(registration)
+              }
             } else {
+              console.log(
+                'navigator.serviceWorker.!controller => content cached'
+              )
+              console.log('navigator.serviceWorker: ', navigator.serviceWorker)
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
+
+              // TODO: check why this message isn't displaying
               console.log('Content is cached for offline use.')
               temporarilySetValue({
                 type: 'SET_DEVICE',
                 key: 'contentCached',
                 value: true,
               })(store.dispatch)
+
+              // TODO: replace the code above with the callback (and kill 'store' as argument)
+              // Execute callback
+              if (config && config.onSuccess) {
+                config.onSuccess(registration)
+              }
             }
           }
         }
@@ -177,14 +227,17 @@ function registerValidSW(swUrl, store) {
     })
 }
 
-function checkValidServiceWorker(swUrl, store) {
+function checkValidServiceWorker({ swUrl, store, config }) {
   // Check if the service worker can be found. If it can't reload the page.
-  fetch(swUrl)
+  fetch(swUrl, {
+    headers: { 'Service-Worker': 'script' },
+  })
     .then(response => {
+      const contentType = response.headers.get('content-type')
       // Ensure service worker exists, and that we really are getting a JS file.
       if (
         response.status === 404 ||
-        response.headers.get('content-type').indexOf('javascript') === -1
+        (contentType != null && contentType.indexOf('javascript') === -1)
       ) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
@@ -195,7 +248,7 @@ function checkValidServiceWorker(swUrl, store) {
         })
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, store)
+        registerValidSW({ swUrl, store, config })
       }
     })
     .catch(() => {
@@ -207,26 +260,12 @@ function checkValidServiceWorker(swUrl, store) {
 
 export function unregister() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(registration => {
-      registration.unregister()
-    })
-  }
-}
-
-function noticeWaitingSw(store) {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistration().then(reg => {
-      if (reg && reg.waiting) {
-        console.log(
-          '(2) noticeWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
-        )
-        temporarilySetValue({
-          type: 'SET_DEVICE',
-          key: 'newerSwWaiting',
-          value: true,
-          time: 30,
-        })(store.dispatch)
-      }
-    })
+    navigator.serviceWorker.ready
+      .then(registration => {
+        registration.unregister()
+      })
+      .catch(error => {
+        console.error(error.message)
+      })
   }
 }
