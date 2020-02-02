@@ -67,6 +67,15 @@ const logRequest = function(req, res, next) {
 
 app.use(logRequest)
 
+// Do not cache /service-worker.js
+app.get('/service-worker.js', (req, res, next) => {
+  res.setHeader(
+    'Cache-Control',
+    'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+  )
+  next()
+})
+
 app.get('/', (req, res, next) => {
   console.log(`req.url: ${req.url} handled by app.get(/)`)
   console.log('')
