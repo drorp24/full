@@ -95,9 +95,8 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       gridTemplateRows: '10% auto',
     },
     header: {
-      fontFamily: 'Rancho, cursive',
       paddingLeft: '1.5rem',
-      fontSize: '10vw',
+      fontSize: '8vmin',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',

@@ -79,7 +79,7 @@ export default ({ store, persistor }) => (req, res, next) => {
     }
 
     const context = {}
-    const modules = []
+    // const modules = []
 
     // Wrap <App /> here with server-specific components only
     //(put browser-specific ones in src/index)

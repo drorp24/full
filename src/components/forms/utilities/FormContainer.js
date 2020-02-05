@@ -166,9 +166,17 @@ const FormContainer = ({ structure, show }) => {
     // this enables viewing all coin quotes when browsing the dropdown coins list.
     // Since it entains invoking a heavy api, attempt is made to prevent calling that api unnecessarily.
 
-    // No use to call the api upon initial render of FormContainer, when the user hasn't yet populated anything into quote
+    const updateCoins = async quote => {
+      const name = 'coins'
+      const list = await getCoins({ quote })
+      updateList({ name, list, quote })
+      updatePopulated('coins')
+    }
+
+    // TBD
     if (!quote) {
-      return
+      // return
+      updateCoins('USD')
     }
 
     // No use to call it before list.currencies had a chance to be built
@@ -186,17 +194,10 @@ const FormContainer = ({ structure, show }) => {
       return
     }
 
-    // No need to call it if the coins list is built already and matches the given quote currency
-    // if (lists.quote === quote) {
-    //   console.log(`coins list matches ${quote} - leaving`)
-    //   return
-    // }
-
-    const updateCoins = async quote => {
-      const name = 'coins'
-      const list = await getCoins({ quote })
-      updateList({ name, list, quote })
-      updatePopulated('coins')
+    //No need to call it if the coins list is built already and matches the given quote currency
+    if (lists.quote === quote) {
+      console.log(`coins list matches ${quote} - no need to re-fetch it`)
+      return
     }
 
     updateCoins(quote)

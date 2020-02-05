@@ -55,7 +55,7 @@ const LiveHeader = props => {
       letterSpacing: base ? '0.2rem' : 'unset',
     },
     secondLine: {
-      letterSpacing: '0.4rem',
+      letterSpacing: '0.1rem',
     },
   }))
 

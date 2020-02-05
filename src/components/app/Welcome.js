@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import Page from '../page/Page'
 
 import Logo from '../../images/Logo'
+// import BuildData from '../utility/BuildData'
 
 const useStyles = makeStyles(theme => ({
   welcomeContainer: {
@@ -19,15 +20,20 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   welcome1: {
-    fontFamily: '"Rancho", cursive',
+    fontFamily: 'sans-serif !important',
     height: '25%',
-    fontSize: '12vmin',
+    fontSize: '6vmin',
+    fontWeight: '300',
+    textTransform: 'uppercase',
+    letterSpacing: '0.4rem',
   },
   welcome2: {
     height: '50%',
   },
   welcome3: {
     height: '25%',
+    display: 'flex',
+    flexDirection: 'column',
   },
   welcomeImg: {
     width: '50%',
@@ -67,6 +73,9 @@ const Welcome = () => {
           >
             Click to Start
           </Button>
+          {/* <p>
+            <BuildData />
+          </p> */}
         </div>
       </div>
     </Page>

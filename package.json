@@ -63,6 +63,7 @@
     "moize": "^5.4.2",
     "node-fetch": "^2.6.0",
     "prettier": "^1.19.1",
+    "preval.macro": "^4.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.9.0",
     "react-apollo": "^2.3.1",

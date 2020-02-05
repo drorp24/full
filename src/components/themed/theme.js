@@ -132,8 +132,8 @@ const theme = mode => {
           justifyContent: 'center',
         },
         title: {
-          fontFamily: '"Rancho", cursive',
-          fontSize: '12vmin',
+          fontSize: '8vmin',
+          fontWeight: '300',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -141,7 +141,6 @@ const theme = mode => {
           color: defaultTheme.palette.primary.contrastText,
         },
         subtitle: {
-          fontFamily: '"Rancho", cursive',
           fontSize: '10vmin',
           fontWeight: '300',
           whiteSpace: 'pre-line',

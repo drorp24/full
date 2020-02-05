@@ -1,5 +1,5 @@
-import React, { useCallback, useReducer, useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import React, { useCallback, useReducer } from 'react'
+import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
 
