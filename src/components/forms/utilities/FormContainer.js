@@ -175,8 +175,8 @@ const FormContainer = ({ structure, show }) => {
 
     // TBD
     if (!quote) {
-      return
-      // updateCoins('USD')
+      // return
+      updateCoins('USD')
     }
 
     // No use to call it before list.currencies had a chance to be built
