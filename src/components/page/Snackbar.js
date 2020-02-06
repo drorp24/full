@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setValue } from '../../redux/actions'
 import { useLocation } from 'react-router-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -66,81 +67,24 @@ const reload = () => {
 //
 // No need for removeEventListener: as soon as the page reloads, all events will have been forgotten.
 
-const install = () => {
+const install = dispatch => () => {
   navigator.serviceWorker.getRegistration().then(reg => {
     if (reg && reg.waiting) {
       function reloadPage() {
-        console.log(
-          'controllerchange: skipWaiting has completed - reloading...'
-        )
         window.location.reload()
       }
+
+      dispatch(
+        setValue({ type: 'SET_DEVICE', key: 'newerSwWaiting', value: false })
+      )
+
       reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+      // SKIP_WAITING takes time:
+      // 'controllerchange' is the event sw emits once it's finished updating its cache with the new files
+      // only then should the page be reloaded
       navigator.serviceWorker.addEventListener('controllerchange', reloadPage)
     }
   })
-}
-
-const messages = {
-  offlineMsg: {
-    type: 'offline',
-    text:
-      'Connection is lost, but no worries: <br/><strong>you can use the app offline!</strong>',
-    action: null,
-    invoke: () => {},
-    icon: 'cloudOff',
-    level: 'warning',
-    duration: 10000,
-  },
-  onlineMsg: {
-    type: 'online',
-    text:
-      'Connection is on! <br /><strong>Reload</strong> to view latest offers',
-    action: 'Reload',
-    invoke: reload,
-    icon: 'cloudOn',
-    level: 'success',
-    duration: 15000,
-  },
-  newerSwWaitingMsg: {
-    type: 'newerSwWaiting',
-    text: 'New release ready. Install?',
-    action: 'Install',
-    invoke: install,
-  },
-  contentCashedMsg: {
-    type: 'contentCached',
-    text: 'Our app can now work offline!',
-    action: '',
-    invoke: () => {},
-  },
-  appSharedMsg: {
-    type: 'appShared',
-    text: 'Thanks for sharing Cryptonite!',
-    action: '',
-    invoke: () => {},
-    icon: 'check',
-    level: 'success',
-    duration: 3000,
-  },
-  appNotSharedMsg: {
-    type: 'appNotShared',
-    text: 'This device does not support sharing',
-    action: '',
-    invoke: () => {},
-    icon: 'warning',
-    level: 'warning',
-    duration: 3000,
-  },
-  landscapeMsg: {
-    type: 'landscape',
-    text: 'Please rotate!',
-    action: '',
-    invoke: () => {},
-    icon: 'rotate',
-    level: 'warning',
-    duration: 30000,
-  },
 }
 
 export default function MySnackbar() {
@@ -163,6 +107,70 @@ export default function MySnackbar() {
   })
 
   const { pathname } = useLocation()
+
+  const dispatch = useDispatch()
+
+  const messages = {
+    offlineMsg: {
+      type: 'offline',
+      text:
+        'Connection is lost, but no worries: <br/><strong>you can use the app offline!</strong>',
+      action: null,
+      invoke: () => {},
+      icon: 'cloudOff',
+      level: 'warning',
+      duration: 10000,
+    },
+    onlineMsg: {
+      type: 'online',
+      text:
+        'Connection is on! <br /><strong>Reload</strong> to view latest offers',
+      action: 'Reload',
+      invoke: reload,
+      icon: 'cloudOn',
+      level: 'success',
+      duration: 15000,
+    },
+    newerSwWaitingMsg: {
+      type: 'newerSwWaiting',
+      text: 'New release ready. Install?',
+      action: 'Install',
+      invoke: install(dispatch),
+    },
+    contentCashedMsg: {
+      type: 'contentCached',
+      text: 'Our app can now work offline!',
+      action: '',
+      invoke: () => {},
+    },
+    appSharedMsg: {
+      type: 'appShared',
+      text: 'Thanks for sharing Cryptonite!',
+      action: '',
+      invoke: () => {},
+      icon: 'check',
+      level: 'success',
+      duration: 3000,
+    },
+    appNotSharedMsg: {
+      type: 'appNotShared',
+      text: 'This device does not support sharing',
+      action: '',
+      invoke: () => {},
+      icon: 'warning',
+      level: 'warning',
+      duration: 3000,
+    },
+    landscapeMsg: {
+      type: 'landscape',
+      text: 'Please rotate!',
+      action: '',
+      invoke: () => {},
+      icon: 'rotate',
+      level: 'warning',
+      duration: 30000,
+    },
+  }
 
   const useStyles = makeStyles(theme => ({
     root: {
@@ -307,3 +315,4 @@ export default function MySnackbar() {
     </div>
   )
 }
+// comment2
