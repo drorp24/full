@@ -7,12 +7,41 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 
 // import logger from 'redux-logger'
 
-// ! redux-persist works in dev / local mode even with PersistGate commented
-// Though I commented PersistGate in in index.js for its interference with ssr,
-// in dev/local env, redux-persist does persist its values.
-// Probably because of the code below
-// This is actually very convenient in dev mode.
-// The price to pay is the KI that when I refresh with the merchant card open, AppBar remains contextual.
+// ! redux-persist works in spite of <PersistGate /> being commented
+// Not sure why (maybe because 'store' includes 'persistedReducer'), but
+// by looking at DovTools, it is absolutely evident that the following take place:
+// -  'presist/REHYDRATE' action is dispatched
+// -   it definitely populates all values into the up-to-that-point empty selector of the redux store
+// This occurs every page load, including when offline.
+// This is great news, as I commented PersistGate for the problems it created and not out of free will
+//
+// Some time after 'presist/REHYDRATE' is dispatched, my useEffect gets to work and calls the APIs,
+// (which are fetched from the browser's disk cache when offline, not creating any issue, for some further confusion)
+// but that's irrelevant to the fact that persist/REHYDRATE dispatched an action and reinstated all values from the cache
+// long before the API had a chance to call the API again.
+//
+// It was also a bug, as APIs are supposed to be called *only* if 'populated' is false, for performance reasons.
+// The bug was that the 'populated' key resided in 'app' selector, which was included in persistConfig's 'blacklist' key
+// hence wrongly appeared to be false, making the API to be called blanking the coins list
+// and the form initialization to take place, blanking the form as well.
+// That API re-invocation was not only unnecessary, but it made the form values reset themselves and the coins list to become blank.
+// Once the 'blacklist' key was gone, form wasn't reset and API weren't called, since 'populated' was correctly rehydrated to 'true'.
+//
+// Once 'blacklist' key was removed from persistConfig, form values and both lists are rehydrated from cache when page is reloaded,
+// and the user sees the form values intact when page is reloaded with both dropdown lists populated as well
+// - even when offline, which is impressive.
+//
+// That bug was another proof that redux-persist is active in spite of the <PersistGate /> commenting,
+// since it was persistConfig's 'blacklist' key that made the form and list blank, which stopped getting blanked as soon as 'blacklist' was removed.
+//
+// Conclusions:
+// - redux-persist is mandatory to not have page reloads blank the page,
+// - redux-persist is particularly mandatory to support offline mode, which is mandatory for calling the app a PWA
+// - apparently it can work with no <PersistGate /> (I will eventually find what the problem was)
+// - persisting redux means that every population must first check if values exist already before potentially overriding good values
+// - again, this otherwise performance thing, becomes crucial to support offline, as this could mean blanking values out
+// - for the above purpose, it doesn't matter if the values themselves are checked or a 'populated' value is used, but if the latter,
+//   it better not be in a blacklisted key of persistConfig's. And generally persistConfig better not have a 'blacklist' key at all.
 
 // ! Persistence and Dehydration
 // Refreshing '/merchants' page only to get back to the '/select' page and see it blank after all the keying is a very poor UX.
@@ -45,10 +74,12 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 //  In my case, since the card is a member of a list which is windowed and implemented with hard-coded values furnished by react-window,
 //  it's not practical to make the UI state of any card declarative hence to persist it.
 //
+
+// ! Do not use blacklist
+// Explained above
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['app', 'device'],
 }
 
 // ! Conditionally adding keys to an object
