@@ -266,7 +266,15 @@ export default function MySnackbar() {
     } else if (orientation === 'portrait' && message.type === 'landscape') {
       setOpen(false)
     }
-  }, [contentCashed, newerSwWaiting, online, message, appShared, orientation])
+  }, [
+    contentCashed,
+    newerSwWaiting,
+    online,
+    message,
+    appShared,
+    orientation,
+    messages,
+  ])
 
   return (
     <div>
