@@ -1,6 +1,5 @@
 // That's the simplest way to handle an update to a redux store key (aka selector)
 import { SET_DEVICE } from '../types'
-import { temporarilySetValue } from '../actions'
 
 // ! My attempt at reducing redux' horrible overhead
 // I should probably be using redux-toolkit or however it's called, but until then,
@@ -32,36 +31,4 @@ export default (state = initialState, action) => {
     default:
       return state
   }
-}
-
-// The following require 'store' argument, since they are called from a non-component place (index.js)
-// which has access to 'store' but not to dispatch
-export const InformSwWaiting = store => () => {
-  temporarilySetValue({
-    type: 'SET_DEVICE',
-    key: 'newerSwWaiting',
-    value: true,
-    time: 30,
-  })(store.dispatch)
-}
-
-export const detectSwWaiting = store => () => {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistration().then(reg => {
-      if (reg && reg.waiting) {
-        console.log(
-          '(2) detectWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
-        )
-        InformSwWaiting(store)()
-      }
-    })
-  }
-}
-
-export const informContentCached = store => () => {
-  temporarilySetValue({
-    type: 'SET_DEVICE',
-    key: 'contentCached',
-    value: true,
-  })(store.dispatch)
 }

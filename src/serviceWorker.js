@@ -1,3 +1,5 @@
+import { temporarilySetValue } from '../src/redux/actions'
+
 // ! Upgrading a running app to a new release
 //
 // * What this note is about
@@ -97,7 +99,7 @@ const isLocalhost = Boolean(
       ))
 )
 
-export function register(config) {
+export function register({ store, config }) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href)
@@ -113,7 +115,7 @@ export function register(config) {
 
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker({ swUrl, config })
+        checkValidServiceWorker({ swUrl, store, config })
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
@@ -125,19 +127,36 @@ export function register(config) {
         })
       } else {
         // Is not local host. Just register service worker
-        registerValidSW({ swUrl, config })
+        registerValidSW({ swUrl, store, config })
       }
     })
 
+    // TODO: pass 'detectWaitingSw' as callback within config
     // called with every call to register (= with every page load)
     // since that's when we want to detect if there's a new sw in a waiting status
-    if (config && config.onPageLoad) config.onPageLoad()
+    detectWaitingSw(store)
   }
 }
 
-function registerValidSW({ swUrl, config }) {
-  console.log('registerValidSW called')
+function detectWaitingSw(store) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg && reg.waiting) {
+        console.log(
+          '(2) detectWaitingSw called (checking reg for a waiting sw, called every page load / entry)'
+        )
+        temporarilySetValue({
+          type: 'SET_DEVICE',
+          key: 'newerSwWaiting',
+          value: true,
+          time: 30,
+        })(store.dispatch)
+      }
+    })
+  }
+}
 
+function registerValidSW({ swUrl, store, config }) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -165,11 +184,20 @@ function registerValidSW({ swUrl, config }) {
               // content until all client tabs are closed.
               // This is the time to inform the user and suggest him to install the new s/w.
 
-              if (config && config.onSwWaiting) config.onSwWaiting()
+              temporarilySetValue({
+                type: 'SET_DEVICE',
+                key: 'newerSwWaiting',
+                value: true,
+                time: 30,
+              })(store.dispatch)
+
+              // TODO: replace the code above with the callback (and kill 'store' as argument)
+              if (config && config.onUpdate) {
+                config.onUpdate(registration)
+              }
             } else {
-              //
               console.log(
-                ' no navigator.serviceWorker.controller => content cached'
+                'navigator.serviceWorker.!controller => content cached'
               )
               console.log('navigator.serviceWorker: ', navigator.serviceWorker)
               // At this point, everything has been precached.
@@ -178,7 +206,17 @@ function registerValidSW({ swUrl, config }) {
 
               // TODO: check why this message isn't displaying
               console.log('Content is cached for offline use.')
-              if (config && config.onContentCached) config.onContentCached()
+              temporarilySetValue({
+                type: 'SET_DEVICE',
+                key: 'contentCached',
+                value: true,
+              })(store.dispatch)
+
+              // TODO: replace the code above with the callback (and kill 'store' as argument)
+              // Execute callback
+              if (config && config.onSuccess) {
+                config.onSuccess(registration)
+              }
             }
           }
         }
@@ -189,7 +227,7 @@ function registerValidSW({ swUrl, config }) {
     })
 }
 
-function checkValidServiceWorker({ swUrl, config }) {
+function checkValidServiceWorker({ swUrl, store, config }) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl, {
     headers: { 'Service-Worker': 'script' },
@@ -210,7 +248,7 @@ function checkValidServiceWorker({ swUrl, config }) {
         })
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW({ swUrl, config })
+        registerValidSW({ swUrl, store, config })
       }
     })
     .catch(() => {

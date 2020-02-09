@@ -124,59 +124,21 @@ store.dispatch(setMessage('Server'))
 // compress any response
 app.use(compression())
 
-//! Static requests
-// (Of course should ideally be served from a CDN or a reverse proxy, not the express server).
-// * index: false!
-// Discovered the (very) hard way: failing to include 'index: false' in express.static's options
-// will make it fetch 'index.html' for '/' requests, which are supposed to be handled by the next, dynamic route since I'm ssr'ing.
-// The result of not overriding this estremely weird default makes express serve the empty 'index.html'
-// instead of the one with the server-rendered content.
-// I couldn't for the life of me understand why it uses 'express.static' when there's clearly no '/' entry in the static folder.
-//
-// That problem makes ssr *break*, and should have been encountered by *anyone* doing React!
-// - but there's not a word about it anywhere.
-//
-//
-// ! The war against CRA's sw implementation
-// Even CRA is integrated with Workbox as of CRA 2.0, the implementation actually breaks sw when it comes to ssr.
-// Since I am reluctant to use react-app-rewire-workbox, which people used during CRA 1, I am fighting with CRA / Workbox
-// to just get the basic functionality, with little success. It's simply not built for ssr or I am missing something.
-//
-// * Reloading any page will fetch the non-ssr'd, empty index.html
-// In spite of fixing the express code as above, as soon as any page is reloaded, it won't even reach the server;
-// instead, it will fetch the empty 'index.html' from the precache; even for req's with url's such as '/select'.
-//
-// That's the result of the following:
-//
-// - workbox-webpack-plugin inserts the static, empty 'index.html' as entry into the generated precached-manifest.json.
-//   Workbox, during its precaching stage (during 'install'), looks at precache-manifest, finds there the 'index.html' entry,
-//   fetches it then places it in the caches.
-//   Nobody should ever need that naked 'index.html', but as always with CRA, that plugin cannot be configured.
-//   But other than the unnecessary fetch, this doesn't yet break anything;
-//
-//   What breaks things is that Workbox doesn't dynamically cache the ssr'd responses that the server responds with to any of the '/*' req's.
-//   In the case of '/' maybe it's the result of Workbox' def behavior to attempt the cache with whose names ends with 'index.html'
-//   before giving up on the cache and fetching from the n/w,
-//   but that rule applies to req's ending with '/' such as '/' and cannot explain why req's like '/select' are also mapped to 'index.html'.
-//
-//   Workbox also can be configured to not map paths ending with '/' into '/index.html' but again, CRA won't let you config.
-//
-// The entire purpose of precaching is to enable quick reloads - but CRA/Workbox breaks them by responding with empty 'index.html' to
-// any reload.
-// Luckily, the initial req to either '/' or any other would reach the express server and be responded with the ssr'd file so long as the
-// sw is new.
-//
-// * max-age=0 for service-worker, '1y' for all the rest
-// Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached
-// doesn below a way to do this exception in one single express.static statement.
-// 'setHeaders' is also a way to add a hook into express.static allowing to view which requests are handled by it (otherwise impossible!)
-// that's how I discovered the index problem described above.
+const logRequest = function(req, res, next) {
+  console.log('req.url: ', req.url)
+  next()
+}
+
+// log any response
+app.use(logRequest)
+
+// respond with the file from the /build folder
+// populating cache header with '1y' for all but service-worker.js
 app.use(
   express.static(path.join(__dirname, '..', '..', 'build'), {
-    index: false,
     maxAge: '1y',
     setHeaders: function(res, path) {
-      console.log('handled by express.static: ', path)
+      // console.log('path: ', path)
       if (path.includes('service-worker')) {
         res.setHeader('Cache-Control', 'max-age=0')
       }
@@ -184,18 +146,17 @@ app.use(
   })
 )
 
-//! Dynamic requests
-// The initial "/" req would arrive here as it has no file with it name in 'static' folder.
-// If no sw is in effect then any page reload would also arrive here (e.g., "/select")
+// I'm not sure if there's an implicit 'return' preventing previously fulfilled req from arriving here
+// or that only the dynamic requests are of the '/*' form, but it works and I've given up on the express docs.
+// Following code handles every request that requires a dynamic, server-rendered page to be sent out
 app.get('/*', (req, res, next) => {
-  console.log(' ')
-  console.log(' ')
-  console.log('handled by app.get(/*): ', req.url)
+  console.log('')
+  console.log(
+    `res for ${req.url} will be index.html with the server-rendered requested page`
+  )
+  console.log('')
 
   serverRenderer({ store, persistor })(req, res, next)
 })
 
-const a = 1
-
 export default app
-// comment
