@@ -2,6 +2,11 @@ import './index.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
+import {
+  detectSwWaiting,
+  InformSwWaiting,
+  informContentCached,
+} from './redux/reducers/device'
 
 import App from './App'
 import * as serviceWorker from './serviceWorker'
@@ -77,24 +82,26 @@ const AppBundle = (
 )
 
 const root = document.getElementById('root')
+
 window.onload = () => {
   const renderMethod = ssr ? ReactDOM.hydrate : ReactDOM.render
   Loadable.preloadReady().then(() => {
-    // alert('click to hydrate') // A way to catch what the server rendered and then what hydrate did with the ssr'd page
     renderMethod(AppBundle, root)
+    initiateDeviceProperties(store)
   })
 }
 
-// ! Use Redux not React.Context when there is no component to hang to
-// 'registerServiceWorker' must be run upon window.load, i.e., before any component is rendered
-// (putting code inside a window.onload in any component's useEffect will do nothing: the onload event will be missed)
-// if I need to write something in a place "everyone can see", there is no component to attach a hook such as useSelector or useContext.
-// Redux to the rescue:
-// Passing 'store' into registerServiceWorker enables it to access 'dispatch' with store.dispatch requiring no hook or old-fashioned connect.
+// ! service-worker should be registered before window.onload
+// Since serviceWorker.register has a window.onload event, it needs to be before it and not in window.onload below.
+// Had it been included in the window.onload below, it would miss the onload event and sw would never register.
 //
-// 'initiateDeviceProperties' even manages to dispatch a thunk.
-
-// TODO: for config, see 'serviceWorker.js'. After that, serviceWorker should accept only 'config' as argument.
-const config = {}
-serviceWorker.register({ store, config })
-initiateDeviceProperties(store)
+// ! passing 'store' enables accessing 'dispatch'
+// follows from the above is that serviceWorker.js code is run before 'onload', let alone any component is rendered.
+// This means it can't get access to redux' dispatch neither thru the old way ('connect' HOC) nor thru useDispatch hook.
+// Since it is required to dispatch, the way to make it access dispatch is to pass 'store' into it.
+// That's a solution for any case (albeit rare) that a non-component code needs to dispatch something to redux.
+serviceWorker.register({
+  onPageLoad: detectSwWaiting(store),
+  onSwWaiting: InformSwWaiting(store),
+  onContentCached: informContentCached(store),
+})
