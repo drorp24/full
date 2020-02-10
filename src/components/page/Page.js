@@ -171,6 +171,7 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const includeLiveHeader =
     !noAppBar &&
     (pathname === '/select' ||
+      pathname === '/index' ||
       (pathname === '/merchants' &&
         !scrolling &&
         // !contextual &&

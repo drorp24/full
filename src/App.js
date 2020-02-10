@@ -12,6 +12,7 @@ import ErrorBoundary from './components/utility/ErrorBoundary'
 // import Loader from './components/utility/Loader'
 
 import Welcome from './components/app/Welcome'
+import Index from './components/app/Index'
 import Select from './components/app/Select'
 import Merchants from './components/app/Merchants'
 // const Merchants = lazy(() => import('./components/app/Merchants'))

@@ -130,6 +130,7 @@ export default ({ store, persistor }) => (req, res, next) => {
       return res.redirect(301, context.url)
     } else {
       res.setHeader('Cache-Control', 'public, max-age=31536000')
+      res.set('Content-Type', 'text/html')
       return res.send(
         htmlData
           .replace(

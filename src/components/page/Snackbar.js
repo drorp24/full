@@ -106,6 +106,9 @@ export default function MySnackbar() {
     invoke: null,
   })
 
+  const [offlineNotified, setOfflineNotified] = useState()
+  const [landscapeNotified, setLandscapeNotified] = useState()
+
   const { pathname } = useLocation()
 
   const dispatch = useDispatch()
@@ -231,7 +234,6 @@ export default function MySnackbar() {
   }
 
   useEffect(() => {
-    const { type } = message
     const {
       offlineMsg,
       onlineMsg,
@@ -242,10 +244,12 @@ export default function MySnackbar() {
       landscapeMsg,
     } = messages
 
-    if (!online) {
+    if (online === false) {
+      setOfflineNotified(true)
       setOpen(true)
       setMessage(offlineMsg)
-    } else if (online && type === 'offline') {
+    } else if (online && offlineNotified) {
+      setOfflineNotified(false)
       setOpen(true)
       setMessage(onlineMsg)
     } else if (newerSwWaiting) {
@@ -261,9 +265,11 @@ export default function MySnackbar() {
       setOpen(true)
       setMessage(appNotSharedMsg)
     } else if (orientation === 'landscape') {
+      setLandscapeNotified(true)
       setOpen(true)
       setMessage(landscapeMsg)
-    } else if (orientation === 'portrait' && message.type === 'landscape') {
+    } else if (orientation === 'portrait' && landscapeNotified) {
+      setLandscapeNotified(false)
       setOpen(false)
     }
   }, [
@@ -274,6 +280,8 @@ export default function MySnackbar() {
     appShared,
     orientation,
     messages,
+    offlineNotified,
+    landscapeNotified,
   ])
 
   return (

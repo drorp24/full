@@ -124,53 +124,79 @@ store.dispatch(setMessage('Server'))
 // compress any response
 app.use(compression())
 
-//! Static requests
-// (Of course should ideally be served from a CDN or a reverse proxy, not the express server).
-// * index: false!
+// const logRequest = function(req, res, next) {
+//   console.log('req.url: ', req.url)
+//   next()
+// }
+
+// // log any response
+// app.use(logRequest)
+
+// ! 'index: false' or ssr will not work
 // Discovered the (very) hard way: failing to include 'index: false' in express.static's options
-// will make it fetch 'index.html' for '/' requests, which are supposed to be handled by the next, dynamic route since I'm ssr'ing.
-// The result of not overriding this estremely weird default makes express serve the empty 'index.html'
-// instead of the one with the server-rendered content.
-// I couldn't for the life of me understand why it uses 'express.static' when there's clearly no '/' entry in the static folder.
+// will make it treat '/' requests as if they were 'index.html', making express serve the empty 'index.html' that's in the /build folder
+// instead of the one with the server-rendered content
 //
-// That problem makes ssr *break*, and should have been encountered by *anyone* doing React!
-// - but there's not a word about it anywhere.
+// It's hard to believe that in 2020 '/' requests are still considered "folder" and respond with its "content".
+// Why the hell is this the default, when obviously it fails so many apps??
+// The fact it's so unbelievable made me pull hair until I discovered that awkward default.
+// And why isn't there any issue raised? That problem should break ssr for *anyone* doing it!
 //
+// ! CRA Workbox implementation *BREAKS* ssr
+// TL;DR - Workbox' default configuration doesn't support ssr, but CRA will not let you change that.
 //
-// ! The war against CRA's sw implementation
-// Even CRA is integrated with Workbox as of CRA 2.0, the implementation actually breaks sw when it comes to ssr.
-// Since I am reluctant to use react-app-rewire-workbox, which people used during CRA 1, I am fighting with CRA / Workbox
-// to just get the basic functionality, with little success. It's simply not built for ssr or I am missing something.
+//  This is what's happenning:
 //
-// * Reloading any page will fetch the non-ssr'd, empty index.html
-// In spite of fixing the express code as above, as soon as any page is reloaded, it won't even reach the server;
-// instead, it will fetch the empty 'index.html' from the precache; even for req's with url's such as '/select'.
+// - At build time, workbox-webpack-plugin creates the precache-manifest.json file with an entry for the empty 'index.html'.
+//   This is fine; it's good to precache index.html certainly if there's no ssr, but even if there is.
+// - During precaching (sw 'install' event), Workbox looks at that precache-manifest, fetches the blank 'index.html' file
+//   from the express server and places it in the sw cache. Still fine.
 //
-// That's the result of the following:
+//   The problem is that
+//   - While Workbox caches the responses to 'index.html' that was precached earlier
+//   - it does not cache the server-rendered responses for dynamic req's such as '/', '/select'
+//   - Instead, when it encounters a dynamic req, it serves the cached 'index.html' and doesn't even call n/w
+//     unless cached 'index.html' doesn't exist.
 //
-// - workbox-webpack-plugin inserts the static, empty 'index.html' as entry into the generated precached-manifest.json.
-//   Workbox, during its precaching stage (during 'install'), looks at precache-manifest, finds there the 'index.html' entry,
-//   fetches it then places it in the caches.
-//   Nobody should ever need that naked 'index.html', but as always with CRA, that plugin cannot be configured.
-//   But other than the unnecessary fetch, this doesn't yet break anything;
+//   The result is that
+//  - everything the server did is thrown away rather than being cached
+//  - each and every reload will get the cached empty index.html file and will have to render it yet again on the client
+//    instead of pulling the server-rendered page which was never cached.
 //
-//   What breaks things is that Workbox doesn't dynamically cache the ssr'd responses that the server responds with to any of the '/*' req's.
-//   In the case of '/' maybe it's the result of Workbox' def behavior to attempt the cache with whose names ends with 'index.html'
-//   before giving up on the cache and fetching from the n/w,
-//   but that rule applies to req's ending with '/' such as '/' and cannot explain why req's like '/select' are also mapped to 'index.html'.
+//   Luckily,
+//   - The very first time a app is entered, before cache has been built, the server does get called and returns ssr.
+//     So user does get the first page quickly, which is the main purpose of ssr.
+//     Subsequent calls and reloads however would be slow and yield an ugly blank page before client has a chance to render them.
 //
-//   Workbox also can be configured to not map paths ending with '/' into '/index.html' but again, CRA won't let you config.
+//   This default behavior of Workbox could perhaps make sense for a non ssr env. For ssr it should be configured differently,
+//   but CRA doesn't allow that (there 2 issues for that since early 2018).
 //
-// The entire purpose of precaching is to enable quick reloads - but CRA/Workbox breaks them by responding with empty 'index.html' to
-// any reload.
-// Luckily, the initial req to either '/' or any other would reach the express server and be responded with the ssr'd file so long as the
-// sw is new.
+//   I am shocked no issue was ever raised for what looks like a serious bug.
 //
-// * max-age=0 for service-worker, '1y' for all the rest
+//   Migitation:
+//   Since Workbox insists on caching and serving index.html, I might as well respond to 'index.html' req's
+//   with something common to most pages (so as not to create a FOUC when client renders)
+//   to at least avoid a totally-white background from showing during the time the client loads.
+//   I'm doing that below.
+//
+// ! proper caching headers
 // Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached
 // doesn below a way to do this exception in one single express.static statement.
 // 'setHeaders' is also a way to add a hook into express.static allowing to view which requests are handled by it (otherwise impossible!)
 // that's how I discovered the index problem described above.
+
+// * Workbox 'index.html' mitigation
+// Rather than serving the empty static 'index.html' from the /build folder (express.static below)
+// we serve a server-rendered componenet as defined in the App.js 'index.html' route.
+// app.get('/index.html', (req, res, next) => {
+//   console.log(' ')
+//   console.log(' ')
+//   console.log('handled by app.get(/index.html): ', req.url)
+//   console.log('req.query: ', req.query)
+
+//   serverRenderer({ store, persistor })(req, res, next)
+// })
+
 app.use(
   express.static(path.join(__dirname, '..', '..', 'build'), {
     index: false,
@@ -191,11 +217,9 @@ app.get('/*', (req, res, next) => {
   console.log(' ')
   console.log(' ')
   console.log('handled by app.get(/*): ', req.url)
+  console.log('req.query: ', req.query)
 
   serverRenderer({ store, persistor })(req, res, next)
 })
 
-const a = 1
-
 export default app
-// comment
