@@ -106,74 +106,9 @@ export default function MySnackbar() {
     invoke: null,
   })
 
-  const [offlineNotified, setOfflineNotified] = useState()
-  const [landscapeNotified, setLandscapeNotified] = useState()
-
   const { pathname } = useLocation()
 
   const dispatch = useDispatch()
-
-  const messages = {
-    offlineMsg: {
-      type: 'offline',
-      text:
-        'Connection is lost, but no worries: <br/><strong>you can use the app offline!</strong>',
-      action: null,
-      invoke: () => {},
-      icon: 'cloudOff',
-      level: 'warning',
-      duration: 10000,
-    },
-    onlineMsg: {
-      type: 'online',
-      text:
-        'Connection is on! <br /><strong>Reload</strong> to view latest offers',
-      action: 'Reload',
-      invoke: reload,
-      icon: 'cloudOn',
-      level: 'success',
-      duration: 15000,
-    },
-    newerSwWaitingMsg: {
-      type: 'newerSwWaiting',
-      text: 'New release ready. Install?',
-      action: 'Install',
-      invoke: install(dispatch),
-    },
-    contentCashedMsg: {
-      type: 'contentCached',
-      text: 'Our app can now work offline!',
-      action: '',
-      invoke: () => {},
-    },
-    appSharedMsg: {
-      type: 'appShared',
-      text: 'Thanks for sharing Cryptonite!',
-      action: '',
-      invoke: () => {},
-      icon: 'check',
-      level: 'success',
-      duration: 3000,
-    },
-    appNotSharedMsg: {
-      type: 'appNotShared',
-      text: 'This device does not support sharing',
-      action: '',
-      invoke: () => {},
-      icon: 'warning',
-      level: 'warning',
-      duration: 3000,
-    },
-    landscapeMsg: {
-      type: 'landscape',
-      text: 'Please rotate!',
-      action: '',
-      invoke: () => {},
-      icon: 'rotate',
-      level: 'warning',
-      duration: 30000,
-    },
-  }
 
   const useStyles = makeStyles(theme => ({
     root: {
@@ -233,7 +168,86 @@ export default function MySnackbar() {
     setOpen(false)
   }
 
+  //! When it is okay to both read and write state in a useEffect
+  // Similalry to how I ask whether I set already the values in FormContainer's useEffects,
+  // here is another case that justifies both reading and writing state in the same useEffect:
+  //
+  //  It would be absurd to notify a user that he's online, unless a prior msg informed him he was offline;
+  //  Similarly, it would be senseless to notify user he's in prtrait, unless I just notified him he was in landscape mode.
+  //  Since I'm both reading and writing to these 2 states, I'm paying the very small penalty of entering the useEffect twice:
+  //  - once that it would anyway enter for each state change (offline to online, landscape to portrait etc)
+  //  - and then another time for my own flag state change.
+  //  So setting 'offlineNotified' to false will itself trigger another entry into the useEffect.
+  //  I could of course work around that by creating 2 separate useEffects etc, but it wouldn't justify a bad code.
+
+  const [offlineNotified, setOfflineNotified] = useState()
+  const [landscapeNotified, setLandscapeNotified] = useState()
+
   useEffect(() => {
+    console.log('useEffect entered')
+
+    console.log('offlineNotified: ', offlineNotified)
+    const messages = {
+      offlineMsg: {
+        type: 'offline',
+        text:
+          'Connection lost, but no worries: <br/><strong>you can browse offline!</strong>',
+        action: null,
+        invoke: () => {},
+        icon: 'cloudOff',
+        level: 'warning',
+        duration: 10000,
+      },
+      onlineMsg: {
+        type: 'online',
+        text: 'Connection is on! <br /><strong>Reload</strong> to view offers',
+        action: 'Reload',
+        invoke: reload,
+        icon: 'cloudOn',
+        level: 'success',
+        duration: 15000,
+      },
+      newerSwWaitingMsg: {
+        type: 'newerSwWaiting',
+        text: 'New release ready. Install?',
+        action: 'Install',
+        invoke: install(dispatch),
+      },
+      contentCashedMsg: {
+        type: 'contentCached',
+        text: 'Our app can now work offline!',
+        action: '',
+        invoke: () => {},
+      },
+      appSharedMsg: {
+        type: 'appShared',
+        text: 'Thanks for sharing Cryptonite!',
+        action: '',
+        invoke: () => {},
+        icon: 'check',
+        level: 'success',
+        duration: 3000,
+      },
+      appNotSharedMsg: {
+        type: 'appNotShared',
+        text: 'This device does not support sharing',
+        action: '',
+        invoke: () => {},
+        icon: 'warning',
+        level: 'warning',
+        duration: 3000,
+      },
+      landscapeMsg: {
+        type: 'landscape',
+        text: 'Please rotate!',
+        action: '',
+        invoke: () => {},
+        icon: 'rotate',
+        level: 'warning',
+        duration: 30000,
+      },
+    }
+
     const {
       offlineMsg,
       onlineMsg,
@@ -273,13 +287,12 @@ export default function MySnackbar() {
       setOpen(false)
     }
   }, [
-    contentCashed,
-    newerSwWaiting,
     online,
-    message,
+    dispatch,
+    newerSwWaiting,
+    contentCashed,
     appShared,
     orientation,
-    messages,
     offlineNotified,
     landscapeNotified,
   ])
