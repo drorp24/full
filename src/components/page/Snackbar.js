@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setValue, setUser } from '../../redux/actions'
+import { setValue, setUser, setDevice } from '../../redux/actions'
 import { useLocation } from 'react-router-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -128,6 +128,7 @@ export default function MySnackbar() {
       bottom: pathname === '/select' ? '11%' : '8px',
     },
     content: {
+      flexWrap: 'nowrap',
       '@media (orientation: landscape)': {
         width: '100%',
       },
@@ -150,10 +151,10 @@ export default function MySnackbar() {
     },
     action: {
       textTransform: 'uppercase',
-      color: '#90ee90',
+      color: '#00c853',
     },
     success: {
-      color: '#90ee90',
+      color: '#00c853',
     },
     warning: {
       color: 'orange',
@@ -219,31 +220,33 @@ export default function MySnackbar() {
       },
       newerSwWaitingMsg: {
         type: 'newerSwWaiting',
-        text: 'New release ready. Install?',
+        text: 'New release arrived! Install it?',
         action: 'Install',
         invoke: install(dispatch),
+        icon: 'newRelease',
       },
       contentCachedMsg: {
         type: 'contentCached',
-        text: 'Our app can now work offline!',
+        text: 'Our app is fully cached. This means you can use it offline!',
         action: '',
         invoke: () => {},
+        icon: 'cloudOn',
       },
       appSharedMsg: {
         type: 'appShared',
         text: 'Thanks for sharing Cryptonite!',
         action: '',
         invoke: () => {},
-        icon: 'check',
+        icon: 'sharing',
         level: 'success',
         duration: 3000,
       },
       appNotSharedMsg: {
         type: 'appNotShared',
-        text: 'This device does not support sharing',
+        text: 'Sorry, this device does not support sharing.',
         action: '',
         invoke: () => {},
-        icon: 'warning',
+        icon: 'sad',
         level: 'warning',
         duration: 3000,
       },
@@ -287,6 +290,7 @@ export default function MySnackbar() {
       setOpen(true)
       setMessage(newerSwWaitingMsg)
     } else if (contentCached) {
+      dispatch(setDevice({ contentCached: false }))
       setOpen(true)
       setMessage(contentCachedMsg)
     } else if (appShared) {
@@ -355,4 +359,3 @@ export default function MySnackbar() {
     </div>
   )
 }
-// comment2

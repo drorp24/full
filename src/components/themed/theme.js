@@ -96,7 +96,7 @@ const theme = mode => {
         },
       },
       body: {
-        padding: '2em 1em',
+        padding: '2em 1em 3em 1em',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-evenly',
