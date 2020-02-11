@@ -21,7 +21,7 @@ const initialState = {
   contentCached: null,
   appShared: null,
   orientation: 'portrait',
-  mode: 'light',
+  mode: null,
 }
 
 export default (state = initialState, action) => {

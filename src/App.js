@@ -15,6 +15,7 @@ import { setMessage, setCount } from './redux/actions'
 //
 // import 'typeface-roboto'
 
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { ThemeProvider } from '@material-ui/styles'
 import theme from './components/themed/theme'
 
@@ -51,8 +52,10 @@ function App({ values }) {
   //   if (hookStylesheet) head.insertBefore(hookStylesheet, null)
   // }
 
-  // const OsDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-  const mode = useSelector(store => store.device.mode)
+  const DarkMediaQuery = useMediaQuery('(prefers-color-scheme: dark)')
+  const userPreferredMode = DarkMediaQuery ? 'dark' : 'light'
+  const alreadySetMode = useSelector(store => store.device.mode)
+  const mode = alreadySetMode || userPreferredMode
   const modeTheme = useMemo(() => theme(mode), [mode])
 
   return (
