@@ -13,6 +13,7 @@ import { setA2hs } from '../../redux/actions'
 
 import iosShare from '../../assets/images/iosShare.png'
 import icon from '../../assets/images/apple-icon-120.png'
+import recentlyNotified from './recentlyNotified'
 
 export default function A2HSPrompt() {
   let nativeInstall = useContext(store => store.device.nativeInstall)
@@ -24,26 +25,22 @@ export default function A2HSPrompt() {
   const landscape = orientation === 'landscape'
 
   const { prompted, accepted } = a2hs
-
-  const oneHour = 1000 * 60 * 60
-  const now = useCallback(() => new Date(), []) // useCallback isn't really caching anything in this case...
-  const timePrompted = () => prompted && Date.parse(prompted) // redux stores dates as strings
-  const recently_prompted = now() - timePrompted() < oneHour
+  const recently_prompted = recentlyNotified(prompted)
 
   const dispatch = useDispatch()
   const recordAccepted = useCallback(
     type => {
       console.log(`User has accepted the ${type} prompt`)
-      dispatch(setA2hs({ prompted: now(), accepted: true }))
+      dispatch(setA2hs({ prompted: new Date(), accepted: true }))
     },
-    [dispatch, now]
+    [dispatch]
   )
   const recordDismissed = useCallback(
     type => {
       console.log(`User has dismissed the ${type} prompt`)
-      dispatch(setA2hs({ prompted: now(), accepted: false }))
+      dispatch(setA2hs({ prompted: new Date(), accepted: false }))
     },
-    [dispatch, now]
+    [dispatch]
   )
 
   const handleClose = () => {
@@ -92,7 +89,6 @@ export default function A2HSPrompt() {
     dispatch,
     landscape,
     nativeInstall,
-    now,
     recently_prompted,
     recordAccepted,
     recordDismissed,
