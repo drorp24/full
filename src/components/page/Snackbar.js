@@ -89,7 +89,7 @@ const install = dispatch => () => {
 
 export default function MySnackbar() {
   const device = useSelector(store => store.device)
-  const { newerSwWaiting, contentCashed, online, appShared } = device
+  const { newerSwWaiting, contentCached, online, appShared } = device
   const orientation =
     typeof window !== 'undefined'
       ? window.matchMedia('(orientation: portrait)').matches
@@ -184,9 +184,6 @@ export default function MySnackbar() {
   const [landscapeNotified, setLandscapeNotified] = useState()
 
   useEffect(() => {
-    console.log('useEffect entered')
-
-    console.log('offlineNotified: ', offlineNotified)
     const messages = {
       offlineMsg: {
         type: 'offline',
@@ -213,7 +210,7 @@ export default function MySnackbar() {
         action: 'Install',
         invoke: install(dispatch),
       },
-      contentCashedMsg: {
+      contentCachedMsg: {
         type: 'contentCached',
         text: 'Our app can now work offline!',
         action: '',
@@ -252,7 +249,7 @@ export default function MySnackbar() {
       offlineMsg,
       onlineMsg,
       newerSwWaitingMsg,
-      contentCashedMsg,
+      contentCachedMsg,
       appSharedMsg,
       appNotSharedMsg,
       landscapeMsg,
@@ -269,9 +266,9 @@ export default function MySnackbar() {
     } else if (newerSwWaiting) {
       setOpen(true)
       setMessage(newerSwWaitingMsg)
-    } else if (contentCashed) {
+    } else if (contentCached) {
       setOpen(true)
-      setMessage(contentCashedMsg)
+      setMessage(contentCachedMsg)
     } else if (appShared) {
       setOpen(true)
       setMessage(appSharedMsg)
@@ -290,7 +287,7 @@ export default function MySnackbar() {
     online,
     dispatch,
     newerSwWaiting,
-    contentCashed,
+    contentCached,
     appShared,
     orientation,
     offlineNotified,

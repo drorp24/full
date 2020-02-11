@@ -168,34 +168,24 @@ app.use(compression())
 //     So user does get the first page quickly, which is the main purpose of ssr.
 //     Subsequent calls and reloads however would be slow and yield an ugly blank page before client has a chance to render them.
 //
-//   This default behavior of Workbox could perhaps make sense for a non ssr env. For ssr it should be configured differently,
-//   but CRA doesn't allow that (there 2 issues for that since early 2018).
+//   This default behavior of Workbox to not cache dynamic responses only the 'index'.html' could
+//   be okay as long as ssr is not involved. For ssr it should be configured differently,
+//   but CRA doesn't allow that (there 2 are issues to let CRA enable configuring Workbox).
 //
-//   I am shocked no issue was ever raised for what looks like a serious bug.
+//   * Do not server-render index.html
+//   Since Workbox would not cache the server-rendered response to '/*' req's, serving the cached 'index.html' instead,
+//   I tought I'd at least populate 'index.html' with some server-rendered content to prevent starting with a blank slate.
+//   That was a bad idea.
+//   The reason: when Workbox serves any server-rendered 'index.html from the cache, React now has to first unmount whatever is in there
+//   and then mount the page that was reloaded once again, whereas when *nothing* is included in 'index.html',
+//   React simply leaves DOM unchanged, which is the best behavior we can expect from a page reload.
+//   Conclusion: continue to serve empty 'index.html' from the /build folder by express.static and don't try to be fancy.
 //
-//   Migitation:
-//   Since Workbox insists on caching and serving index.html, I might as well respond to 'index.html' req's
-//   with something common to most pages (so as not to create a FOUC when client renders)
-//   to at least avoid a totally-white background from showing during the time the client loads.
-//   I'm doing that below.
-//
-// ! proper caching headers
-// Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached
-// doesn below a way to do this exception in one single express.static statement.
-// 'setHeaders' is also a way to add a hook into express.static allowing to view which requests are handled by it (otherwise impossible!)
+//! Do not cache service-worker.js
+// Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached.
+// I'm doing that below in one single express.static statement.
+// 'setHeaders' also provides a hook into express.static allowing to view which requests are handled by it (which is otherwise impossible!)
 // that's how I discovered the index problem described above.
-
-// * Workbox 'index.html' mitigation
-// Rather than serving the empty static 'index.html' from the /build folder (express.static below)
-// we serve a server-rendered componenet as defined in the App.js 'index.html' route.
-// app.get('/index.html', (req, res, next) => {
-//   console.log(' ')
-//   console.log(' ')
-//   console.log('handled by app.get(/index.html): ', req.url)
-//   console.log('req.query: ', req.query)
-
-//   serverRenderer({ store, persistor })(req, res, next)
-// })
 
 app.use(
   express.static(path.join(__dirname, '..', '..', 'build'), {
@@ -210,9 +200,9 @@ app.use(
   })
 )
 
-//! Dynamic requests
-// The initial "/" req would arrive here as it has no file with it name in 'static' folder.
-// If no sw is in effect then any page reload would also arrive here (e.g., "/select")
+//* dynamic requests
+// Initial dynamic req's (e.g., '/', '/select') arrive here as they don't have a corresponding filename in /build folder.
+// Subsequent requests are already served from a browser cache or the sw's.
 app.get('/*', (req, res, next) => {
   console.log(' ')
   console.log(' ')
