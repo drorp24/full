@@ -1,4 +1,4 @@
-import { SET_A2HS } from '../types'
+import { SET_A2HS, SET_USER } from '../types'
 
 const initialState = { a2hs: { accepted: null, prompted: null } }
 
@@ -42,12 +42,17 @@ const initialState = { a2hs: { accepted: null, prompted: null } }
 // and would maintain redcuers' blissful ignorance.
 //
 export default (state = initialState, action) => {
-  const { type, a2hs } = action
+  const { type, a2hs, payload } = action
   switch (type) {
     case SET_A2HS:
       return {
         ...state,
         a2hs,
+      }
+    case SET_USER:
+      return {
+        ...state,
+        ...payload,
       }
     default:
       return state

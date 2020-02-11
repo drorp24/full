@@ -142,10 +142,11 @@ app.use(compression())
 // The fact it's so unbelievable made me pull hair until I discovered that awkward default.
 // And why isn't there any issue raised? That problem should break ssr for *anyone* doing it!
 //
-// ! CRA Workbox implementation *BREAKS* ssr
-// TL;DR - Workbox' default configuration doesn't support ssr, but CRA will not let you change that.
+// ! CRA Workbox implementation may break ssr
 //
-//  This is what's happenning:
+// UPTATE: NOT SURE THIS IS TRUE AMYMORE BUT DONT WANT TO MESS WITH IT ANY LONGER
+// It's probably due to Lightbox claiming sw doesn't respond with 200 when offline
+// that made me start experimenting with sw and index.html req's.
 //
 // - At build time, workbox-webpack-plugin creates the precache-manifest.json file with an entry for the empty 'index.html'.
 //   This is fine; it's good to precache index.html certainly if there's no ssr, but even if there is.
@@ -160,7 +161,7 @@ app.use(compression())
 //
 //   The result is that
 //  - everything the server did is thrown away rather than being cached
-//  - each and every reload will get the cached empty index.html file and will have to render it yet again on the client
+//  - each and every reload will get the cached empty index.html file and [I DON'T THINK THIS TRUE ANYMORE] will have to render it yet again on the client
 //    instead of pulling the server-rendered page which was never cached.
 //
 //   Luckily,
@@ -176,10 +177,15 @@ app.use(compression())
 //   Since Workbox would not cache the server-rendered response to '/*' req's, serving the cached 'index.html' instead,
 //   I tought I'd at least populate 'index.html' with some server-rendered content to prevent starting with a blank slate.
 //   That was a bad idea.
-//   The reason: when Workbox serves any server-rendered 'index.html from the cache, React now has to first unmount whatever is in there
-//   and then mount the page that was reloaded once again, whereas when *nothing* is included in 'index.html',
-//   React simply leaves DOM unchanged, which is the best behavior we can expect from a page reload.
+//   The reason: when Workbox serves any server-rendered 'index.html from the cache, React has to first unmount what the server rendered
+//   and then mount the page that was reloaded once again, whereas when *nothing* is rendered in 'index.html',
+//   The DOM doesn't get changed following the server repsonse, so React finds no diff b/w the DOM and what it would otherwise need to render.
+//   This means nothing gets changed in the page - which is the best behavior one can expect from a page reload.
 //   Conclusion: continue to serve empty 'index.html' from the /build folder by express.static and don't try to be fancy.
+//
+//   * server-rendering requires a corresponding route defined in React (App.js)
+//   Whenever I do want to server-render any path, I should remember to have a corresponding route defined for that path in App.js
+//   otherwise App.js won't know which component to render and the html and css would return empty.
 //
 //! Do not cache service-worker.js
 // Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached.

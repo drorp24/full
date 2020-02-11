@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setValue } from '../../redux/actions'
+import { setValue, setUser } from '../../redux/actions'
 import { useLocation } from 'react-router-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import MySvg from '../utility/svg'
 import clsx from 'clsx'
+import recentlyNotified from '../utility/recentlyNotified'
 
 // ! Informing user of events using snackbars
 //
@@ -97,6 +98,9 @@ export default function MySnackbar() {
         : 'landscape'
       : 'portrait'
 
+  const { offline } = useSelector(store => store.user)
+  const recentlyNotifiedOffline = recentlyNotified(offline)
+
   const [open, setOpen] = useState(false)
 
   const [message, setMessage] = useState({
@@ -174,13 +178,22 @@ export default function MySnackbar() {
   //
   //  It would be absurd to notify a user that he's online, unless a prior msg informed him he was offline;
   //  Similarly, it would be senseless to notify user he's in prtrait, unless I just notified him he was in landscape mode.
-  //  Since I'm both reading and writing to these 2 states, I'm paying the very small penalty of entering the useEffect twice:
-  //  - once that it would anyway enter for each state change (offline to online, landscape to portrait etc)
+  //
+  //  Since I'm both reading and writing to landscapeNotified state, I'm paying the very small penalty of entering the useEffect twice:
+  //  - once that it would anyway enter for each state change (landscape to portrait and vice versa)
   //  - and then another time for my own flag state change.
-  //  So setting 'offlineNotified' to false will itself trigger another entry into the useEffect.
-  //  I could of course work around that by creating 2 separate useEffects etc, but it wouldn't justify a bad code.
+  //  I could of course work around that (e.g. by creating 2 separate useEffects), but it wouldn't justify a bad code.
+  //
+  // ! When is redux preferrable to local state
+  // Local state would not survive a page reload. For the landscape orientation notification I don't care,
+  // but I do want the offline notification timing to survive a page reload, or else I wouldn't get a 'connection is on again'
+  // notification after a page reload that is followed by connection return. And since a page reload is the ultimate
+  // demonstration that app functions in offline, it would mean missing the 'connection is on' entirely.
+  // So for offline notification timing I'm using redux rather than local state.
+  //
+  // Using redux doesn't mean not paying the price of entering one more time into the useEffect,
+  // which is the result of mutating a dependency, regardless of where it is stored.
 
-  const [offlineNotified, setOfflineNotified] = useState()
   const [landscapeNotified, setLandscapeNotified] = useState()
 
   useEffect(() => {
@@ -255,12 +268,19 @@ export default function MySnackbar() {
       landscapeMsg,
     } = messages
 
-    if (online === false) {
-      setOfflineNotified(true)
+    if (orientation === 'landscape') {
+      setLandscapeNotified(true)
+      setOpen(true)
+      setMessage(landscapeMsg)
+    } else if (orientation === 'portrait' && landscapeNotified) {
+      setLandscapeNotified(false)
+      setOpen(false)
+    } else if (online === false && !recentlyNotifiedOffline) {
+      dispatch(setUser({ offline: new Date() }))
       setOpen(true)
       setMessage(offlineMsg)
-    } else if (online && offlineNotified) {
-      setOfflineNotified(false)
+    } else if (online && recentlyNotifiedOffline) {
+      dispatch(setUser({ offline: null }))
       setOpen(true)
       setMessage(onlineMsg)
     } else if (newerSwWaiting) {
@@ -275,13 +295,6 @@ export default function MySnackbar() {
     } else if (appShared === false) {
       setOpen(true)
       setMessage(appNotSharedMsg)
-    } else if (orientation === 'landscape') {
-      setLandscapeNotified(true)
-      setOpen(true)
-      setMessage(landscapeMsg)
-    } else if (orientation === 'portrait' && landscapeNotified) {
-      setLandscapeNotified(false)
-      setOpen(false)
     }
   }, [
     online,
@@ -290,8 +303,9 @@ export default function MySnackbar() {
     contentCached,
     appShared,
     orientation,
-    offlineNotified,
     landscapeNotified,
+    offline,
+    recentlyNotifiedOffline,
   ])
 
   return (

@@ -12,6 +12,7 @@ import {
   SET_POPULATED,
   SET_A2HS,
   SET_DEVICE,
+  SET_USER,
 } from './types'
 
 export const setMessage = message => ({
@@ -91,6 +92,11 @@ export const setApp = payload => ({
 
 export const setDevice = payload => ({
   type: SET_DEVICE,
+  payload,
+})
+
+export const setUser = payload => ({
+  type: SET_USER,
   payload,
 })
 
