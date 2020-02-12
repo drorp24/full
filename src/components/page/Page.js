@@ -117,6 +117,10 @@ const Viewport = ({ children }) => {
   const server = !inBrowser()
   const { orientation } = useSelector(store => store.device)
   const [landscapeHeight, setLandscapeHeight] = useState('100vw') // if fetched from server or re-loaded when in landscape
+
+  const standaloneMode = useMediaQuery('(display-mode: standalone) ')
+  const id = server ? 'viewportServer' : 'viewportClient'
+
   const calculateHeight = useCallback(() => {
     if (orientation === 'landscape') {
       const {
@@ -137,7 +141,7 @@ const Viewport = ({ children }) => {
   const useStyles = makeStyles(theme => ({
     viewport: {
       width: '100%',
-      transition: 'height 0.5s',
+      transition: standaloneMode ? 'unset' : 'height 0.5s',
       '@media (orientation: landscape)': {
         height: `${landscapeHeight} !important`,
         width: '100vh !important',
@@ -147,9 +151,6 @@ const Viewport = ({ children }) => {
 
   const classes = useStyles()
   const { viewport } = classes
-
-  const standaloneMode = useMediaQuery('(display-mode: standalone) ')
-  const id = server ? 'viewportServer' : 'viewportClient'
 
   return server || standaloneMode ? (
     <div style={{ height: '100vh' }} className={viewport} id={id}>
