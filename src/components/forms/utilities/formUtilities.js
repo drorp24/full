@@ -395,6 +395,12 @@ const NumberField = ({
   } = form
   const theme = useTheme()
 
+  // react-number-format leaves a zero and a currency prefix after user deletes the entered number;
+  // this made me step in and format it myself, giving up on 'prefix' and 'thousandSeparator'.
+  const symbol = getSymbolFromCurrency(base) || ''
+  const format = val =>
+    val > 0 ? (symbol.length ? `${symbol} ${val}` : `${val}`) : null
+
   return (
     <TextField
       InputProps={{
@@ -404,9 +410,8 @@ const NumberField = ({
         inputComponent: MyNumberFormat,
         inputProps: {
           value,
-          thousandSeparator: true,
+          format,
           onValueChange: onChange,
-          prefix: getSymbolFromCurrency(base),
           style: {
             height: theme.form.body.fields.input.height,
             padding: theme.form.body.fields.input.padding,

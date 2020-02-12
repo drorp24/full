@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
-import { connect, useSelector } from 'react-redux'
-import { setMessage, setCount } from './redux/actions'
+import { connect, useSelector, useDispatch } from 'react-redux'
+import { setMessage, setCount, setDevice } from './redux/actions'
 
 //! Why I gave up custom fonts
 //  Usually, custom fonts are lazily fetched only when required.
@@ -55,6 +55,10 @@ function App({ values }) {
   const DarkMediaQuery = useMediaQuery('(prefers-color-scheme: dark)')
   const userPreferredMode = DarkMediaQuery ? 'dark' : 'light'
   const alreadySetMode = useSelector(store => store.device.mode)
+  const dispatch = useDispatch()
+  if (!alreadySetMode) {
+    dispatch(setDevice({ mode: userPreferredMode }))
+  }
   const mode = alreadySetMode || userPreferredMode
   const modeTheme = useMemo(() => theme(mode), [mode])
 

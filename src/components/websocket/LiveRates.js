@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { PropTypes } from 'prop-types'
 import getSymbolFromCurrency from 'currency-symbol-map'
 import NumberFormat from 'react-number-format'
@@ -120,11 +121,15 @@ const useStyles = makeStyles(theme => ({
   upDown: {
     color: ({ direction }) => theme.form.header.liveRates[direction],
   },
+  progress: {
+    width: '100%',
+    backgroundColor: '#fff',
+  },
 }))
 
 const Price = ({ value, quantity, direction = 'up', quote }) => {
   const classes = useStyles({ direction })
-  return value ? (
+  return 1 === 0 ? (
     <NumberFormat
       value={value * quantity}
       displayType={'text'}
@@ -135,7 +140,7 @@ const Price = ({ value, quantity, direction = 'up', quote }) => {
       className={classes.upDown}
     />
   ) : (
-    <LinearProgress style={{ width: '100%' }} />
+    <LinearProgress className={classes.progress} />
   )
 }
 

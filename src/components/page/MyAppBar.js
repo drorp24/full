@@ -46,6 +46,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     appBar: {
       height: '100%',
       boxShadow: 'inherit',
+      paddingTop: '10%',
 
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)
