@@ -2,12 +2,14 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
+import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/styles'
+import Paper from '@material-ui/core/Paper'
+
 import Div100vh from 'react-div-100vh'
 import MyAppBar from './MyAppBar'
 import SnackBar from './Snackbar'
 import { inBrowser } from '../utility/detect'
-import { makeStyles } from '@material-ui/styles'
-import Paper from '@material-ui/core/Paper'
 import LiveHeader from '../forms/utilities/LiveHeader'
 
 // ! Dynamic parent must be defined outside the scope of its children
@@ -70,6 +72,10 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 //
 // * 3rd caveat: <Div100vh /> doesn't handle orientation change well
 // Details in the next section.
+//
+// * 4th caveat: <Div100vh /> will not work in standalone mode
+// It's not Div100vh's fault. In standalone mode, window.innerHeight is not the entire viewport height.
+// The entire viewport height in standlone mode is... 100vh.
 
 // ! Prevent distorted layout on orientation change
 // * Why auto-rotate
@@ -90,8 +96,8 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 //
 // - Once rotated to landscape, the full end-to-end width is neither 100vw nor window.innerWidth.
 //   It's window.screen.availHeight on iOS Safari! and window.screen.availWidth on Chrome!
-// - Both browsers don't allocate that entire end-to-end space, at least in iPhone Xr, where the notch area seems out of reach.
-//   The height that would cover everything but the notch is actually the average b/w the avail<x> and innerWidth.
+// - Both browsers don't allocate that entire end-to-end space.
+//   The height that would cover everything is actually the average b/w the avail<x> and innerWidth.
 //
 // * Side note: CSS variables
 // Initially I thought to use the oportunity to play with CSS variables for that, but I couldn't since they don't
@@ -140,17 +146,17 @@ const Viewport = ({ children }) => {
   }))
 
   const classes = useStyles()
+  const { viewport } = classes
 
-  return server ? (
-    <div
-      style={{ height: '100vh' }}
-      className={classes.viewport}
-      id="viewportServer"
-    >
+  const standaloneMode = useMediaQuery('(display-mode: standalone) ')
+  const id = server ? 'viewportServer' : 'viewportClient'
+
+  return server || standaloneMode ? (
+    <div style={{ height: '100vh' }} className={viewport} id={id}>
       {children}
     </div>
   ) : (
-    <Div100vh className={classes.viewport} id="viewportClient">
+    <Div100vh className={viewport} id={id}>
       {children}
     </Div100vh>
   )
@@ -177,8 +183,8 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
         // !contextual &&
         layout === 'vertical'))
 
-  const appBarHeightPercent = noAppBar ? 0 : 10
-  const liveHeaderHeightPercent = includeLiveHeader ? 20 : 0
+  const appBarHeightPercent = noAppBar ? 0 : 15
+  const liveHeaderHeightPercent = includeLiveHeader ? 15 : 0
   const mainHeightPercent = 100 - appBarHeightPercent - liveHeaderHeightPercent
 
   const boxShadow =
