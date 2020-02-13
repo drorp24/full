@@ -81,8 +81,11 @@ const AppBundle = (
   </ReduxProvider>
 )
 
-const root = document.getElementById('root')
+// ! Order is important
+// serviceWorker.register should be defined after window.onload is defined
+// and initiateDeviceProperties should await and be defined within onload or else its values would be overriden by reudx-persist's hydrate
 
+const root = document.getElementById('root')
 window.onload = () => {
   const renderMethod = ssr ? ReactDOM.hydrate : ReactDOM.render
   Loadable.preloadReady().then(() => {
@@ -91,10 +94,6 @@ window.onload = () => {
   })
 }
 
-// ! service-worker should be registered before window.onload
-// Since serviceWorker.register has a window.onload event, it needs to be before it and not in window.onload below.
-// Had it been included in the window.onload below, it would miss the onload event and sw would never register.
-//
 // ! passing 'store' enables accessing 'dispatch'
 // follows from the above is that serviceWorker.js code is run before 'onload', let alone any component is rendered.
 // This means it can't get access to redux' dispatch neither thru the old way ('connect' HOC) nor thru useDispatch hook.

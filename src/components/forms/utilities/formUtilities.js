@@ -286,7 +286,8 @@ const MemoField = React.memo(EveryField)
 // There's no 'Display' Component per ce, it's just a cover for a host of other components
 // Dynamic component is for cases where different components all require the same props but each does differet things with these same props
 const DisplayField = ({ type, ...rest }) => {
-  const online = useSelector(store => store.device.online)
+  const { online } = useSelector(store => store.device)
+  const { value } = rest
 
   const display = {
     // phone: PhoneField,
@@ -300,7 +301,7 @@ const DisplayField = ({ type, ...rest }) => {
 
   const Display = display[type]
   return (
-    <ErrorBoundary level="line" online={online}>
+    <ErrorBoundary level="line" {...{ online, value }}>
       <Display {...rest} />
     </ErrorBoundary>
   )

@@ -21,8 +21,8 @@ class ErrorBoundary extends React.Component {
   }
 
   render() {
-    const online = this.props.online
-    if (this.state.hasError) {
+    const { value, online } = this.props
+    if (!value && this.state.hasError) {
       // You can render any custom fallback UI
       return this.props.level === 'line' ? (
         <TextField
@@ -31,7 +31,7 @@ class ErrorBoundary extends React.Component {
           helperText={
             online
               ? 'Something went wrong'
-              : "Can't show, Internet connection seems to be lost"
+              : 'We do need Internet connection to show this'
           }
         ></TextField>
       ) : (

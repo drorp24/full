@@ -43,7 +43,7 @@ const QueryResponse = ({
 }) => {
   const online = useSelector(store => store.device.online)
   const userError = !online
-    ? 'You are offline. Please refresh and try again'
+    ? 'Our app usually works offline, but this time we do need a connection. We will let you know as soon as it is back.'
     : error
     ? 'Our GraphQl server is temporarily down. Please refresh and try again'
     : null
@@ -75,7 +75,7 @@ const QueryResponse = ({
       )
     }
   } else {
-    if (error) {
+    if (error || !online) {
       return (
         <Messages
           title={!online ? 'No Connection' : 'Error'}

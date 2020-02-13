@@ -1,4 +1,5 @@
-import React, { useState /* , useEffect */ } from 'react'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import deburr from 'lodash/deburr'
 import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
@@ -19,26 +20,31 @@ import IsolatedScroll from 'react-isolated-scroll'
 
 moize.collectStats()
 
-const FlagPure = ({ imageUrl, inlineImg, display }) => (
-  <MyGrid container direction="column">
-    {imageUrl ? (
-      <MyGrid
-        container
-        style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
-        justify="flex-end"
-      >
-        <LazyLoadImage
-          effect="black-and-white"
-          alt={display}
-          height="25px"
-          src={imageUrl}
-        />
-      </MyGrid>
-    ) : (
-      <div className={inlineImg} />
-    )}
-  </MyGrid>
-)
+const FlagPure = ({ imageUrl, inlineImg, display }) => {
+  const { online } = useSelector(store => store.device)
+  return (
+    <MyGrid container direction="column">
+      {imageUrl ? (
+        <MyGrid
+          container
+          style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
+          justify="flex-end"
+        >
+          {online && (
+            <LazyLoadImage
+              effect="black-and-white"
+              alt={display}
+              height="25px"
+              src={imageUrl}
+            />
+          )}
+        </MyGrid>
+      ) : (
+        <div className={inlineImg} />
+      )}
+    </MyGrid>
+  )
+}
 
 const Flag = moize.react(FlagPure, { profileName: 'Flag' })
 

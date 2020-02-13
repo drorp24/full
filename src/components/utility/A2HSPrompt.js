@@ -16,7 +16,8 @@ import icon from '../../assets/images/apple-icon-120.png'
 import recentlyNotified from './recentlyNotified'
 
 export default function A2HSPrompt() {
-  let nativeInstall = useContext(store => store.device.nativeInstall)
+  let { online, nativeInstall } = useSelector(store => store.device)
+  const offline = !online
 
   const [show, setShow] = useState(false)
 
@@ -59,9 +60,15 @@ export default function A2HSPrompt() {
   }
 
   useEffect(() => {
-    if (accepted || recently_prompted) {
+    const reasonsNotToPrompt = {
+      accepted,
+      recently_prompted,
+      offline,
+    }
+    if (Object.values(reasonsNotToPrompt).includes(true)) {
       console.log(
-        'a2hs accepted or recently prompted or device is in landscape. Not asking'
+        'No a2hs prompt since at least one of the following is true:',
+        reasonsNotToPrompt
       )
       return
     }
@@ -89,6 +96,7 @@ export default function A2HSPrompt() {
     dispatch,
     landscape,
     nativeInstall,
+    offline,
     recently_prompted,
     recordAccepted,
     recordDismissed,
