@@ -117,18 +117,20 @@ const LiveRates = ({ base, quote, quantity }) => {
   return <Price {...{ value, quantity, direction, quote }} />
 }
 
-const useStyles = makeStyles(theme => ({
-  upDown: {
-    color: ({ direction }) => theme.form.header.liveRates[direction],
-  },
-  progress: {
-    width: '100%',
-    backgroundColor: '#fff',
-  },
-}))
-
 const Price = ({ value, quantity, direction = 'up', quote }) => {
+  const { online } = useSelector(store => store.device)
+  const useStyles = makeStyles(theme => ({
+    upDown: {
+      color: ({ direction }) => theme.form.header.liveRates[direction],
+    },
+    progress: {
+      visibility: online ? 'visible' : 'hidden',
+      width: '100%',
+      backgroundColor: '#fff',
+    },
+  }))
   const classes = useStyles({ direction })
+
   return value ? (
     <NumberFormat
       value={value * quantity}

@@ -56,7 +56,7 @@ const Welcome = () => {
     <Page noAppBar>
       <div className={classes.welcomeContainer}>
         <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
-          Cryptonite5
+          Cryptonite
         </div>
         <div className={`${classes.welcome2} ${classes.welcomeSection}`}>
           <div className={classes.welcomeImg}>

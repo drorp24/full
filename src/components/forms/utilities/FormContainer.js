@@ -58,6 +58,7 @@ const FormContainer = ({ structure, show }) => {
   // Unlike lists and app selectors, whose properties are hard-coded hence initialized,
   // form.values' properties are unknown initially as they're dynamically built
   const quote = useSelector(store => (store.form.values || {}).quote)
+  const { online } = useSelector(store => store.device)
 
   // ! useCallback only when needed
   // The recommendation is to hoist functions that don’t need props or state outside of your component,
@@ -120,19 +121,18 @@ const FormContainer = ({ structure, show }) => {
   // In a sense, this acts like service worker for meta data.
   //
 
-  // Initialization useEffect
+  // form values (aka 'state') useEffect
   useEffect(() => {
     const updateForm = form => dispatch(setForm(form))
 
-    // ! Iterate or just refresh
-    // Finding user's location takes some time, and may require a number of intervaled attempts until info is there.
-    // That's why I iterate over location tracking, with a few seconds lapse b/w one attempt to another.
-    // getCurrencies on the other hand is an API that almost always succeeds.
-    // It fails (only) if WiFi signal is weak, in which case app would fail anyway.
-    // Generally when an API fails due to weak network signal, it's often easier to just refresh and try again
-    // rather than filling the code with iterators over every API.
-    // 'if (!empty)' ensures we can try again by refreshing.
-    // Once app supports offline, this API should anyway come from a cache rather than the network.
+    if (!populated.state) {
+      updateForm(createFormStateFromStructure(structure))
+      updatePopulated('state')
+    }
+  }, [populated.state, structure, dispatch, updatePopulated])
+
+  // currencies list useEffect
+  useEffect(() => {
     const updateCurrencies = async () => {
       const name = 'currencies'
       const list = await getCurrencies()
@@ -140,27 +140,13 @@ const FormContainer = ({ structure, show }) => {
       if (!empty(list)) updatePopulated('currencies')
     }
 
-    if (!populated.state) {
-      updateForm(createFormStateFromStructure(structure))
-      updatePopulated('state')
-    }
-
     if (!populated.currencies) {
-      console.log(
-        'about to call updateCurrencies (see if this msg appears 2 times'
-      )
+      console.log('about to call updateCurrencies')
       updateCurrencies()
     }
-  }, [
-    populated.state,
-    populated.currencies,
-    structure,
-    dispatch,
-    updateList,
-    updatePopulated,
-  ])
+  }, [populated.currencies, updateList, updatePopulated])
 
-  // quote useEffect
+  // quote list useEffect
   useEffect(() => {
     // This useEffect is in charge of populating the quotes of the selected currency for *each* of the crypto coins
     // this enables viewing all coin quotes when browsing the dropdown coins list.
@@ -204,14 +190,24 @@ const FormContainer = ({ structure, show }) => {
     //
   }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
 
+  // ! Iterate API attempts vs. refresh
+  // Finding user's location takes some time, and may require a number of intervaled attempts until info is there.
+  // That's why I iterate over location detection down below, with a few seconds lapse b/w one attempt to another.
+  // APIs such as getCurrencies on the other hand either succeed or, if not, should not be instantly re-attempted.
+  // In their case, user would better reload the page which will end up in the proper useEffect which will make another attempt.
+
   // address useEffect
   useEffect(() => {
+    if (!online) {
+      console.log('offline - will not locateUser')
+      return
+    }
     const updateFormValues = values => dispatch(setFormValues(values))
 
     const locateUser = async attempts => {
       // ! loop of asynchroneous attempts
       // The following code attempts to locate the user.
-      // It does so by awaiting each the return result of each attempt (an async operation),
+      // It does so by awaiting each of the return results of each attempt (an async operation),
       // then attempting again if unsuccessful but not before waiting 3 seconds.
       // This loop ends after maximum 5 attempts.
       // the 3 seconds lapse prevents thousands of attempts from occurring quickly one after the other,
@@ -225,9 +221,9 @@ const FormContainer = ({ structure, show }) => {
       // It would naturally also make it impossible to control the time lapse to the next attempt.
       //
       // The lapse b/w one attempt to another requires the 'await' syntax:
-      // using the 'promise' syntax would not cut it, as there's no function to perform following the resolution of the 'delay' promise.
-      // What we want following the resolution is do nothing; just wait a couple of seconds before proceeding to the loop's next iteration
-      // (the '.then' in this case is actually the next iteration).
+      // using the 'promise' syntax would not cut it, as we have no other function to chain to the promise;
+      // instead we want to wait a couple of seconds doing nothing before proceeding to the loop's next iteration.
+      // The 'await' syntax allows to not chain anything to the 'delay' function, which is what we want.
       //
       const delay = ms => {
         return new Promise(resolve => setTimeout(resolve, ms))
@@ -248,7 +244,7 @@ const FormContainer = ({ structure, show }) => {
     }
 
     locateUser(5)
-  }, [dispatch])
+  }, [dispatch, online])
 
   const properties = {
     structure,
