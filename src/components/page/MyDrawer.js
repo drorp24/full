@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { makeStyles } from '@material-ui/styles'
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
 import List from '@material-ui/core/List'
@@ -30,7 +32,12 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   const otherMode = mode === 'light' ? 'dark' : 'light'
   const layout = useSelector(store => store.app.layout)
   const otherLayout = layout === 'vertical' ? 'horizontally' : 'vertically'
+
   const doNothing = () => {}
+  const history = useHistory()
+  const home = () => history.push('/')
+  const back = () => history.goBack()
+  const refresh = () => window.location.reload()
 
   // ! Passing components dynamically with an object
   // One way to pass a dynamic component is to have it in its JSX form as a value on some object's key
@@ -44,6 +51,16 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   // - embedded rather than fetched (not as strong a reason, as chances are most MUI icons as svg,
   //   plus webpack automatically converts < 10k png's into svgs and embeds them)
   const menu = [
+    {
+      svg: 'back',
+      text: 'Back',
+      action: back,
+    },
+    {
+      svg: 'refresh',
+      text: 'Refresh',
+      action: refresh,
+    },
     {
       icon: <Share />,
       text: 'Share app',
@@ -59,16 +76,7 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
       text: `Slide ${otherLayout}`,
       redux: toggleLayout(),
     },
-    {
-      icon: <Map />,
-      text: 'Map view',
-      action: doNothing,
-    },
-    {
-      icon: <ContactPhone />,
-      text: 'Contact us',
-      action: doNothing,
-    },
+
     {
       icon: <Help />,
       text: 'Help',
@@ -87,15 +95,18 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
     drawerDispatch({ type: action })
   }
 
+  const standalone = useMediaQuery('(display-mode: standalone) ')
+
   const useStyles = makeStyles(theme => ({
     drawer: {
       height: '100%',
       minWidth: '80vw',
       display: 'grid',
-      gridTemplateRows: '10% auto',
+      gridTemplateRows: '15% auto',
     },
     header: {
       paddingLeft: '1.5rem',
+      paddingTop: standalone ? '10%' : 0,
       fontSize: '8vmin',
       display: 'flex',
       flexDirection: 'column',
@@ -135,7 +146,9 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
         id="drawer"
         className={classes.drawer}
       >
-        <div className={classes.header}>Cryptonite</div>
+        <div className={classes.header} onClick={home}>
+          Cryptonite
+        </div>
         <List className={classes.list}>
           {menu.map(({ icon, svg, text, action, redux }) => (
             <ListItem

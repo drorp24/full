@@ -8,26 +8,15 @@ const share = dispatch => () => {
   }
 
   if (navigator.share) {
-    navigator
-      .share(shareData)
-      .then(() => {
-        temporarilySetValue({
-          type: 'SET_DEVICE',
-          key: 'appShared',
-          value: true,
-          time: 5,
-          toggle: false,
-        })(dispatch)
-      })
-      .catch(() => {
-        temporarilySetValue({
-          type: 'SET_DEVICE',
-          key: 'appShared',
-          value: false,
-          time: 5,
-          toggle: false,
-        })(dispatch)
-      })
+    navigator.share(shareData).then(() => {
+      temporarilySetValue({
+        type: 'SET_DEVICE',
+        key: 'appShared',
+        value: true,
+        time: 5,
+        toggle: false,
+      })(dispatch)
+    })
   } else {
     temporarilySetValue({
       type: 'SET_DEVICE',

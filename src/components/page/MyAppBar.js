@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setContextual, setShouldClose } from '../../redux/actions'
 
 import { makeStyles } from '@material-ui/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -38,6 +39,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
   const { name, contextual } = useSelector(state => state.app)
   const { online, mode } = useSelector(store => store.device)
   const otherMode = mode === 'light' ? 'dark' : 'light'
+  const standalone = useMediaQuery('(display-mode: standalone) ')
 
   const useStyles = makeStyles(theme => ({
     root: {
@@ -46,7 +48,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     appBar: {
       height: '100%',
       boxShadow: 'inherit',
-      paddingTop: '10%',
+      paddingTop: standalone ? '10%' : 0,
 
       // ! The problem with 'vh' unit in mobile browsers
       // 100vh assumes the mobile browser's address bar is minimal (as occurs after scrolling beyond the first page)

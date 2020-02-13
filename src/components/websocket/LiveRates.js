@@ -129,7 +129,7 @@ const useStyles = makeStyles(theme => ({
 
 const Price = ({ value, quantity, direction = 'up', quote }) => {
   const classes = useStyles({ direction })
-  return 1 === 0 ? (
+  return value ? (
     <NumberFormat
       value={value * quantity}
       displayType={'text'}
