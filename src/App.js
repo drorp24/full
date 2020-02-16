@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect, useState } from 'react'
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect, useSelector, useDispatch } from 'react-redux'
-import { setMessage, setCount, setDevice } from './redux/actions'
+import { setSource, setCount, setDevice } from './redux/actions'
 
 //! Why I gave up custom fonts
 //  Usually, custom fonts are lazily fetched only when required.
@@ -39,8 +39,8 @@ function App({ values }) {
   // jssStyles.parentElement.removeChild(jssStyles)
   //   }
 
-  //   if (!this.props.message) {
-  //     this.props.setMessage('Client')
+  //   if (!this.props.source) {
+  //     this.props.setSource('Client')
   //   }
 
   //   // This hack puts the hook stylesheet that has every custom styling last so it can really override
@@ -53,17 +53,42 @@ function App({ values }) {
 
   // MUI's 'useMediaQuery' in this case would provide the wrong result
   // window.matchMedia should be used whenever possible
-  const mql =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-color-scheme: dark)')
-  const DarkMediaQuery = mql ? mql.matches : null
-  const userPreferredMode = DarkMediaQuery ? 'dark' : 'light'
-  const alreadySetMode = useSelector(store => store.device.mode)
+
+  // ! Mode selection & ssr
+  // Since <ThemeProvider /> wraps the entire app, deciding what the mode is ('light' or 'dark') must come first.
+  // That goes for the server too, as it needs to know how to color the rendered page.
+  // (I've decided to not save a few milliseconds by inlining styles on the first rendered page
+  // and instead save my time and the certain bugs which would likely follow with every change of the theme).
+  //
+  // Server doesn't know what the user prefers so it will go with 'dark' as default and color the returned page accordingly;
+  // That means it would also return the value 'dark' in its embedded serialized REDUX.
+  //
+  // Server doesn't record its 'dark' default in the 'device' redux selector, returning null there;
+  // Even if it did, client would not have mistaken it to be the user's choice as 'source' would indicate the value's source is the server.
+  //
+  // As soon as client takes over and populates its own values it sets 'source' to 'Client',
+  // thus ensuring that client would only override server-generated values, not its own.
+  //
+
   const dispatch = useDispatch()
-  if (!alreadySetMode) {
+
+  const alreadySetMode = useSelector(
+    store => store.source === 'Client' && store.device.mode
+  )
+  const [mode, setMode] = useState(alreadySetMode || 'dark')
+
+  useEffect(() => {
+    if (alreadySetMode) return
+
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    const DarkMatches = mql ? mql.matches : null
+    const userPreferredMode = DarkMatches ? 'dark' : 'light'
+
     dispatch(setDevice({ mode: userPreferredMode }))
-  }
-  const mode = alreadySetMode || userPreferredMode
+    setMode(userPreferredMode)
+    dispatch(setSource('Client'))
+  }, [alreadySetMode, dispatch])
+
   const modeTheme = useMemo(() => theme(mode), [mode])
 
   return (
@@ -90,13 +115,13 @@ function App({ values }) {
 // most use the long version for no reason, having to use a different prop name
 export default withRouter(
   connect(
-    ({ text: { message }, counter: { count }, form: { values } }) => ({
-      message,
+    ({ source, counter: { count }, form: { values } }) => ({
+      source,
       count,
       values,
     }),
     {
-      setMessage,
+      setSource,
       setCount,
     }
   )(App)

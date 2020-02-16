@@ -3,7 +3,7 @@ import path from 'path'
 import compression from 'compression'
 
 import configureStore from '../../src/redux/configureStore'
-import { setMessage } from '../../src/redux/actions'
+import { setSource } from '../../src/redux/actions'
 
 import serverRenderer from '../middleware/renderer'
 
@@ -54,7 +54,7 @@ const app = express()
 // This way or the other, when browser becomes aware of the new waiting release, it does the following:
 // - it fires an event
 // - it places a 'waiting' key on the registration obj (which is a kind of the sw's "representative" on the window obj, i.e., the web process)
-// both signalling that if desired, a SKIP_WAITING postMessage can be sent to the sw process,
+// both signalling that if desired, a SKIP_WAITING postSource can be sent to the sw process,
 // which would replace the files with the updated ones (after another page reload).
 // I'm watching for these 2 events in serviceWorker.js to inform the user and act accorindgly.
 //
@@ -119,7 +119,7 @@ const app = express()
 // The following is merely an excercise in passing some data from server to client.
 // I'm using here the same trick I've used on the client when I'm not yet exposed to 'dispatch': store.dispatch
 const { store, persistor } = configureStore()
-store.dispatch(setMessage('Server'))
+store.dispatch(setSource('Server'))
 
 // compress any response
 app.use(compression())

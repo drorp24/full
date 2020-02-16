@@ -1,7 +1,7 @@
 //  See my note about cross-cutting reducers
 
 import { combineReducers } from 'redux'
-import text from './text'
+import source from './source'
 import counter from './counter'
 import form from './form'
 import lists from './lists'
@@ -10,7 +10,7 @@ import user from './user'
 import device from './device'
 
 export default combineReducers({
-  text,
+  source,
   counter,
   form,
   lists,

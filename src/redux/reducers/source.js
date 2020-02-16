@@ -1,14 +1,14 @@
-import { SET_MESSAGE } from '../types'
+import { SET_SOURCE } from '../types'
 
 const initialState = {
-  message: null,
+  source: null,
 }
 
 export default (state = initialState, action) => {
-  const { type, message } = action
+  const { type, source } = action
   switch (type) {
-    case SET_MESSAGE:
-      return message
+    case SET_SOURCE:
+      return source
 
     default:
       return state
