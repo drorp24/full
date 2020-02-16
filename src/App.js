@@ -15,7 +15,6 @@ import { setMessage, setCount, setDevice } from './redux/actions'
 //
 // import 'typeface-roboto'
 
-import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { ThemeProvider } from '@material-ui/styles'
 import theme from './components/themed/theme'
 
@@ -54,7 +53,7 @@ function App({ values }) {
 
   // MUI's 'useMediaQuery' in this case would provide the wrong result
   // window.matchMedia should be used whenever possible
-  const mql = window.matchMedia('(prefers-color-scheme: dark)')
+  const mql = window && window.matchMedia('(prefers-color-scheme: dark)')
   const DarkMediaQuery = mql ? mql.matches : null
   const userPreferredMode = DarkMediaQuery ? 'dark' : 'light'
   const alreadySetMode = useSelector(store => store.device.mode)

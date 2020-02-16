@@ -11,9 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 
 import Share from '@material-ui/icons/Share'
-import Map from '@material-ui/icons/Map'
 import Help from '@material-ui/icons/Help'
-import ContactPhone from '@material-ui/icons/ContactPhone'
 import MySvg from '../utility/svg'
 
 import { ios } from '../utility/detect'
