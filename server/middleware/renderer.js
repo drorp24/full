@@ -15,24 +15,26 @@ const fs = require('fs')
 
 // ! Code Split with ssr
 // Webpack recognizes both its own dynamic import()'s and React.lazy's
-// so when build is run, it creates several separate .js chunks accordingly.
+// so when build is run, it creates several separate .js and .css chunks accordingly.
 //
-// That happens at build time, of course irrespective of which runtime library we'll be using to split the chunks in the returned response
+// * JS
+// Identifying which JS code chunk belongs to which route requires identifying which component belongs to which route, detecting their chunks
+// athennd including only those chunks as <link /> tags in the returned html file.
+// I've originally used react-loadable for that, but react-loadable became obsolete so I commented it and returning all chunks.
+// React now recommends another library, Loadable Components, but I'll just wait till React.lazy code splits on the server side too.
 //
-// React.lazy should eventually have something in the server to identify which of the webpack-split
-// JS and CSS chunks to send within that server-rendered index.html file, but it still doesn't have that capability.
+/// * CSS
+// External
+// I only have one  external CSS file (for the flags). I can't split it (it belongs to Select component) and
+// since CSS is usually render-blocking, it is quite a problem, delaying the rendering by 0.6s according to Lightbox.
+// What I did was to use "preload", as suggested by google/lightbox so AFAIU it doesn't block rendering.
+// I suppose React.lazy will eventually cater for CSS splitting as well.
 //
-// Until React.lazy is able to identify which js chunks and css styles pertain to the current request, I'm using
-// - react-loadable - to identify the minimal set of js chunks required for the requested page
-// - MUI's sheets - to collect and include the only css styles required for the current request
-// - StaticRouter's context - to return an indication if <Redirect /> was encountered during the renderToString,
-//   in which case no index.html should be returned at all but a 301 redirect code instead.
+// Thankfully, MUI inlines all styles in the <header /> tag, so no CSS files to fetch, but it too doesn't split the CSS.
+// MUI's sheets is used to collect and inline the styles into the 'css' variable which I embed below into the returned html.
 //
-// All 3 use the regular technique to let children pass values to parent:
-// define a variable at the parent, let the children modify it (during the renderToString)
-// then collect the result back at the parent and return the response accordingly.
-//
-// * Not all splits are wise
+// * Splitting Considerations
+// Not all splits are wise.
 // I ended up deciding that while splitting the css is important, splitting the JS in my case is a bad idea.
 //
 // CSS splitting is crucial for ssr, as it takes a lot of space and time to generate:
@@ -41,32 +43,30 @@ const fs = require('fs')
 // I could hard-code/inline the styles, but that would save almost nothing and it is super important for me
 // to be using the MUI theme colors, fonts etc rather define things on my own.
 //
-// JS splitting on the other hand was a bad idea, because the difference in time b/w loading the entire JS
-// bundle to the chunks required for only the first page is nominal; The time it takes the user to stare at
-// the first static page before hitting the button is more than enough to load the entire bundle.
-// The gain loading the entire bundle is that by clicking the button, the next page loads instantly.
-// If the whole point of ssr is the first load, the second page should also load quickly.
-// Esp. in my case, that the second page is quite complex.
+// By *not* splitting JS, however, we utilize the time it takes the user to stare at
+// the first static page before hitting the button to load the entire bundle.
+// By the time user hits the button, the JS is supposedly fully loaded so next page loads instantly.
 //
-// Thus, the combination of ssr'ing a simple static page plus not splitting the JS is that
+// Thus the combination of ssr'ing a simple static page *and* not splitting the JS is that
 // both the first, simple page as well as second, complex page load extremely fast.
 //
 // The first static page rendered by the server doesn't even require hydration:
-// if user clicked the button even before React had the opprotunity to hydrate (he wouldn't)
-// browser would just call the server for the next page, which would come partly server-rendered
-// and be completly rendered by React as soon as it's ready.
+// if user clicks the button before React had a chance to upload React code
+// then the browser would just call the server which will render the next page.
 // This means that the server-rendered page is ready for user interaction as soon as loaded even before hydration.
 //
-// As for the redirections: while it makes sense in the client, in ssr it just emulates the
-// unefficient way it used to be done with servers (having the server instruct the browser to call it one more time)
-// so unless required I see no benefit in it when ssr is in place.
+// ! Code split is not great. The real performance gains are done during the build
+// From my experience, both of the following *build-time* optimizations have a *far better* effect than code splitting:
 //
-// ! The real performance gains are done during the buile, not runtime
-// Using 'analyze' I was able to cut away 90% of the JS bundle size, as it turned out to include huge stuff I didn't use.
+// * Optimizing bundle sizes
+// Using 'analyze' I was able to cut 90% of the JS bundle size, as it turned out to include huge stuff I didn't use.
 // That step is far more important in my mind than runtime code split.
 //
-// As far as production go I think index.html has to be created once during build time
+// * Prerendering
+// As far as production go I think that index.html has to be created once during build time
 // rather than being server-rendered again and again with every request at runtime.
+// This is obvious in cases such as I had, that the file rendered over and over was *identical*,
+// but also if it contained user details, which can be completed on the client side.
 
 export default ({ store, persistor }) => (req, res, next) => {
   // point to the html file created by CRA's build tool
@@ -111,14 +111,6 @@ export default ({ store, persistor }) => (req, res, next) => {
     //   c => `<script type="text/javascript" src="${c}"></script>`
     // )
 
-    const browserDefaultsOverride = `
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-  }
-    `
-
     // return either a 301 redirect response, or
     // a populated index.html file with the manifest, iOs icons, service worker etc plus:
     // - <styles> required to style the *initial*, server-rendered markup,
@@ -133,10 +125,6 @@ export default ({ store, persistor }) => (req, res, next) => {
       res.set('Content-Type', 'text/html')
       return res.send(
         htmlData
-          .replace(
-            '</title>',
-            `</title><style id="browser-server-side">${browserDefaultsOverride}</style>`
-          )
           .replace(
             '<style id="jss-server-side"></style>',
             `<style id="jss-server-side">${css}</style>`
