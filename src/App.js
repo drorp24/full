@@ -52,7 +52,10 @@ function App({ values }) {
   //   if (hookStylesheet) head.insertBefore(hookStylesheet, null)
   // }
 
-  const DarkMediaQuery = useMediaQuery('(prefers-color-scheme: dark)')
+  // MUI's 'useMediaQuery' in this case would provide the wrong result
+  // window.matchMedia should be used whenever possible
+  const mql = window.matchMedia('(prefers-color-scheme: dark)')
+  const DarkMediaQuery = mql ? mql.matches : null
   const userPreferredMode = DarkMediaQuery ? 'dark' : 'light'
   const alreadySetMode = useSelector(store => store.device.mode)
   const dispatch = useDispatch()

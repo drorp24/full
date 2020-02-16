@@ -79,6 +79,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     },
     name: {
       fontWeight: '400',
+      textTransform: 'capitalize',
     },
     backButton: {
       transform: contextual ? 'rotate(90deg)' : 'initial',
