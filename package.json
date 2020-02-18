@@ -7,14 +7,6 @@
     "yarn": "1.21.1"
   },
   "dependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
-    "@babel/plugin-transform-runtime": "^7.6.0",
-    "@babel/preset-env": "^7.1.6",
-    "@babel/preset-react": "^7.7.4",
-    "@babel/register": "^7",
-    "@babel/runtime": "^7.6.0",
     "@date-io/date-fns": "^1.0.2",
     "@google/maps": "^0.5.5",
     "@material-ui/core": "^4",
@@ -92,11 +84,21 @@
     "redux-thunk": "^2.3.0",
     "source-map-explorer": "^2.1.1",
     "subscriptions-transport-ws": "^0.9.15",
+    "tti-polyfill": "^0.2.2",
     "typeface-roboto": "^0.0.54",
     "typescript": "^3.7.5",
     "yup": "^0.26.6"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.1.6",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/register": "^7",
+    "@babel/runtime": "^7.6.0"
+  },
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [
       "prettier --single-quote --write",
@@ -106,6 +108,8 @@
   "scripts": {
     "precommit": "lint-staged",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "lighthouse:prod": "lighthouse --config-path=lighthouse-config.js https://drorpoliakfull.herokuapp.com --save-assets --view",
+    "lighthouse:dev": "lighthouse --config-path=lighthouse-config.js http://localhost:3001 --save-assets --view",
     "build": "HTTPS=true REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build --profile ",
     "buildNoSsr": "REACT_APP_SERVER=true REACT_APP_SSR=false react-scripts build --ptofile ",
     "test": "react-scripts test --env=jsdom",

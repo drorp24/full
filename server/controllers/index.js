@@ -213,7 +213,6 @@ app.get('/*', (req, res, next) => {
   console.log(' ')
   console.log(' ')
   console.log('handled by app.get(/*): ', req.url)
-  console.log('req.query: ', req.query)
 
   serverRenderer({ store, persistor })(req, res, next)
 })

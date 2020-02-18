@@ -225,9 +225,11 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
         <div className={classes.appBar}>
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}
         </div>
-        <div className={classes.liveHeader}>
-          <LiveHeader />
-        </div>
+        {includeLiveHeader && (
+          <div className={classes.liveHeader}>
+            <LiveHeader />
+          </div>
+        )}
         <div className={classes.main}>
           <main style={{ height: '100%' }}>{children}</main>
         </div>

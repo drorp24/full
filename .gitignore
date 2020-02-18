@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-/NEW_UNSUCCESSFUL_node_modules
+/DELETEnode_modules
 
 # testing
 /coverage
@@ -21,3 +21,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 yarn.lock 2
+
+*.devtoolslog.json
+*.trace.json
+*.report.html
