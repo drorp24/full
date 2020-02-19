@@ -8,30 +8,30 @@
 const config = {
   extends: 'lighthouse:default',
   settings: {
-    audits: [
-      'first-meaningful-paint',
-      'first-cpu-idle',
-      'byte-efficiency/uses-optimized-images',
-      'load-fast-enough-for-pwa',
-      'first-cpu-idle',
-      'largest-contentful-paint',
-      'interactive',
-    ],
+    // audits: [
+    //   'first-meaningful-paint',
+    //   'first-cpu-idle',
+    //   'byte-efficiency/uses-optimized-images',
+    //   'load-fast-enough-for-pwa',
+    //   'first-cpu-idle',
+    //   'largest-contentful-paint',
+    //   'interactive',
+    // ],
     // Skip the h2 audit so it doesn't lie to us. See https://github.com/GoogleChrome/lighthouse/issues/6539
     skipAudits: ['uses-http2', 'redirects-http'],
-    categories: {
-      performance: {
-        title: 'Performance',
-        description: 'This category judges your performance',
-        auditRefs: [
-          { id: 'first-meaningful-paint', weight: 2, group: 'metrics' },
-          { id: 'first-cpu-idle', weight: 3, group: 'metrics' },
-          // { id: 'load-fast-enough-for-pwa', weight: 5, group: 'metrics' },
-          // { id: 'largest-contentful-paint', weight: 0, group: 'metrics' },
-          { id: 'interactive', weight: 5, group: 'metrics' },
-        ],
-      },
-    },
+    // categories: {
+    //   performance: {
+    //     title: 'Performance',
+    //     description: 'This category judges your performance',
+    //     auditRefs: [
+    //       { id: 'first-meaningful-paint', weight: 2, group: 'metrics' },
+    //       { id: 'first-cpu-idle', weight: 3, group: 'metrics' },
+    //       { id: 'load-fast-enough-for-pwa', weight: 5, group: 'metrics' },
+    //       { id: 'largest-contentful-paint', weight: 0, group: 'metrics' },
+    //       { id: 'interactive', weight: 5, group: 'metrics' },
+    //     ],
+    //   },
+    // },
   },
 
   // throttling: {

@@ -2,12 +2,21 @@ import React from 'react'
 import { makeStyles } from '@material-ui/styles'
 import Button from '@material-ui/core/Button'
 import { Link } from 'react-router-dom'
-import Page from '../page/Page'
 
 import Logo from '../../images/Logo'
 // import BuildData from '../utility/BuildData'
 
 const useStyles = makeStyles(theme => ({
+  page: {
+    '@media (orientation: landscape)': {
+      width: '100vh',
+      height: '100vw',
+    },
+    '@media (orientation: portrait)': {
+      width: '100vw',
+      height: '100vh',
+    },
+  },
   welcomeContainer: {
     backgroundColor: theme.palette.primary.main,
     color: '#fff',
@@ -53,7 +62,7 @@ const Welcome = () => {
   const classes = useStyles()
 
   return (
-    <Page noAppBar>
+    <div className={classes.page}>
       <div className={classes.welcomeContainer}>
         <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
           Cryptonite
@@ -78,7 +87,7 @@ const Welcome = () => {
           </p> */}
         </div>
       </div>
-    </Page>
+    </div>
   )
 }
 

@@ -107,8 +107,8 @@
   "scripts": {
     "precommit": "lint-staged",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "lighthouse:prod": "lighthouse --config-path=lighthouse-config.js https://drorpoliakfull.herokuapp.com --save-assets --view",
-    "lighthouse:dev": "lighthouse --config-path=lighthouse-config.js http://localhost:3001 --save-assets --view",
+    "lighthouse:prod": "cd ./reports && lighthouse --config-path=../lighthouse-config.js https://drorpoliakfull.herokuapp.com --view",
+    "lighthouse:dev": "cd ./reports && lighthouse --config-path=../lighthouse-config.js http://localhost:3001 --view",
     "build": "HTTPS=true REACT_APP_SERVER=true REACT_APP_SSR=true react-scripts build --profile ",
     "buildNoSsr": "REACT_APP_SERVER=true REACT_APP_SSR=false react-scripts build --ptofile ",
     "test": "react-scripts test --env=jsdom",
