@@ -72,22 +72,22 @@ function App({ values }) {
 
   const dispatch = useDispatch()
 
-  const alreadySetMode = useSelector(
+  const mql = window.matchMedia('(prefers-color-scheme: dark)')
+  const DarkMatches = mql ? mql.matches : null
+  const userOSMode = DarkMatches ? 'dark' : 'light'
+
+  const userSetMode = useSelector(
     store => store.source === 'Client' && store.device.mode
   )
-  const [mode, setMode] = useState(alreadySetMode || 'dark')
+  const [mode, setMode] = useState(userSetMode || userOSMode || 'dark')
 
   useEffect(() => {
-    if (alreadySetMode) return
+    const mode = userSetMode || userOSMode
 
-    const mql = window.matchMedia('(prefers-color-scheme: dark)')
-    const DarkMatches = mql ? mql.matches : null
-    const userPreferredMode = DarkMatches ? 'dark' : 'light'
-
-    dispatch(setDevice({ mode: userPreferredMode }))
-    setMode(userPreferredMode)
+    setMode(mode)
+    dispatch(setDevice({ mode }))
     dispatch(setSource('Client'))
-  }, [alreadySetMode, dispatch])
+  }, [userSetMode, dispatch, userOSMode])
 
   const modeTheme = useMemo(() => theme(mode), [mode])
 

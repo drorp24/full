@@ -127,6 +127,7 @@ function renderSuggestionPure(suggestion, { query, isHighlighted }) {
             key={String(index)}
             style={{
               fontWeight: 500,
+              color: 'red',
             }}
           >
             {part.text}
@@ -205,10 +206,11 @@ const useStyles = makeStyles(theme => ({
   },
   suggestionsContainerOpen: {
     position: 'absolute',
-    zIndex: 2,
+    zIndex: 3,
     marginTop: theme.spacing(3),
     left: 0,
     right: 0,
+    width: 'calc(100vw - 2em)',
   },
   suggestionsContainer: {
     maxWidth: '100%',

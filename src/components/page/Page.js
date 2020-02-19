@@ -192,6 +192,12 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
     '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)'
 
   const useStyles = makeStyles(theme => ({
+    paper: {
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? theme.palette.background.paper
+          : theme.palette.background.default,
+    },
     appBar: {
       height: `${appBarHeightPercent}%`,
       backgroundColor: contextual
@@ -220,7 +226,7 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
   const classes = useStyles()
 
   return (
-    <Paper square>
+    <Paper square className={classes.paper}>
       <Viewport {...{ noAppBar }}>
         <div className={classes.appBar}>
           {!noAppBar && <MyAppBar {...{ title, icon, noBack }} />}

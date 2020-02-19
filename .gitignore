@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /DELETEnode_modules
+/OLDnode_modules
 
 # testing
 /coverage

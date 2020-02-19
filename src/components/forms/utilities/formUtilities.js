@@ -509,6 +509,7 @@ const AutosuggestField = ({
       value={value}
       fullWidth={fullWidth}
       variant="outlined"
+      id={name}
       {...rest}
     />
   )
@@ -640,6 +641,17 @@ const handleEveryChange = ({
 }) => {
   const error = checkByType({ name, type, fieldSchema, value })
   if (type === 'number') value = Number(value)
+
+  // Terrible hack
+  if (name === 'quote' || name === 'base') {
+    const other = name === 'quote' ? 'base' : 'quote'
+    const el = document.getElementById(`${name}-helper-text`)
+    const otherEl = document.getElementById(`${other}-helper-text`)
+    const elParent = el && el.parentElement
+    const otherElParent = otherEl && otherEl.parentElement
+    if (elParent) elParent.style.zIndex = 1
+    if (otherElParent) otherElParent.style.zIndex = 0
+  }
 
   updateForm(
     produce(form, draft => {

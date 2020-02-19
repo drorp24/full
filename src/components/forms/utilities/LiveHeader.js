@@ -53,6 +53,7 @@ const LiveHeader = props => {
     firstLine: {
       textTransform: base ? 'uppercase' : 'unset',
       letterSpacing: base ? '0.2rem' : 'unset',
+      textAlign: 'center',
     },
     secondLine: {
       letterSpacing: '0.1rem',
