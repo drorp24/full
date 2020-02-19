@@ -72,22 +72,22 @@ function App({ values }) {
 
   const dispatch = useDispatch()
 
-  const mql = window.matchMedia('(prefers-color-scheme: dark)')
-  const DarkMatches = mql ? mql.matches : null
-  const userOSMode = DarkMatches ? 'dark' : 'light'
-
   const userSetMode = useSelector(
     store => store.source === 'Client' && store.device.mode
   )
-  const [mode, setMode] = useState(userSetMode || userOSMode || 'dark')
+  const [mode, setMode] = useState('dark')
 
   useEffect(() => {
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    const DarkMatches = mql ? mql.matches : null
+    const userOSMode = DarkMatches ? 'dark' : 'light'
+
     const mode = userSetMode || userOSMode
 
     setMode(mode)
     dispatch(setDevice({ mode }))
     dispatch(setSource('Client'))
-  }, [userSetMode, dispatch, userOSMode])
+  }, [userSetMode, dispatch])
 
   const modeTheme = useMemo(() => theme(mode), [mode])
 
