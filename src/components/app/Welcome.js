@@ -62,7 +62,7 @@ const Welcome = () => {
   const classes = useStyles()
 
   return (
-    <div className={classes.page}>
+    <main className={classes.page}>
       <div className={classes.welcomeContainer}>
         <div className={`${classes.welcome1} ${classes.welcomeSection}`}>
           Cryptonite
@@ -87,7 +87,7 @@ const Welcome = () => {
           </p> */}
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

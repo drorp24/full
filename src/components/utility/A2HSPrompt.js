@@ -177,7 +177,7 @@ export default function A2HSPrompt() {
         </DialogContent>
         <DialogActions className={classes.background}>
           <Button onClick={handleDismissed} color="primary">
-            Maybe next time
+            Maybe later
           </Button>
           <Button onClick={handleAccepted} color="primary" autoFocus>
             OK
