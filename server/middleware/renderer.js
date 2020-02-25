@@ -166,8 +166,8 @@ export default ({ store, persistor }) => (req, res, next) => {
           )
           .replace(
             /rel="stylesheet"/g,
-            // 'rel="preload" as="style" onload="this.rel=\'stylesheet\'"'
-            'rel="author"'
+            'rel="preload" as="style" onload="this.rel=\'stylesheet\'"'
+            // 'rel="author"'
           )
           .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
           // .replace('</body>', extraChunks.join('') + '</body>')
