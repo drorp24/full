@@ -1,5 +1,5 @@
 // That's the simplest way to handle an update to a redux store key (aka selector)
-import { SET_FORM, SET_FORM_VALUES } from '../types'
+import { SET_FORM, SET_FORM_VALUES, CLEAR_TOUCHED } from '../types'
 
 const initialState = { values: null, touched: null, errors: {} }
 
@@ -14,6 +14,8 @@ export default (state = initialState, action) => {
       return form
     case SET_FORM_VALUES:
       return { ...state, values: { ...state.values, ...values } }
+    case CLEAR_TOUCHED:
+      return { ...state, touched: {} }
     default:
       return state
   }

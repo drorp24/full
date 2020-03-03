@@ -55,6 +55,7 @@ function renderInputComponentPure({
   ref,
   entireListObj,
   endAdornment = null,
+  name,
   ...other
 }) {
   const PassedEndAdornment =
@@ -72,6 +73,16 @@ function renderInputComponentPure({
       </InputAdornment>
     )
 
+  const setZ = e => {
+    const other = name === 'quote' ? 'base' : 'quote'
+    const el = document.getElementById(`${name}-helper-text`)
+    const otherEl = document.getElementById(`${other}-helper-text`)
+    const elParent = el && el.parentElement
+    const otherElParent = otherEl && otherEl.parentElement
+    if (elParent) elParent.style.zIndex = 1
+    if (otherElParent) otherElParent.style.zIndex = 0
+  }
+
   return (
     <TextField
       fullWidth
@@ -86,6 +97,7 @@ function renderInputComponentPure({
         endAdornment: EndAdornment(),
         disableUnderline: true,
       }}
+      onClick={setZ}
       value={
         value && entireListObj && entireListObj[value]
           ? entireListObj[value].display
@@ -246,6 +258,7 @@ const MuiAutosuggest = ({
   onBlur,
   value,
   endAdornment,
+  name,
 }) => {
   const [state, setState] = useState({
     single: '',
@@ -311,7 +324,7 @@ const MuiAutosuggest = ({
   }
 
   // Autosuggest for some reason doesn't pass 'value' prop into 'renderInputComponent' so this hack fixes that
-  const renderInputComponentWithTrueValue = trueValue => ({
+  const renderInputComponentWithTrueValue = (trueValue, name) => ({
     value: trueValue,
     classes,
     inputRef = () => {},
@@ -326,6 +339,7 @@ const MuiAutosuggest = ({
       ref,
       entireListObj,
       endAdornment,
+      name,
       ...other,
     })
 
@@ -379,7 +393,7 @@ const MuiAutosuggest = ({
   }
 
   const autosuggestProps = {
-    renderInputComponent: renderInputComponentWithTrueValue(value),
+    renderInputComponent: renderInputComponentWithTrueValue(value, name),
     suggestions: state.suggestions,
     onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
     onSuggestionsClearRequested: handleSuggestionsClearRequested,

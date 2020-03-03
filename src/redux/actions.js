@@ -3,6 +3,7 @@ import {
   SET_COUNT,
   SET_FORM,
   SET_FORM_VALUES,
+  CLEAR_TOUCHED,
   SET_LIST,
   SET_APP,
   SET_CONTEXTUAL,
@@ -37,6 +38,10 @@ export const setForm = form => ({
 export const setFormValues = values => ({
   type: SET_FORM_VALUES,
   values,
+})
+
+export const clearTouched = () => ({
+  type: CLEAR_TOUCHED,
 })
 
 export const setList = ({ name, list, quote }) => ({

@@ -1,9 +1,7 @@
 import { ios, online, standalone } from './detect'
 import { setDevice, setShouldClose } from '../../redux/actions'
 
-export const initiateDeviceProperties = store => {
-  const { dispatch } = store
-
+export const initiateDeviceProperties = ({ dispatch }) => {
   dispatch(
     setDevice({
       ios: ios(),

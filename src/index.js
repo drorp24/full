@@ -16,13 +16,14 @@ import configureStore from './redux/configureStore'
 // import { PersistGate } from 'redux-persist/integration/react'
 
 import { initiateDeviceProperties } from './components/utility/deviceProperties'
+import { cleanTouched } from './components/utility/touched'
 
 const ssr = JSON.parse(process.env.REACT_APP_SSR)
 
 const storeConfig = configureStore(ssr ? window.REDUX_STATE || {} : {})
 const { store /* , persistor */ } = storeConfig
 
-// ! redux-persist doesn't work with ssr
+// ! <PersistGate /> doesn't work with ssr
 // https://github.com/rt2zz/redux-persist/issues/1008
 // https://github.com/rt2zz/redux-persist/issues/1053
 // When PersistGate is on, the page, that rendered instantly thanks to ssr, is erased as soon as React/main.js load,
@@ -35,12 +36,9 @@ const { store /* , persistor */ } = storeConfig
 // This may explain why the browser appeared to do nothing at all during that time (devtools).
 // Maybe the reason it took that much time is that I put the currency and coin lists there.
 //
-// * reudx-persist is not really required anyway
+// * reudx-persist does work without <PersistGate />
 //
-// When I started this, backing from the /merchants page to the /select page cleared out the values just filled by the user
-// That was the original purpose of the redux-persist
-// Somehow, Chrome browser now auto-populates the values back even with no redux-persist, so I'm ok.
-// TODO: Check Safari mobile browser does that too.
+// Explained in configureStore.js
 //
 // ! Providers should be placed as lower in the tree as possible
 // There are providers like ErrorBoundary, which can safely be placed on top of the overall app tree and that's fine.
@@ -90,6 +88,7 @@ window.onload = () => {
   Loadable.preloadReady().then(() => {
     renderMethod(AppBundle, root)
     initiateDeviceProperties(store)
+    cleanTouched(store)
   })
 }
 
