@@ -146,11 +146,13 @@ const FormContainer = ({ structure, show }) => {
     }
   }, [populated.currencies, updateList, updatePopulated])
 
-  // quote list useEffect
+  // coins list useEffect
   useEffect(() => {
-    // This useEffect is in charge of populating the quotes of the selected currency for *each* of the crypto coins
-    // this enables viewing all coin quotes when browsing the dropdown coins list.
-    // Since it entains invoking a heavy api, attempt is made to prevent calling that api unnecessarily.
+    console.log('coins useEffect')
+    // This useEffect is in charge of fetching the coins list, each coin with a rate relative to the quote currency.
+    // Since it entails fetching a slow api with lots of data, every attempt is made to prevent calling that api unnecessarily.
+    // This is particulalry important since the useEffect depdends on 'quote', whose value changes with every key stroke
+    //(including removal keystrokes, such as deleteing "United Stated Dollar" character by character).
 
     const updateCoins = async quote => {
       const name = 'coins'
@@ -159,33 +161,39 @@ const FormContainer = ({ structure, show }) => {
       updatePopulated('coins')
     }
 
-    // TBD
-    if (!quote) {
-      // return
-      updateCoins('USD')
-    }
-
     // No use to call it before list.currencies had a chance to be built
     if (!lists.currencies) {
+      console.log('currencies list isnt built yet')
       return
     }
 
-    // No use to call it before all 3 chars has been typed
-    // no use to call it if the quote currency is not included in the currencies list either
+    // No use to call the API if the keyed quote currency is not found in the fetched currencies list.
+    // Also prevents calling the API when 'quote' gets the currency full name (e.g, "United States Dollar") and is deleted back character by character.
+    //
+    // No use to even look for the quote in the currencies list if
+    // - currencies list isn't fetched yet, or
+    // - the quote currency dosen't contain at least 3 chars
     const found =
       lists.currencies &&
+      quote.length >= 3 &&
       lists.currencies.find(currency => currency.name === quote)
 
     if (!found) {
+      console.log(
+        `quote ${quote} has <3 chars or isnt included in currencies list`
+      )
       return
     }
 
-    //No need to call it if the coins list is built already and matches the given quote currency
+    //No need to call it if the coins list is built already with rates relative to the given quote currency
     if (lists.quote === quote) {
-      console.log(`coins list matches ${quote} - no need to re-fetch it`)
+      console.log(
+        `coins list already has rates for ${quote} - no need to re-fetch it`
+      )
       return
     }
 
+    console.log(`Calling updateCoins for quote currrency ${quote}`)
     updateCoins(quote)
     //
   }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
