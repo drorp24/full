@@ -76,7 +76,7 @@ const FormContainer = ({ structure, show }) => {
   //
   // Below: updateList and updatePopulated are required by multiple effects, hence defined here and wrapped with useCallback.
   const updateList = useCallback(
-    ({ name, list, quote = 'USD' }) => dispatch(setList({ name, list, quote })),
+    ({ name, list, quote }) => dispatch(setList({ name, list, quote })),
     [dispatch]
   )
 
@@ -121,7 +121,9 @@ const FormContainer = ({ structure, show }) => {
   // In a sense, this acts like service worker for meta data.
   //
 
-  // form values (aka 'state') useEffect
+  // *
+  // * form values (aka 'state') useEffect
+  // *
   useEffect(() => {
     const updateForm = form => dispatch(setForm(form))
 
@@ -141,34 +143,47 @@ const FormContainer = ({ structure, show }) => {
     }
 
     if (!populated.currencies) {
-      console.log('about to call updateCurrencies')
+      console.info('about to call updateCurrencies')
       updateCurrencies()
     }
   }, [populated.currencies, updateList, updatePopulated])
 
-  // coins list useEffect
-  useEffect(() => {
-    console.log('coins useEffect')
-    // This useEffect is in charge of fetching the coins list, each coin with a rate relative to the quote currency.
-    // Since it entails fetching a slow api with lots of data, every attempt is made to prevent calling that api unnecessarily.
-    // This is particulalry important since the useEffect depdends on 'quote', whose value changes with every key stroke
-    //(including removal keystrokes, such as deleteing "United Stated Dollar" character by character).
+  // *
+  // * coins list useEffect
+  // *
+  // This useEffect is in charge of fetching the coins list, each coin with a rate relative to the quote currency.
+  // Since it entails fetching a slow api with lots of data, every attempt is made to prevent calling that api unnecessarily.
+  // This is particulalry important since the useEffect depdends on 'quote', whose value changes with every key stroke
+  //(including removal keystrokes, such as deleteing "United Stated Dollar" character by character).
 
+  useEffect(() => {
+    console.info('coins useEffect')
     const updateCoins = async quote => {
+      console.info('updateCoins called')
       const name = 'coins'
       const list = await getCoins({ quote })
       updateList({ name, list, quote })
       updatePopulated('coins')
     }
 
-    // No use to call it before list.currencies had a chance to be built
+    // This useEffect will also be entered as soon as list.currencies has been built,
+    // which occurs before user selected the quote currency. No use to call the API with no quote currency
+    //
+    // This is the place to optimistically prefetch a default currency such as 'USD'.
+    if (!quote) {
+      console.info('No quote currency')
+      return
+    }
+
+    // No use to call it before list.currencies got built
+    // This could occur for instance if user selected the 'base' currency first and the currecny list has not been fully built.
     if (!lists.currencies) {
-      console.log('currencies list isnt built yet')
+      console.info('currencies list isnt built yet')
       return
     }
 
     // No use to call the API if the keyed quote currency is not found in the fetched currencies list.
-    // Also prevents calling the API when 'quote' gets the currency full name (e.g, "United States Dollar") and is deleted back character by character.
+    // No use to call it either once 'quote' gets the currency full name (e.g, "United States Dollar") and is deleted back character by character.
     //
     // No use to even look for the quote in the currencies list if
     // - currencies list isn't fetched yet, or
@@ -179,7 +194,7 @@ const FormContainer = ({ structure, show }) => {
       lists.currencies.find(currency => currency.name === quote)
 
     if (!found) {
-      console.log(
+      console.info(
         `quote ${quote} has <3 chars or isnt included in currencies list`
       )
       return
@@ -187,13 +202,13 @@ const FormContainer = ({ structure, show }) => {
 
     //No need to call it if the coins list is built already with rates relative to the given quote currency
     if (lists.quote === quote) {
-      console.log(
+      console.info(
         `coins list already has rates for ${quote} - no need to re-fetch it`
       )
       return
     }
 
-    console.log(`Calling updateCoins for quote currrency ${quote}`)
+    console.info(`Calling updateCoins for quote currrency ${quote}`)
     updateCoins(quote)
     //
   }, [quote, lists.quote, lists.currencies, updateList, updatePopulated])
@@ -204,10 +219,12 @@ const FormContainer = ({ structure, show }) => {
   // APIs such as getCurrencies on the other hand either succeed or, if not, should not be instantly re-attempted.
   // In their case, user would better reload the page which will end up in the proper useEffect which will make another attempt.
 
-  // address useEffect
+  // *
+  // * address useEffect
+  // *
   useEffect(() => {
     if (!online) {
-      console.log('offline - will not locateUser')
+      console.info('offline - will not locateUser')
       return
     }
     const updateFormValues = values => dispatch(setFormValues(values))

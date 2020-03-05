@@ -144,7 +144,9 @@ const useFormStyles = makeStyles(theme => ({
     height: '100%',
     boxSizing: 'border-box',
   },
-  primary: {},
+  primary: {
+    display: 'flex',
+  },
   label: theme.form.body.fields.label,
   phone: {
     background: 'inherit',
@@ -266,6 +268,7 @@ const EveryField = ({ name }) => (
         list,
         uniqProps,
         clearable,
+        fieldSchema,
       }
       return (
         <DisplayField {...displayFieldProps} fullWidth>
@@ -386,6 +389,7 @@ const NumberField = ({
   onChange,
   uniqProps,
   clearable,
+  fieldSchema,
   ...rest
 }) => {
   const classes = useFormStyles()
@@ -424,7 +428,7 @@ const NumberField = ({
         // The onChange: () => {} in this case is since MyNumberFormat doesn't recognize 'onChange' but 'onValueChange' instead
         onChange: () => {},
         ...(clearable && {
-          endAdornment: <ClearIcon {...{ name, updateForm }} />,
+          endAdornment: <ClearIcon {...{ name, updateForm, fieldSchema }} />,
         }),
       }}
       InputLabelProps={{
@@ -481,11 +485,13 @@ const AutosuggestField = ({
   fullWidth,
   list,
   uniqProps: { update },
+  clearable,
+  fieldSchema,
   ...rest
 }) => {
   const classes = useFormStyles()
   const context = useContext(FormContext)
-  const { form } = context
+  const { form, updateForm } = context
   const lists = useSelector(store => store.lists)
   const entireList = lists[list]
 
@@ -499,6 +505,11 @@ const AutosuggestField = ({
           entireList,
           quantity: 90,
           name,
+          ...(clearable && {
+            endAdornment: () => (
+              <ClearIcon {...{ name, updateForm, fieldSchema }} />
+            ),
+          }),
         },
         className: classes.inputBase,
       }}
@@ -524,6 +535,7 @@ const LocationField = ({
   label,
   fullWidth,
   uniqProps,
+  fieldSchema,
   ...rest
 }) => {
   const classes = useFormStyles()
@@ -547,7 +559,9 @@ const LocationField = ({
         inputComponent: LocationSearchInput,
         inputProps: {
           ...(clearable && {
-            endAdornment: () => <ClearIcon {...{ name, updateForm }} />,
+            endAdornment: () => (
+              <ClearIcon {...{ name, updateForm, fieldSchema }} />
+            ),
           }),
           updateAddress,
         },
@@ -575,6 +589,7 @@ const DefaultField = ({
   clearable = false,
   uniqProps,
   onChange,
+  fieldSchema,
   ...rest
 }) => {
   const classes = useFormStyles()
@@ -588,7 +603,7 @@ const DefaultField = ({
           showAdornment(icon, value) && IconAdornment({ icon, form }),
         className: classes.primary,
         ...(clearable && {
-          endAdornment: <ClearIcon {...{ name, updateForm }} />,
+          endAdornment: <ClearIcon {...{ name, updateForm, fieldSchema }} />,
         }),
       }}
       value={value}
@@ -744,17 +759,18 @@ const getFields = structure =>
 const showAdornment = (icon, value) =>
   icon && typeof icon === 'function' ? !!value : !!icon
 
-const ClearIcon = ({ name, updateForm }) => {
+const ClearIcon = ({ name, updateForm, fieldSchema }) => {
   const classes = useFormStyles()
   const form = useSelector(store => store.form)
+  const value = ''
 
   const clearValue = name => () => {
     updateForm(
       produce(form, draft => {
-        draft.values[name] = ''
+        draft.values[name] = value
       })
     )
-    // should have called handleEveryChange (e.g., to warn if fieldSchema doesn't allow it to stay blank)
+    handleEveryChange({ name, value, updateForm, fieldSchema, form })
   }
   return (
     <span onClick={clearValue(name)} className={classes.primary}>

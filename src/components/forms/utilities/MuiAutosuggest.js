@@ -20,16 +20,16 @@ import IsolatedScroll from 'react-isolated-scroll'
 
 moize.collectStats()
 
-const FlagPure = ({ imageUrl, inlineImg, display }) => {
+const FlagPure = ({ imageUrl, inlineImg, display, empty }) => {
   const { online } = useSelector(store => store.device)
   return (
-    <MyGrid container direction="column">
-      {imageUrl ? (
-        <MyGrid
-          container
-          style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
-          justify="flex-end"
-        >
+    // <MyGrid direction="column">
+    imageUrl ? (
+      <MyGrid
+        style={{ lineHeight: '0' }} // only way to vertically center LazyLoadImage
+        justify="flex-end"
+      >
+        <div style={{ paddingLeft: '1em' }}>
           {online && (
             <LazyLoadImage
               effect="black-and-white"
@@ -38,11 +38,18 @@ const FlagPure = ({ imageUrl, inlineImg, display }) => {
               src={imageUrl}
             />
           )}
-        </MyGrid>
-      ) : (
-        <div className={inlineImg} />
-      )}
-    </MyGrid>
+        </div>
+      </MyGrid>
+    ) : (
+      <>
+        {inlineImg && (
+          <div style={{ paddingLeft: '1em', display: 'flex' }}>
+            <div className={inlineImg} />
+          </div>
+        )}
+      </>
+    )
+    // </MyGrid>
   )
 }
 
@@ -60,6 +67,14 @@ function renderInputComponentPure({
 }) {
   const PassedEndAdornment =
     endAdornment && (() => <span>{endAdornment()}</span>)
+
+  const StartAdornment = () =>
+    value && entireListObj && entireListObj[value] ? (
+      <Flag {...entireListObj[value]} />
+    ) : (
+      <Flag empty />
+    )
+
   const EndAdornment = () =>
     endAdornment ? (
       <PassedEndAdornment />
@@ -94,6 +109,7 @@ function renderInputComponentPure({
         classes: {
           input: classes.input,
         },
+        startAdornment: StartAdornment(),
         endAdornment: EndAdornment(),
         disableUnderline: true,
       }}

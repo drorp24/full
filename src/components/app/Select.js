@@ -22,6 +22,7 @@ const structure = [
         required: true,
         label: 'Paying with',
         helper: "The currency I'm paying with",
+        clearable: true,
       },
       {
         name: 'base',
@@ -36,6 +37,7 @@ const structure = [
         required: true,
         label: 'Buying coin',
         helper: "The currency I'm buying",
+        clearable: true,
       },
       {
         name: 'amount',
@@ -54,7 +56,6 @@ const structure = [
         name: 'address',
         type: 'location',
         value: address,
-        fieldSchema: string().required('Please specify'),
         label: 'Prefer searching around',
         helper: 'Center the search here',
         clearable: true,
