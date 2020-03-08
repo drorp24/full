@@ -180,12 +180,11 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
     (pathname === '/select' ||
       pathname === '/index' ||
       (pathname === '/merchants' &&
-        !scrolling &&
         // !contextual &&
         layout === 'vertical'))
 
   const appBarHeightPercent = noAppBar ? 0 : 15
-  const liveHeaderHeightPercent = includeLiveHeader ? 15 : 0
+  const liveHeaderHeightPercent = includeLiveHeader & !scrolling ? 15 : 0
   const mainHeightPercent = 100 - appBarHeightPercent - liveHeaderHeightPercent
 
   const boxShadow =
@@ -208,7 +207,7 @@ const Page = ({ title, icon, noAppBar, noBack, children }) => {
     },
     liveHeader: {
       height: `${liveHeaderHeightPercent}%`,
-      transition: 'height 1.5s',
+      transition: 'height 2s',
       backgroundColor: theme.palette.primary.main,
       display: 'flex',
       flexDirection: 'column',
