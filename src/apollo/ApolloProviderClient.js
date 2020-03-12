@@ -153,7 +153,7 @@ const ApolloProviderClient = ({ children }) => {
     return () => {}
   }, [])
 
-  //! Quick loader
+  // ! Quick loader
   // When the time window for the loader/spinner is a fraction of a second,
   // my attempt to include a component, any component (e.g., <Loader />) resulted in an empty screen.
   // Probable reason: there's an overhead to mount a component

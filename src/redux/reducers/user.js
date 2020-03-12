@@ -25,15 +25,15 @@ const initialState = { a2hs: { accepted: null, prompted: null } }
 // the event. Today I would probably call it: 'SET_LOCATION.
 //
 // * payload granularity - key child level
-// Even when there are multiple actions updating one single key, it's better if each action doesn't go any deeper than
-// the key's child.
+// Even when there are multiple actions updating one single selector, it's better if each action doesn't go any deeper than
+// the selector's immediate child.
 // In such cases, all of the data pertaining to one single event should be grouped under one single object (e.g. 'a2hs' here),
-// senabling to add more pieces of data pertaining to that event later on if needed
+// enabling to add more pieces of data pertaining to that event later on if needed
 // w/o the need to change anything else other than adding the new data in the calling function.
 // For that purpose, the object in its entirety should be the payload (here: 'a2hs') rather than its properties,
 // so that the reducer doesn't know what's inside.
 //
-// * payload granularity - deeper levels
+// * Immer to the rescue
 // The above is not possible when the update is deeper than a key's child.
 // Such was the case with SET_FORM_VALUES.
 // That means letting the reducer know the structure of the content, which is bug-prone and not future friendly.

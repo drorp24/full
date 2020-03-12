@@ -79,7 +79,7 @@ export const createFormStateFromStructure = structure => {
 // ! Generating the schema dynamically: not required
 // After much struggle with yup, I'm documenting the ultimate conclusions to hopefully save more struggles going forward.
 //
-// * Once thought to be required to generate oneOf rules dynamically, based on lists
+// * Using yup's oneOf rules is usually a bad idea, and genertaing oneOf list programmatically is even worse
 // Using oneOf rules in yup is kind of okay if the lists are short and hard-coded, though there are more reasons to not use it even then.
 // But generating a long oneOf rule based on a list (e.g., currencies) is always a bad idea as I discovered:
 // - Technically, it entails using a setTransform function in redux-persist, which would convert the yup whitelists that serve its oneOf rules

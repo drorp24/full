@@ -66,6 +66,10 @@ const app = express()
 // The preached-manifest filename is also signed, so that file itself can be cached until a new one arrives.
 // The precached-manifest file is the one used by the sw process to update its cache.
 //
+// I'm doing that below in one single express.static statement.
+// 'setHeaders' also provides a hook into express.static allowing to view which requests are handled by it (which is otherwise impossible!)
+// that's how I discovered the index problem described above.
+//
 // * implementing it with cache headers
 // All posts about service workers remind to set its max-age to zero lest the browser will cache an old one.
 // Why not simply sign the the file name like all the rest of the static files is beyond me.
@@ -187,11 +191,6 @@ app.use(compression())
 //   Whenever I do want to server-render any path, I should remember to have a corresponding route defined for that path in App.js
 //   otherwise App.js won't know which component to render and the html and css would return empty.
 //
-//! Do not cache service-worker.js
-// Whereas most static files need a long cache header to make sw effective, the service-worker.js code itself should obviously not be cached.
-// I'm doing that below in one single express.static statement.
-// 'setHeaders' also provides a hook into express.static allowing to view which requests are handled by it (which is otherwise impossible!)
-// that's how I discovered the index problem described above.
 
 app.use(
   express.static(path.join(__dirname, '..', '..', 'build'), {

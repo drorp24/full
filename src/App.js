@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect, useSelector, useDispatch } from 'react-redux'
 import { setSource, setCount, setDevice } from './redux/actions'
 
-//! Why I gave up custom fonts
+// ! Why I gave up custom fonts
 //  Usually, custom fonts are lazily fetched only when required.
 //  That prevents the browser from having to fetch font files in the first page, which I deliberately
 //  didn't style with any custom font for performance.

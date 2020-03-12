@@ -6,8 +6,6 @@ import { address } from '../utility/geolocation'
 
 const structure = [
   {
-    title: 'What are you looking for?',
-    // subtitle: 'Get the best offers',
     fields: [
       {
         name: 'quote',
@@ -84,12 +82,11 @@ const Select = () => {
   const show = {
     helper: false,
     label: true,
-    submit: 'get offers',
     next: 'merchants',
   }
 
   return (
-    <Page title="Find offers" icon="searchQuote" noBack>
+    <Page title="Find offers" noBack>
       <FormContainer {...{ structure, show }} />
     </Page>
   )

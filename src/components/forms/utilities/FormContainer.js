@@ -37,21 +37,6 @@ const FormContainer = ({ structure, show }) => {
   // there are dependencies that don't sit on any component (e.g., schema) and would therefore not be possible with any useEffect
   // and then there is the fact that any useEffect can depend on a multitude of data, which isn't possible with onChange either.
   //
-  // ! every useEffect invocation will have a component re-render preceeding it
-  // ! or: why is FormContainer being re-rendered upon every keystroke in the 'quote' field
-  // The above rule holds even if the useSelector vars doesn't seem to require any re-render of the component, just a side calculation
-  // For instance: 'quote' changes trigger re-generation of the coins list.
-  // Aparently, this doesn't require any re-rendering of FormContainer (maybe not a good example but never mind)
-  // but since quote useEffect depends on 'quote', every keystroke in the 'quote' field will re-invoke it
-  // and since that quote useEffect belongs to the FormContainer, FormContainer itself will be re-rendered every keystroke in the 'quote' field
-  //
-  // I could have separated the only part of the form that cares about lists ('quote' field) into its own component
-  // and define the 'quote' useSelector as well as the corresponding useEffect (setLists) there
-  // but then I would miss the entire flexibility of my Form 'library' which is completely dynamic based on configuration
-  // I could have passed 'quote' as a prop into some child of FormContainer, which would make only that child re-render
-  // but then I would again defeat the purpose of having a Form component which is entirely dependant on configuration.
-  // Even if I had done any of these, I would merely compete with React's own 'diff' mechanism,
-  // which sees that only the minimal part of the DOM (if ever) is updated.
 
   const lists = useSelector(store => store.lists)
   const populated = useSelector(store => store.app.populated)
@@ -154,7 +139,7 @@ const FormContainer = ({ structure, show }) => {
   // This useEffect is in charge of fetching the coins list, each coin with a rate relative to the quote currency.
   // Since it entails fetching a slow api with lots of data, every attempt is made to prevent calling that api unnecessarily.
   // This is particulalry important since the useEffect depdends on 'quote', whose value changes with every key stroke
-  //(including removal keystrokes, such as deleteing "United Stated Dollar" character by character).
+  // (including removal keystrokes, such as deleteing "United Stated Dollar" character by character).
 
   useEffect(() => {
     console.info('coins useEffect')
@@ -183,7 +168,7 @@ const FormContainer = ({ structure, show }) => {
     }
 
     // No use to call the API if the keyed quote currency is not found in the fetched currencies list.
-    // No use to call it either once 'quote' gets the currency full name (e.g, "United States Dollar") and is deleted back character by character.
+    // No use to call it as of when 'quote' holds the currency full name either (e.g, "United States Dollar") and is deleted back character by character.
     //
     // No use to even look for the quote in the currencies list if
     // - currencies list isn't fetched yet, or
@@ -235,7 +220,7 @@ const FormContainer = ({ structure, show }) => {
       // It does so by awaiting each of the return results of each attempt (an async operation),
       // then attempting again if unsuccessful but not before waiting 3 seconds.
       // This loop ends after maximum 5 attempts.
-      // the 3 seconds lapse prevents thousands of attempts from occurring quickly one after the other,
+      // the 3 seconds lapse prevents thousands of attempts from occurring successively,
       // and the 5 attempts restriction prevents endless attempts in environments that don't support location tracking
       // (e.g., user has not authorized location tracking, http etc)
       //
@@ -278,7 +263,7 @@ const FormContainer = ({ structure, show }) => {
 
   // ! ssr road block
   // The following "road block" on populated.state ensures that render will not take place until form's state population is complete (it's async).
-  // And since state is populated by a useEffect which only run on the client, it also blocks the server from rendering anything beyond this point.
+  // And since state is populated by a useEffect which only runs on the client, it also blocks the server from rendering anything beyond this point.
   //
   // Actually none of FormContainer's code runs on the server, as FormContainer's entire logic in useEffect's.
   //

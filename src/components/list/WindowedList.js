@@ -87,9 +87,8 @@ const WindowedList = ({
   //   To save hundreds of very frequent dispatches from occuring with every 'onWheel' event,
   //   a local state holds the current value of the forward, and the dispatch is called only if the user changed scrolling direction.
   //
-  //   Had I used useState an endless re-render would have occurred,
+  //   If that's not enough, had I used useState an endless re-render would have occurred,
   //   since any modification done to that state would instantly call that component again.
-  //   So I used a local variable instead.
 
   // Skip first reported scroll because it's fired befire user actually scrolls
   const dispatch = useDispatch()

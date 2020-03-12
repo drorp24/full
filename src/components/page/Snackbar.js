@@ -19,23 +19,23 @@ import recentlyNotified from '../utility/recentlyNotified'
 // which is included on every page and reacts to changes in that global space thus showing the proper messages.
 //
 // * Fading out messages vs. self-removing actions
-// Even though messages can fade out after some time, some events remove themselves from the redux store after some time.
-// This happens if the actual state doesn't change, but we want to set it to recur periodically.
-// If those events had remained on, they would hinder other events from being evaluated hence displayed to the user
+// Even though snackbars can be configured to fade themselves out after some time,
+// I let some events remove themselves from the redux store after some time.
+//
+// This mechanism was required to force some messages to recurr periodically, in spite of the state itself remaining intact.
+// If the states had remained on in redux, even though the snackbar messages would have faded away,
+// the remained redux status would have hindered other events from being evaluated, effectively blocking them from rendering.
 // (they would remain true in the useEffect and so would be the one displayed even if the useEffect had been trigger by another event).
-// Examples: reminding the user to intall a newer pending release or create a shortcut
-// - both of which I made to recur every page reload and app visit.
+//
+// Examples for such constant statuses that were made into recurring events:
+// - periodical reminder for the user to intall a newer pending release
+// - periodical add to home screen prompt
 //
 // ! Use multi-variable state (only) when it makes sense
 // Many times, it's easier to let useState handle a scalar rather than an object and use as many of them as needed,
 // otherwise, if you update only one variable at a time and don't know the value of (or don't want to update) the others,
 // you must either use the functional form of setState or useReducer or even useImmerReducer.
 // 'message' however is one of those cases where it actually makes more sense to define a multi-variable (i.e., object) state.
-
-// ! Place configuration / unchanging function definitions outside the component
-// Placing them here, outside of the component, ensures they won't affect the useEffect
-// and is the only way to avoid eslint from demanding to include them in the list of useEffect dependencies.
-// Including them in the list of useEffect dependencies will make it harder to see what that useEffect really depends on.
 
 const reload = () => {
   console.log('reload invoked')
@@ -44,6 +44,7 @@ const reload = () => {
 
 // ! Installing a new release
 // Documented in 'Snackbar.js'
+// TODO: 'install' function of course should not be defined here
 //
 // ? Install the new release for the user
 // If the 'registration' object which is available only as a return of a promise isn't peculiar enough,
@@ -173,7 +174,7 @@ export default function MySnackbar() {
     setOpen(false)
   }
 
-  //! When it is okay to both read and write state in a useEffect
+  // ! When it is okay to both read and write state in a useEffect
   // Similalry to how I ask whether I set already the values in FormContainer's useEffects,
   // here is another case that justifies both reading and writing state in the same useEffect:
   //

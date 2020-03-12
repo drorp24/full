@@ -2,7 +2,7 @@
 Todo:
   Message:
     ☐ Mission: continuous exploration of "write-once-deploy-on-every-device" approaches:
-      ☐ MPA, SPA, PWA, React native, flutter, ...
+      ☐ Web (MPA, SPA, PWA), React native, flutter, ...
     ☐ Milestones:
     ☐  Paykido launch 
     ☐  Cambiu launch 
@@ -38,13 +38,13 @@ Todo:
       ☐ Serverless, functional programming, typescript, WASM etc
   Proficiency:
     PWA:
-      ☐ Offline support: offline/online alerts, state caching (redux-persist), data caching (apollo-client)
-      ☐ Fullscreen / Standalone
-      ☐ Shortcut icon
-      ☐ Add to home screen
+      ✔ Offline support: offline/online alerts, state caching (redux-persist), data caching (apollo-client) @done(20-03-08 16:17)
+      ✔ Fullscreen / Standalone @done(20-03-08 16:17)
+      ✔ Shortcut icon @done(20-03-08 16:17)
+      ✔ Add to home screen @done(20-03-08 16:17)
     Fetching:
       Assets:
-        ☐ Amazon CloudFront
+        ✘ Amazon CloudFront @cancelled(20-03-08 15:56)
       External Data: 
         REST API:
         ✔ CryptoCompare, Google places @done(19-02-12 16:48)
@@ -58,13 +58,13 @@ Todo:
         GraphQL API:
           ✔ Apollo Server 2, Apollo Client @done(19-02-12 17:27)
           ✔ Subscriptions @done(19-02-12 15:49)
-          ☐ defer (server)
-          ☐ caching (client)
+          ✘ defer (server) @cancelled(20-03-08 15:56)
+          ✔ caching (client) @done(20-03-08 15:56)
       Code:
         ✔ Server-Side Rendering of components, styles, state and data @done(19-02-12 15:45)
         ✔ Code splitting, exluded/included in initial render @done(19-02-12 15:45)
         ✔ Web workers, caching (PWA) @done(19-02-12 16:05)
-        ☐ Dynamic import(), React.lazy, react-loadable
+        ✔ Dynamic import(), React.lazy, react-loadable @done(20-03-08 15:56)
         ☐ Preloading (fetching server data of unmounted yet components ahead of time)
     UI:
       Performance:
@@ -95,15 +95,15 @@ Todo:
         ✔ Dynamically mount/unmount DOM elements as user scrolls (react-window) @done(20-01-21 17:17)
         ✔ graphQL cursor-based paging - client (Apollo Client), 
         ☐ graphQL cursor-based paging - server (mongoose) @done(20-01-21 17:17)
+    Serverless:
+      ✘ AWS API Gateway @cancelled(20-03-08 15:57)
+      ✘ AWS Lambda @cancelled(20-03-08 15:57)
+    Typescript:
+      ☐ At least some of the components
   Prove:
     Scores:
-    ☐ Lighthouse score
-    ☐ PWA check score
-  Serverless:
-    ☐ AWS API Gateway 
-    ☐ AWS Lambda
-  Typescript:
-    ☐ At least some of the components
+    ✔ Lighthouse score @done(20-03-08 15:57)
+    ✔ PWA check score @done(20-03-08 15:57)
   Do:
     Onboarding: 
       Purpose:
@@ -250,30 +250,30 @@ Todo:
       ✔ Go over Deployment TODO note and remove obsolete parts @done(19-09-17 18:18)
   Consider:
     Pre-rendering:
-      ☐ use react-snap to pre-render the first, static page
-      ☐ the pre-rendered fist page is the page that should be sent out by the server, not the ssr one
-      ☐ ensure ssr is not running (since it will waste time unnessesaraily)
+      ✘ use react-snap to pre-render the first, static page @cancelled(20-03-08 16:15)
+      ✘ the pre-rendered fist page is the page that should be sent out by the server, not the ssr one @cancelled(20-03-08 16:15)
+      ✘ ensure ssr is not running (since it will waste time unnessesaraily) @cancelled(20-03-08 16:15)
   Delay:
     Sort by quote (Plan A):
-      ☐ Construct the recturned records of 'edges', each with its separate cursor and node
-      ☐ In other words, return a cursor for *each* record like in https://graphql.org/learn/pagination/#pagination-and-edges 
-      ☐ Each record's cursor will include that record's _id and quote values
-      ☐ ! Find a way to call the quote instance method from the search static method so it can be used for sorting
-      ☐ search.find() should be sorted so that quote < last record/cursor's quote *or* _id > last record/cursor's _id
+      ✘ Construct the recturned records of 'edges', each with its separate cursor and node @cancelled(20-03-08 16:16)
+      ✘ In other words, return a cursor for *each* record like in https://graphql.org/learn/pagination/#pagination-and-edges @cancelled(20-03-08 16:16)
+      ✘ Each record's cursor will include that record's _id and quote values @cancelled(20-03-08 16:16)
+      ✘ ! Find a way to call the quote instance method from the search static method so it can be used for sorting @cancelled(20-03-08 16:16)
+      ✘ search.find() should be sorted so that quote < last record/cursor's quote *or* _id > last record/cursor's _id @cancelled(20-03-08 16:16)
     Sort by quote (Plan B):
-      ☐ Make a process to insert some random margin to each merchant record
-      ☐ Use that fixed store margin instead of randomizing it during run time
-      ☐ Have .search sort by it (the quotes added later will be ordered to match)
-      ☐ Either leave cursor, sorting like Plan A, or give cursors up and just use offsets
+      ✘ Make a process to insert some random margin to each merchant record @cancelled(20-03-08 16:16)
+      ✘ Use that fixed store margin instead of randomizing it during run time @cancelled(20-03-08 16:16)
+      ✘ Have .search sort by it (the quotes added later will be ordered to match) @cancelled(20-03-08 16:16)
+      ✘ Either leave cursor, sorting like Plan A, or give cursors up and just use offsets @cancelled(20-03-08 16:16)
     Code Splitting - migrate from react-loadable to React.lazy once the latter supports CS in ssr:
-      ☐ Remove all 'react-loadable' legacy code
-      ☐ Replace it with React.lazy when ssr-ready
-      ☐ Include in initial render only the first page (which by then should be the new page)
-      ☐ Check only first page code is sent initially.
+      ✘ Remove all 'react-loadable' legacy code @cancelled(20-03-08 16:16)
+      ✘ Replace it with React.lazy when ssr-ready @cancelled(20-03-08 16:16)
+      ✘ Include in initial render only the first page (which by then should be the new page) @cancelled(20-03-08 16:16)
+      ✘ Check only first page code is sent initially. @cancelled(20-03-08 16:16)
     Server-side rendering:
         Styles:
-          ☐ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering)
-          ☐ Avoid discrepancy with client-rendered styles (requires https://www.styled-components.com/docs/tooling#babel-plugin)
+          ✔ server-render styles (https://www.styled-components.com/docs/advanced#server-side-rendering) @done(20-03-08 16:16)
+          ✔ Avoid discrepancy with client-rendered styles (requires https://www.styled-components.com/docs/tooling#babel-plugin) @done(20-03-08 16:16)
     Desktop:
       ✘ When on desktop, confine display to a left pane and show map with merchants (a-la google maps, old cambiu) @cancelled(19-09-06 00:53)
 

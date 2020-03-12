@@ -21,7 +21,7 @@ import toggleMode from './toggleMode'
 
 import { inBrowser } from '../utility/detect'
 
-//! Mystery: MyAppBar gets re-rendered whenever either of the form values gets updated
+// ! Mystery: MyAppBar gets re-rendered whenever either of the form values gets updated
 // That's 3 times plus 1 for each location tracking attempt.
 // It makes no sense as none of MyAppBar's 8 hooks needs to change following those updates.
 // But that still happens, and Profile tab shows it clearly, without of course disclosing which of the hooks changed.
@@ -118,7 +118,7 @@ const MyAppBar = ({ title, icon = null, noBack }) => {
     history.goBack()
   }
 
-  //! Passing a reducer down to a child
+  // ! useReducer is better than useState when a reducer has to be passed down to a child
   // The Menu icon is part of the MyAppBar component;
   // when it is clicked, it should affect MyDrawer's state so that MyDrawer will re-render;
   // The menu items on the other hand are part of the MyDrawer component;

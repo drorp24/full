@@ -44,7 +44,8 @@ import rootReducer from './reducers/index'
 // - persisting redux means that every population must first check if values exist already before potentially overriding good values
 // - again, this otherwise performance thing, becomes crucial to support offline, as this could mean blanking values out
 // - for the above purpose, it doesn't matter if the values themselves are checked or a 'populated' value is used, but if the latter,
-//   it better not be in a blacklisted key of persistConfig's. And generally persistConfig better not have a 'blacklist' key at all.
+//   it better not be in a blacklisted key of persistConfig's.
+// - And generally persistConfig better not have a 'blacklist' key at all.
 
 // ! Persistence and Dehydration
 // Refreshing '/merchants' page only to get back to the '/select' page and see it blank after all the keying is a very poor UX.

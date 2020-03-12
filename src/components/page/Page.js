@@ -44,14 +44,14 @@ import LiveHeader from '../forms/utilities/LiveHeader'
 // * <Div100vh /> to the rescue
 // <Div100vh /> component uses windows.innerHeight instead of '100vh' and listens to window.resize.
 // As such, it always keeps to the viewport's exact height.
-// It does come with 2 caveats though, which as usual I had to learn the hard way.
+// It does come with several big caveats though, which as usual I had to learn the hard way:
 //
 // * 1st caveat: <Div100vh /> doesn't work on the server
 // <Page /> is server-rendered as well, and Div100vh doesn't operate on the server.
 // The server in this case has to generate an alternative <div style={{height: 100vh}} />
 // or else the first static page would not capture the entire screen's height and a FOUC would occur as soon as React takes over.
 //
-// To solve this, I started by defining the 'server' as state, but no hydration occured by the the time client had to render <Page />
+// To solve this, I started by defining the 'server' as state, but no re-render occured by the the time client had to render <Page />
 // Maybe that's because what the server returns looks identical to what <Div100vh /> would have rendered:
 // Both have the same props, with the 'style' props having the very same key (height) with the very same value (in the first static page).
 //

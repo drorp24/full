@@ -3,9 +3,25 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect, useSelector, useDispatch } from 'react-redux'
 import { setSource, setCount, setDevice } from './redux/actions'
 
-// ! READ WHY I SAVED THIS FILE BELOW
+// ! WHY I SAVED THIS FILE
+//
+// SSR + code split are blocked for anyone using CRA. react-loadable is obsolete and loadable-components requires access to webpack and babel configs.
+// This code below is as far as I could come close to a home-made SSR+split.
+// I'm saving it since it's only a matter of understanding what have I missed to make this work.
+// Currently for the life of me I cannot make it work.
+// What I notice:
+// - setSelect makes parent 'App' re-render for some reason, in spite of being embedded in 'LazySelect';
+//   'App' re-rendering re-initializes 'Select's state back into 'load', which breaks the protective 'if (Select !== 'load') return' statement,
+//   creating an endless loop. 'Select' itself renders properly.
+// - an attempt to use a local variable instead of the setSelect hook (left commented) prevented the endless loop,
+//   but didn't trigger any re-render either, making the initial 'load' value hang and never replaced with 'Select'.
+//
+// I'm treating here code as React treats data, and maybe this is the culprit.
+// If I ever (hpe not!) try doing that again, I may try:
+// - Return to React.lazy and focus on server not minding <Suspense />
+// - or stick with this home-made React.lazy and use some Suspense-like component of my own.
 
-//! Why I gave up custom fonts
+// ! Why I gave up custom fonts
 //  Usually, custom fonts are lazily fetched only when required.
 //  That prevents the browser from having to fetch font files in the first page, which I deliberately
 //  didn't style with any custom font for performance.
@@ -78,24 +94,6 @@ function App({ values }) {
   // As soon as client takes over and populates its own values it sets 'source' to 'Client',
   // thus ensuring that client would only override server-generated values, not its own.
   //
-
-  // ! WHY I SAVED THIS FILE
-  //
-  // SSR + code split are blocked for anyone using CRA. react-loadable is obsolete and loadable-components requires access to webpack and babel configs.
-  // This code below is as far as I could come close to a home-made SSR+split.
-  // I'm saving it since it's only a matter of understanding what have I missed to make this work.
-  // Currently for the life of me I cannot make it work.
-  // What I notice:
-  // - setSelect makes parent 'App' re-render for some reason, in spite of being embedded in 'LazySelect';
-  //   'App' re-rendering re-initializes 'Select's state back into 'load', which breaks the protective 'if (Select !== 'load') return' statement,
-  //   creating an endless loop. 'Select' itself renders properly.
-  // - an attempt to use a local variable instead of the setSelect hook (left commented) prevented the endless loop,
-  //   but didn't trigger any re-render either, making the initial 'load' value hang and never replaced with 'Select'.
-  //
-  // I'm treating here code as React treats data, and maybe this is the culprit.
-  // If I ever (hpe not!) try doing that again, I may try:
-  // - Return to React.lazy and focus on server not minding <Suspense />
-  // - or stick with this home-made React.lazy and use some Suspense-like component of my own.
 
   const dispatch = useDispatch()
 

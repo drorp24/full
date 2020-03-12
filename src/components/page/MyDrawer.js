@@ -41,8 +41,10 @@ const MyDrawer = ({ drawerState, drawerDispatch }) => {
   // One way to pass a dynamic component is to have it in its JSX form as a value on some object's key
   // (Another which I use often is to simply assign a capitalized named variable to it then use the variable as the component)
   // used down below to pass a variable icon component (icon key)
+
   // ! Svg for variable icons
-  // Specifically to icons, there's a better way to pass a dynamic icon, which is to use an svg icon
+  // Specifically to icons, there's a better way to pass a dynamic icon than passing an icon component;
+  // The prefferd way is to pass the icon name as a prop to a coponent such as my 'svg' one.
   // benefits:
   // - no need to import a component for every new item: with svg the icon is merely a name prop
   // - the icon can be context-sensitive (example, 'svg: otherMode')

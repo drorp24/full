@@ -18,7 +18,7 @@ const config = {
     //   'interactive',
     // ],
     // Skip the h2 audit so it doesn't lie to us. See https://github.com/GoogleChrome/lighthouse/issues/6539
-    skipAudits: ['uses-http2'],
+    skipAudits: ['uses-http2', 'redirects-http'],
     categories: {
       performance: {
         //     title: 'Performance',

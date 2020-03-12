@@ -3,7 +3,7 @@ import green from '@material-ui/core/colors/green'
 import blue from '@material-ui/core/colors/blue'
 import orange from '@material-ui/core/colors/orange'
 
-// ! MUI's 'light' and 'dark' keys have nothing to do with light/dark mode
+// ! MUI's 'light' and 'dark' keys doesn't seem to have anything to do with light/dark mode
 // Importing a color from MUI (as I did with 'blue') brings an object with 'light' and 'dark' keys which are each offset from the 'main' key
 // which represents the main color. I don't know what MUI does with these variations, but from my experience,
 // it has nothing to do with 'light' or 'dark' mode: when I changed theme.palette.type from 'light' to 'dark' and vice versa
@@ -42,11 +42,12 @@ import orange from '@material-ui/core/colors/orange'
 // creating some components like <Box /> and <MyTypography />
 // with their very own 'variants' like 'formVariants' and 'pageVariants';
 // Later I understood that this is actually a very bad idea.
-//s
+//
 // What this does is to put the styling away in a remote file again ('theme.js' in this case)
 // rather than include them in the same file as the component they style, which is one of css-in-js benefits, that is more in line with
-// concepts such as componentization and shadow-dom. Worse yet, it polutes the 'theme' with component-specific styling rules rather
-// then leave the theme for only the, well theme stuff such as the brand colors, spacing etc.
+// concepts such as componentization and shadow-dom.
+// Worse yet, it polutes the 'theme' with component-specific styling rules rather
+// than leaving the theme for only the, well theme stuff such as the brand colors, spacing etc.
 
 const theme = mode => {
   const defaultTheme = createMuiTheme({
