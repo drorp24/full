@@ -25,6 +25,7 @@ import Welcome from './components/app/Welcome'
 import Select from './components/app/Select'
 import Merchants from './components/app/Merchants'
 // const Merchants = lazy(() => import('./components/app/Merchants'))
+import Quiz from './reactQuiz/Quiz'
 
 function App({ values }) {
   // componentDidMount() {
@@ -104,6 +105,9 @@ function App({ values }) {
           </Route>
           <Route path="/merchants">
             {values && values.quote ? <Merchants /> : <Redirect to="/select" />}
+          </Route>
+          <Route path="/quiz">
+            <Quiz />
           </Route>
         </Switch>
       </ErrorBoundary>
