@@ -88,6 +88,14 @@ const ApolloProviderClient = ({ children }) => {
     const httpEndpoint = `${REACT_APP_GRAPHQL_WEB_SCHEME}://${graphqlEndpoint}`
     const wsEndpoint = `${REACT_APP_GRAPHQL_WEBSOCKET_SCHEME}://${graphqlEndpoint}`
 
+    console.log('========')
+    console.log('========')
+    console.log('========')
+    console.log('httpEndpoint: ', httpEndpoint)
+    console.log('========')
+    console.log('========')
+    console.log('========')
+
     const httpLink = new HttpLink({
       uri: httpEndpoint,
       fetch: fetch,
