@@ -61,7 +61,7 @@
     "material-ui-pickers": "^2.1.2",
     "mdi-material-ui": "^5.9.0",
     "moize": "^5.4.2",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "prettier": "^1.19.1",
     "preval.macro": "^4.0.0",
     "prop-types": "^15.6.2",
